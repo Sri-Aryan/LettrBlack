@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "591554703858",
+    "project_id": "letteblack86",
+    "storage_bucket": "letteblack86.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:591554703858:android:fac7b2e182a0252df43b6b",
+        "android_client_info": {
+          "package_name": "com.example.letteblack"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAvUEhpH6cEvPBLeNswnUvBsjTVHUvQaJg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -23,16 +23,16 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.letteblack.UserState
 import com.example.letteblack.Utils
-import com.example.letteblack.ViewModel
+import com.example.letteblack.AuthViewModel
 import com.example.letteblack.data.Routes
 import com.example.letteblack.data.UserDetails
-import com.google.firebase.Firebase
-import com.google.firebase.firestore.firestore
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 
 @Composable
-fun HomeScreen(navController: NavHostController, modifier: Modifier, viewModel: ViewModel){
-    LaunchedEffect(viewModel.userState.value){
-        when(viewModel.userState.value){
+fun HomeScreen(navController: NavHostController, modifier: Modifier, authViewModel: AuthViewModel){
+    LaunchedEffect(authViewModel.userState.value){
+        when(authViewModel.userState.value){
             is UserState.Unauthenticated -> navController.navigate(Routes.Login.toString())
             else -> null
         }
@@ -59,7 +59,7 @@ fun HomeScreen(navController: NavHostController, modifier: Modifier, viewModel: 
             fontWeight = FontWeight.SemiBold)
         Spacer(modifier= Modifier.height(8.dp))
     Button(onClick = {
-        viewModel.signOut()
+        authViewModel.signOut()
     },
         modifier = Modifier.size(200.dp,50.dp)){
         Text("Sign Out")

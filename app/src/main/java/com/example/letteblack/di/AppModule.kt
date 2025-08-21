@@ -1,0 +1,44 @@
+package com.example.letteblack.di
+
+import android.content.Context
+import androidx.room.Room
+import com.example.letteblack.db.AppDatabase
+import com.example.letteblack.db.GroupMemberDao
+import com.example.letteblack.db.NoteDao
+import com.example.letteblack.repositories.GroupMemberRepository
+import com.example.letteblack.repositories.GroupMemberRepositoryImpl
+import com.example.letteblack.repositories.NoteRepository
+import com.example.letteblack.repositories.NoteRepositoryImpl
+import com.google.firebase.firestore.FirebaseFirestore
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Singleton
+
+@Module
+@InstallIn(SingletonComponent::class)
+object AppModule {
+    @Provides
+    @Singleton
+    fun provideFirestore(): FirebaseFirestore = FirebaseFirestore.getInstance()
+
+    @Provides
+    @Singleton
+    fun provideDatabase(@ApplicationContext app: Context): AppDatabase =
+        Room.databaseBuilder(app, AppDatabase::class.java, "study_app.db")
+            .fallbackToDestructiveMigration()
+            .build()
+
+    @Provides fun provideGroupMemberDao(db: AppDatabase): GroupMemberDao = db.groupMemberDao()
+    @Provides fun provideNoteDao(db: AppDatabase): NoteDao = db.noteDao()
+
+    @Provides @Singleton
+    fun provideGroupMemberRepository(dao: GroupMemberDao, fs: FirebaseFirestore): GroupMemberRepository =
+        GroupMemberRepositoryImpl(dao, fs)
+
+    @Provides @Singleton
+    fun provideNoteRepository(dao: NoteDao, fs: FirebaseFirestore): NoteRepository =
+        NoteRepositoryImpl(dao, fs)
+}
