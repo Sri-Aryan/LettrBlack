@@ -1,6 +1,7 @@
 package com.example.letteblack.screens
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -42,25 +43,34 @@ import com.example.letteblack.data.Routes
 @Composable
 fun LoginScreen(navController: NavHostController, modifier: Modifier, authViewModel: AuthViewModel) {
     val context = LocalContext.current
+
     LaunchedEffect(authViewModel.userState.value){
         when(authViewModel.userState.value){
             is UserState.Authenticated -> navController.navigate(Routes.Home.toString())
             is UserState.Error -> Utils.showToast(context,authViewModel.userState.value.toString())
+
+
             else -> null
         }
     }
     var eyeOpener by remember { mutableStateOf(false) }
 
+    Box(modifier = Modifier.fillMaxSize()) {
         Column(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(bottom = 60.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
-        ){
-            Text("Welcome To Login Screen",
+        ) {
+            Text(
+                "Welcome To Login Screen",
                 fontSize = (24.sp),
                 fontFamily = FontFamily.SansSerif,
-                fontWeight = FontWeight.SemiBold)
+                fontWeight = FontWeight.SemiBold
+            )
             Spacer(modifier = Modifier.height(8.dp))
+
             OutlinedTextField(value = authViewModel.email,
                 onValueChange = {authViewModel.onEmailChange(it)},
                 placeholder = {Text("Enter your email")},
@@ -74,19 +84,25 @@ fun LoginScreen(navController: NavHostController, modifier: Modifier, authViewMo
                 placeholder = {Text("Enter your password")},
                 label = {Text("Password")},
                 modifier = Modifier.fillMaxWidth().height(60.dp).padding(horizontal = 16.dp),
+
                 shape = CircleShape,
-                visualTransformation = if(!eyeOpener) PasswordVisualTransformation() else VisualTransformation.None,
+                visualTransformation = if (!eyeOpener) PasswordVisualTransformation() else VisualTransformation.None,
                 trailingIcon = {
-                    IconButton(onClick = {eyeOpener = !eyeOpener},
-                        modifier = Modifier.size(50.dp))
-                    {
-                        Icon(painterResource(R.drawable.eye),null,
+                    IconButton(
+                        onClick = { eyeOpener = !eyeOpener },
+                        modifier = Modifier.size(50.dp)
+                    ) {
+                        Icon(
+                            painterResource(R.drawable.eye),
+                            null,
                             tint = Color.Unspecified,
-                            modifier = Modifier.size(40.dp))
+                            modifier = Modifier.size(40.dp)
+                        )
                     }
                 }
             )
             Spacer(modifier = Modifier.height(16.dp))
+
             Button(onClick = {
                 if(authViewModel.email.isNotEmpty() && authViewModel.password.isNotEmpty()){
                     authViewModel.login(authViewModel.email,authViewModel.password)
@@ -98,13 +114,23 @@ fun LoginScreen(navController: NavHostController, modifier: Modifier, authViewMo
             },
                 enabled = authViewModel.userState.value!= UserState.Loading,
                 modifier = Modifier.size(200.dp,50.dp)){
+
                 Text("Login")
             }
-            Spacer(modifier = Modifier.height(0.dp))
             TextButton(onClick = {
                 navController.navigate(Routes.SignUp.toString())
-            }){
+            }) {
                 Text("Don't have any account, SignUp")
             }
         }
+
+        TextButton(
+            onClick = { navController.navigate(Routes.Home.toString()) },
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(16.dp)
+        ) {
+            Text("Skip")
+        }
     }
+}
