@@ -1,17 +1,14 @@
 package com.example.letteblack
 
+//import androidx.activity.enableEdgeToEdge
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
-//import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.letteblack.screens.JoinGroupScreen
-import com.example.letteblack.screens.NotesScreen
 import com.example.letteblack.ui.theme.LetteBlackTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -25,8 +22,8 @@ class MainActivity : ComponentActivity() {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Navigation()
                     Column(modifier = Modifier.padding(innerPadding)) {
-                        JoinGroupScreen(groupId = "group123", userId = "user1")
-                        NotesScreen(groupId = "group123", authorId = "user1")
+                        //JoinGroupScreen(groupId = "group123", userId = "user1")
+                        //NotesScreen(groupId = "group123", authorId = "user1")
                     }
                 }
             }
