@@ -1,6 +1,5 @@
 package com.example.letteblack
 
-import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
@@ -9,9 +8,10 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.example.letteblack.data.UserDetails
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.firestore
-import com.google.firebase.Firebase
-class ViewModel: ViewModel(){
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
+
+class AuthViewModel: ViewModel(){
 
     private val _userState = mutableStateOf<UserState?>(null)
     val userState: State<UserState?> = _userState

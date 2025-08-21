@@ -15,10 +15,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.letteblack.R
 import com.example.letteblack.data.Routes
-import com.example.letteblack.data.UserDetails
-import com.google.android.play.integrity.internal.n
-import com.google.firebase.Firebase
-import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.delay
 
 
