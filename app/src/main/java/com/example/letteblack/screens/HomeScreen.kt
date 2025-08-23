@@ -51,10 +51,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.letteblack.AuthViewModel
 import com.example.letteblack.R
 import com.example.letteblack.UserState
 import com.example.letteblack.Utils
-import com.example.letteblack.AuthViewModel
 import com.example.letteblack.data.Routes
 import com.example.letteblack.data.UserDetails
 import com.google.firebase.firestore.ktx.firestore
@@ -86,9 +86,30 @@ fun HomeScreen(navController: NavHostController, modifier: Modifier, authViewMod
     val innerNavController = rememberNavController()
 
     Scaffold(
-        topBar = {
+
+        bottomBar = { BottomNavigationBar(innerNavController) }
+    ) { innerPadding ->
+        NavHost(
+            navController = innerNavController,
+            startDestination = "home",
+            modifier = Modifier.padding(innerPadding)
+        ) {
+            composable("home") { HomeContent(user,authViewModel) }
+            composable("courses") { CenterText("Courses") }
+            composable("puzzles") { CenterText("Puzzles") }
+            composable("you") { ProfileScreen() }
+        }
+    }
+}
+
+@Composable
+fun HomeContent(user: UserDetails, authViewModel: AuthViewModel) {
+    Column(
+        modifier = Modifier.fillMaxSize().padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
             Row(
-                Modifier.fillMaxWidth().padding(8.dp, top = 30.dp),
+                Modifier.fillMaxWidth().padding(8.dp, top = 10.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -105,28 +126,7 @@ fun HomeScreen(navController: NavHostController, modifier: Modifier, authViewMod
                     Text("Logout", fontSize = 14.sp,)
                 }
             }
-        },
-        bottomBar = { BottomNavigationBar(innerNavController) }
-    ) { innerPadding ->
-        NavHost(
-            navController = innerNavController,
-            startDestination = "home",
-            modifier = Modifier.padding(innerPadding)
-        ) {
-            composable("home") { HomeContent(user) }
-            composable("courses") { CenterText("Courses") }
-            composable("puzzles") { CenterText("Puzzles") }
-            composable("you") { CenterText("Profile") }
-        }
-    }
-}
 
-@Composable
-fun HomeContent(user: UserDetails) {
-    Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
         Spacer(Modifier.height(35.dp))
         Text(
             "Discover, Learn, and Grow",

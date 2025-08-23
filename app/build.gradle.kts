@@ -3,9 +3,9 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
 
-    alias(libs.plugins.google.gms.google.services) // Firebase
-    alias(libs.plugins.kotlin.kapt)                // kapt
-    alias(libs.plugins.dagger.hilt.android)        // Hilt
+    alias(libs.plugins.google.gms.google.services)
+    alias(libs.plugins.kotlin.kapt)
+    alias(libs.plugins.dagger.hilt.android)
 }
 
 android {
@@ -30,6 +30,8 @@ android {
                 "proguard-rules.pro"
             )
         }
+
+
     }
 
     compileOptions {
@@ -43,6 +45,8 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
+        resValues = true
     }
 }
 
