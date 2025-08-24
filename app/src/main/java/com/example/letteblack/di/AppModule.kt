@@ -3,10 +3,13 @@ package com.example.letteblack.di
 import android.content.Context
 import androidx.room.Room
 import com.example.letteblack.db.AppDatabase
+import com.example.letteblack.db.GroupDao
 import com.example.letteblack.db.GroupMemberDao
 import com.example.letteblack.db.NoteDao
 import com.example.letteblack.repositories.GroupMemberRepository
 import com.example.letteblack.repositories.GroupMemberRepositoryImpl
+import com.example.letteblack.repositories.GroupRepository
+import com.example.letteblack.repositories.GroupRepositoryImpl
 import com.example.letteblack.repositories.NoteRepository
 import com.example.letteblack.repositories.NoteRepositoryImpl
 import com.google.firebase.firestore.FirebaseFirestore
@@ -31,14 +34,29 @@ object AppModule {
             .fallbackToDestructiveMigration()
             .build()
 
-    @Provides fun provideGroupMemberDao(db: AppDatabase): GroupMemberDao = db.groupMemberDao()
-    @Provides fun provideNoteDao(db: AppDatabase): NoteDao = db.noteDao()
+    @Provides
+    fun provideGroupMemberDao(db: AppDatabase): GroupMemberDao = db.groupMemberDao()
 
-    @Provides @Singleton
+    @Provides
+    fun provideNoteDao(db: AppDatabase): NoteDao = db.noteDao()
+
+    @Provides
+    @Singleton
     fun provideGroupMemberRepository(dao: GroupMemberDao, fs: FirebaseFirestore): GroupMemberRepository =
         GroupMemberRepositoryImpl(dao, fs)
 
-    @Provides @Singleton
+    @Provides
+    @Singleton
     fun provideNoteRepository(dao: NoteDao, fs: FirebaseFirestore): NoteRepository =
         NoteRepositoryImpl(dao, fs)
+
+    @Provides fun provideGroupDao(db: AppDatabase): GroupDao = db.groupDao()
+
+    @Provides @Singleton
+    fun provideGroupRepository(
+        dao: GroupDao,
+        memberDao: GroupMemberDao,
+        fs: FirebaseFirestore
+    ): GroupRepository = GroupRepositoryImpl(dao, memberDao, fs)
+
 }

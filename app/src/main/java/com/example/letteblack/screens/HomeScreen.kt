@@ -114,7 +114,21 @@ fun HomeScreen(navController: NavHostController, modifier: Modifier, authViewMod
             modifier = Modifier.padding(innerPadding)
         ) {
             composable("home") { HomeContent(user) }
-            composable("courses") { CenterText("Courses") }
+            composable("courses") {
+                GroupListScreen(
+                    userId = user.uid, // pass logged-in userId
+                    onGroupClick = { groupId ->
+                        innerNavController.navigate("group/$groupId")
+                    }
+                )
+            }
+            composable("group/{groupId}") { backStackEntry ->
+                val groupId = backStackEntry.arguments?.getString("groupId") ?: ""
+                JoinGroupScreen(
+                    groupId = groupId,
+                    userId = user.uid // same logged-in userId
+                )
+            }
             composable("puzzles") { CenterText("Puzzles") }
             composable("you") { CenterText("Profile") }
         }
