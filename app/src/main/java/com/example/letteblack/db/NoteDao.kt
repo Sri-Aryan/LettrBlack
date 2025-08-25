@@ -1,0 +1,16 @@
+package com.example.letteblack.db
+
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import kotlinx.coroutines.flow.Flow
+
+@Dao
+interface NoteDao {
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(note: NoteEntity)
+
+    @Query("SELECT * FROM notes WHERE groupId = :groupId ORDER BY createdAt DESC")
+    fun observeNotes(groupId: String): Flow<List<NoteEntity>>
+}
