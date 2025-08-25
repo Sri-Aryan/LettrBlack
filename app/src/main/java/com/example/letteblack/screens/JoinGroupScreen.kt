@@ -14,7 +14,8 @@ fun JoinGroupScreen(
     userId: String,
     viewModel: GroupViewModel = hiltViewModel()
 ) {
-    val members by viewModel.members(groupId).collectAsState()
+    val group by viewModel.getGroup(groupId).collectAsState(initial = null)
+    val members by viewModel.members(groupId).collectAsState(emptyList())
 
     Column(
         modifier = Modifier
@@ -22,17 +23,22 @@ fun JoinGroupScreen(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        Text("Group: $groupId", style = MaterialTheme.typography.titleLarge)
-
-        Button(onClick = { viewModel.joinGroup(groupId, userId) }) {
-            Text("Join Group")
-        }
+        Text(
+            "Group: ${group?.name ?: "..."}",  // show name, not UUID
+            style = MaterialTheme.typography.titleLarge
+        )
 
         Divider()
 
         Text("Members:", style = MaterialTheme.typography.titleMedium)
         members.forEach { member ->
-            Text("• ${member.userId} (joined ${member.joinedAt})")
+            Text("• ${member.userName} (joined ${member.joinedAt})") // show username
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(onClick = { /*TODO*/ }) {
+            Text(text = "Add Note")
         }
     }
 }

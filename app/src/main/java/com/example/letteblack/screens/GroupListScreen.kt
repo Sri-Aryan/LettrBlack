@@ -1,0 +1,171 @@
+package com.example.letteblack.screens
+
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.letteblack.db.GroupEntity
+import com.example.letteblack.viewmodel.GroupViewModel
+import kotlinx.coroutines.launch
+
+@Composable
+fun GroupListScreen(
+    userId: String,
+    onGroupClick: (String) -> Unit,
+    viewModel: GroupViewModel = hiltViewModel()
+) {
+    val groups by viewModel.groups().collectAsState(initial = emptyList())
+
+    // state for joining existing group
+    var showJoinDialog by remember { mutableStateOf(false) }
+    var selectedGroupId by remember { mutableStateOf<String?>(null) }
+    var userName by remember { mutableStateOf("") }
+
+    // state for creating new group
+    var showCreateDialog by remember { mutableStateOf(false) }
+    var newGroupName by remember { mutableStateOf("") }
+    var creatorName by remember { mutableStateOf("") }   // new field
+
+    val scope = rememberCoroutineScope()
+
+    Column(
+        Modifier
+            .fillMaxSize()
+            .padding(16.dp)) {
+        Text("Groups", style = MaterialTheme.typography.titleLarge)
+
+        Spacer(Modifier.height(8.dp))
+
+        groups.forEach { group: GroupEntity ->
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp)
+                    .clickable { onGroupClick(group.id) }, // open members screen
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
+            ) {
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(group.name, style = MaterialTheme.typography.titleMedium)
+                    IconButton(onClick = {
+                        selectedGroupId = group.id
+                        showJoinDialog = true
+                    }) {
+                        Icon(Icons.Default.Add, contentDescription = "Join")
+                    }
+                }
+            }
+        }
+
+        Spacer(Modifier.height(16.dp))
+
+        Button(onClick = { showCreateDialog = true }) {
+            Text("➕ Create New Group")
+        }
+    }
+
+    // Dialog for joining existing group
+    if (showJoinDialog && selectedGroupId != null) {
+        AlertDialog(
+            onDismissRequest = {
+                showJoinDialog = false
+                userName = ""
+            },
+            title = { Text("Join Group") },
+            text = {
+                OutlinedTextField(
+                    value = userName,
+                    onValueChange = { userName = it },
+                    label = { Text("Enter your name") }
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    if (userName.isNotBlank()) {
+                        scope.launch {
+                            viewModel.joinGroup(selectedGroupId!!, userId, userName) // ✅ pass name
+                        }
+                        userName = ""
+                        showJoinDialog = false
+                        onGroupClick(selectedGroupId!!) // navigate to JoinGroupScreen
+                    }
+                }) { Text("Join") }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    showJoinDialog = false
+                    userName = ""
+                }) { Text("Cancel") }
+            }
+        )
+    }
+
+    // Dialog for creating new group
+    if (showCreateDialog) {
+        AlertDialog(
+            onDismissRequest = { showCreateDialog = false },
+            title = { Text("New Group") },
+            text = {
+                Column {
+                    OutlinedTextField(
+                        value = newGroupName,
+                        onValueChange = { newGroupName = it },
+                        label = { Text("Group Name") }
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    OutlinedTextField(
+                        value = creatorName,
+                        onValueChange = { creatorName = it },
+                        label = { Text("Your Name") }
+                    )
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    if (newGroupName.isNotBlank() && creatorName.isNotBlank()) {
+                        scope.launch {
+                            viewModel.createGroup(newGroupName, userId, creatorName) // pass both
+                        }
+                        newGroupName = ""
+                        creatorName = ""
+                        showCreateDialog = false
+                    }
+                }) { Text("Create") }
+            },
+            dismissButton = {
+                TextButton(onClick = { showCreateDialog = false }) { Text("Cancel") }
+            }
+        )
+    }
+}

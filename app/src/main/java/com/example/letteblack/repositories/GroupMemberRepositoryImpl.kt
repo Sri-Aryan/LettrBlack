@@ -14,10 +14,17 @@ class GroupMemberRepositoryImpl(
 
     override fun observeMembers(groupId: String) = dao.observeMembers(groupId)
 
-    override suspend fun joinGroup(groupId: String, userId: String) {
+    override suspend fun joinGroup(groupId: String, userId: String, userName: String) {
         val now = System.currentTimeMillis()
         val id = "${groupId}_$userId"
-        val member = GroupMemberEntity(id = id, groupId = groupId, userId = userId, joinedAt = now)
+
+        val member = GroupMemberEntity(
+            id = id,
+            groupId = groupId,
+            userId = userId,
+            userName = userName,
+            joinedAt = now
+        )
 
         dao.insert(member)
 
@@ -25,6 +32,7 @@ class GroupMemberRepositoryImpl(
             "id" to member.id,
             "groupId" to member.groupId,
             "userId" to member.userId,
+            "userName" to member.userName,
             "joinedAt" to member.joinedAt
         )
         collection.document(member.id).set(map).await()

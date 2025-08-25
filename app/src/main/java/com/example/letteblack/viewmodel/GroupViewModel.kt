@@ -2,27 +2,33 @@ package com.example.letteblack.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.letteblack.db.GroupMemberEntity
 import com.example.letteblack.repositories.GroupMemberRepository
+import com.example.letteblack.repositories.GroupRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class GroupViewModel @Inject constructor(
-    private val repo: GroupMemberRepository
+    private val groupRepo: GroupRepository,
+    private val memberRepo: GroupMemberRepository
 ) : ViewModel() {
 
-    fun members(groupId: String): StateFlow<List<GroupMemberEntity>> =
-        repo.observeMembers(groupId)
-            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+    fun groups() = groupRepo.observeGroups()
 
-    fun joinGroup(groupId: String, userId: String) {
+    fun members(groupId: String) = memberRepo.observeMembers(groupId)
+
+    fun createGroup(name: String, creatorId: String, creatorName: String) {
         viewModelScope.launch {
-            repo.joinGroup(groupId, userId)
+            groupRepo.createGroup(name, creatorId, creatorName)
+        }
+    }
+
+    fun getGroup(groupId: String) = groupRepo.getGroup(groupId)
+
+    fun joinGroup(groupId: String, userId: String, userName: String) {
+        viewModelScope.launch {
+            memberRepo.joinGroup(groupId, userId, userName)
         }
     }
 }

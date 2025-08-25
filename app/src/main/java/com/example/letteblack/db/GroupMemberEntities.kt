@@ -8,5 +8,6 @@ data class GroupMemberEntity(
     @PrimaryKey val id: String,
     val groupId: String,
     val userId: String,
+    val userName: String,
     val joinedAt: Long
 )

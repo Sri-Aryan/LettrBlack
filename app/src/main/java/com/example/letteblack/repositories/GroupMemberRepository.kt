@@ -5,5 +5,5 @@ import kotlinx.coroutines.flow.Flow
 
 interface GroupMemberRepository {
     fun observeMembers(groupId: String): Flow<List<GroupMemberEntity>>
-    suspend fun joinGroup(groupId: String, userId: String)
+    suspend fun joinGroup(groupId: String, userId: String, userName: String)
 }
