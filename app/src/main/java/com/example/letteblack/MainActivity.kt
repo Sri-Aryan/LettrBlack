@@ -19,6 +19,7 @@ class MainActivity : ComponentActivity() {
             LetteBlackTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Navigation()
+
                 }
             }
         }

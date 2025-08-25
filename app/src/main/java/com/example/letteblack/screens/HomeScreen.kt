@@ -51,10 +51,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.letteblack.AuthViewModel
 import com.example.letteblack.R
 import com.example.letteblack.UserState
 import com.example.letteblack.Utils
-import com.example.letteblack.AuthViewModel
 import com.example.letteblack.data.Routes
 import com.example.letteblack.data.UserDetails
 import com.google.firebase.firestore.ktx.firestore
@@ -86,26 +86,7 @@ fun HomeScreen(navController: NavHostController, modifier: Modifier, authViewMod
     val innerNavController = rememberNavController()
 
     Scaffold(
-        topBar = {
-            Row(
-                Modifier.fillMaxWidth().padding(8.dp, top = 30.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.lettrblack),
-                    contentDescription = "Company Logo",
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.surface)
-                )
 
-                TextButton(onClick = { authViewModel.signOut() }) {
-                    Text("Logout", fontSize = 14.sp,)
-                }
-            }
-        },
         bottomBar = { BottomNavigationBar(innerNavController) }
     ) { innerPadding ->
         NavHost(
@@ -113,7 +94,8 @@ fun HomeScreen(navController: NavHostController, modifier: Modifier, authViewMod
             startDestination = "home",
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable("home") { HomeContent(user) }
+
+            composable("home") { HomeContent(user, authViewModel) }
             composable("courses") {
                 GroupListScreen(
                     userId = user.uid, // pass logged-in userId
@@ -130,17 +112,36 @@ fun HomeScreen(navController: NavHostController, modifier: Modifier, authViewMod
                 )
             }
             composable("puzzles") { CenterText("Puzzles") }
-            composable("you") { CenterText("Profile") }
+            composable("you") { ProfileScreen() }
         }
     }
 }
 
 @Composable
-fun HomeContent(user: UserDetails) {
+fun HomeContent(user: UserDetails, authViewModel: AuthViewModel) {
     Column(
         modifier = Modifier.fillMaxSize().padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+            Row(
+                Modifier.fillMaxWidth().padding(8.dp, top = 10.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.lettrblack),
+                    contentDescription = "Company Logo",
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.surface)
+                )
+
+                TextButton(onClick = { authViewModel.signOut() }) {
+                    Text("Logout", fontSize = 14.sp,)
+                }
+            }
+
         Spacer(Modifier.height(35.dp))
         Text(
             "Discover, Learn, and Grow",
