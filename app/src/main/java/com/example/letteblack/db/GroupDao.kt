@@ -14,6 +14,9 @@ interface GroupDao {
     @Query("SELECT * FROM groups")
     fun observeGroups(): Flow<List<GroupEntity>>
 
-    @Query("SELECT * FROM groups WHERE id = :groupId LIMIT 1")
+    @Query("SELECT * FROM groups WHERE groupId = :groupId")
     fun getGroup(groupId: String): Flow<GroupEntity?>
+
+    @Query("UPDATE groups SET memberCount = memberCount + 1 WHERE groupId = :groupId")
+    suspend fun incrementMemberCount(groupId: String)
 }

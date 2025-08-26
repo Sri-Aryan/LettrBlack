@@ -5,7 +5,11 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "groups")
 data class GroupEntity(
-    @PrimaryKey val id: String,
-    val name: String,
-    val createdAt: Long
+    @PrimaryKey val groupId: String,
+    val groupName: String,
+    val description: String?,
+    val createdByUserId: String,
+    val createdByUserName: String,
+    val createdAt: Long,
+    val memberCount: Int
 )
