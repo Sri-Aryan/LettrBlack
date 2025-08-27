@@ -51,14 +51,16 @@ fun GroupListScreen(
     // state for creating new group
     var showCreateDialog by remember { mutableStateOf(false) }
     var newGroupName by remember { mutableStateOf("") }
-    var creatorName by remember { mutableStateOf("") }   // new field
+    var newGroupDescription by remember { mutableStateOf("") }
+    var creatorName by remember { mutableStateOf("") }
 
     val scope = rememberCoroutineScope()
 
     Column(
         Modifier
             .fillMaxSize()
-            .padding(16.dp)) {
+            .padding(16.dp)
+    ) {
         Text("Groups", style = MaterialTheme.typography.titleLarge)
 
         Spacer(Modifier.height(8.dp))
@@ -68,21 +70,33 @@ fun GroupListScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 4.dp)
-                    .clickable { onGroupClick(group.id) }, // open members screen
+                    .clickable { onGroupClick(group.groupId) },
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
             ) {
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(group.name, style = MaterialTheme.typography.titleMedium)
-                    IconButton(onClick = {
-                        selectedGroupId = group.id
-                        showJoinDialog = true
-                    }) {
-                        Icon(Icons.Default.Add, contentDescription = "Join")
+                Column(Modifier.padding(16.dp)) {
+                    Text(group.groupName, style = MaterialTheme.typography.titleMedium)
+
+                    if (!group.description.isNullOrBlank()) {
+                        Spacer(Modifier.height(4.dp))
+                        Text(group.description!!, style = MaterialTheme.typography.bodySmall)
+                    }
+
+                    Spacer(Modifier.height(8.dp))
+
+                    Row(
+                        Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            "👤 ${group.createdByUserName} • ${group.memberCount} members",
+                            style = MaterialTheme.typography.labelSmall
+                        )
+                        IconButton(onClick = {
+                            selectedGroupId = group.groupId
+                            showJoinDialog = true
+                        }) {
+                            Icon(Icons.Default.Add, contentDescription = "Join")
+                        }
                     }
                 }
             }
@@ -114,11 +128,10 @@ fun GroupListScreen(
                 TextButton(onClick = {
                     if (userName.isNotBlank()) {
                         scope.launch {
-                            viewModel.joinGroup(selectedGroupId!!, userId, userName) // ✅ pass name
+                            viewModel.joinGroup(selectedGroupId!!, userId, userName)
                         }
                         userName = ""
                         showJoinDialog = false
-                        onGroupClick(selectedGroupId!!) // navigate to JoinGroupScreen
                     }
                 }) { Text("Join") }
             },
@@ -145,6 +158,12 @@ fun GroupListScreen(
                     )
                     Spacer(Modifier.height(8.dp))
                     OutlinedTextField(
+                        value = newGroupDescription,
+                        onValueChange = { newGroupDescription = it },
+                        label = { Text("Description") }
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    OutlinedTextField(
                         value = creatorName,
                         onValueChange = { creatorName = it },
                         label = { Text("Your Name") }
@@ -155,9 +174,15 @@ fun GroupListScreen(
                 TextButton(onClick = {
                     if (newGroupName.isNotBlank() && creatorName.isNotBlank()) {
                         scope.launch {
-                            viewModel.createGroup(newGroupName, userId, creatorName) // pass both
+                            viewModel.createGroup(
+                                newGroupName,
+                                newGroupDescription,
+                                userId,
+                                creatorName
+                            )
                         }
                         newGroupName = ""
+                        newGroupDescription = ""
                         creatorName = ""
                         showCreateDialog = false
                     }

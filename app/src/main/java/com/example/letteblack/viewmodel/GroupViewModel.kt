@@ -18,9 +18,9 @@ class GroupViewModel @Inject constructor(
 
     fun members(groupId: String) = memberRepo.observeMembers(groupId)
 
-    fun createGroup(name: String, creatorId: String, creatorName: String) {
+    fun createGroup(name: String, description: String?, creatorId: String, creatorName: String) {
         viewModelScope.launch {
-            groupRepo.createGroup(name, creatorId, creatorName)
+            groupRepo.createGroup(name, description, creatorId, creatorName)
         }
     }
 

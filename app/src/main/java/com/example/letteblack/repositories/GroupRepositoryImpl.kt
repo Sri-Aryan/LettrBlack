@@ -19,24 +19,37 @@ class GroupRepositoryImpl(
 
     override fun observeGroups() = dao.observeGroups()
 
-    override suspend fun createGroup(name: String, creatorUserId: String, creatorUserName: String) {
+    override suspend fun createGroup(
+        groupName: String,
+        description: String?,
+        creatorUserId: String,
+        creatorUserName: String
+    ) {
         val groupId = UUID.randomUUID().toString()
         val now = System.currentTimeMillis()
 
-        val group = GroupEntity(id = groupId, name = name, createdAt = now)
+        val group = GroupEntity(
+            groupId = groupId,
+            groupName = groupName,
+            description = description,
+            createdByUserId = creatorUserId,
+            createdByUserName = creatorUserName,
+            createdAt = now,
+            memberCount = 1
+        )
         dao.insert(group)
 
-        // auto add creator as first member, with name
+        // add creator as first member
         val member = GroupMemberEntity(
             id = "${groupId}_$creatorUserId",
             groupId = groupId,
             userId = creatorUserId,
-            userName = creatorUserName,   // include name
+            userName = creatorUserName,
             joinedAt = now
         )
         memberDao.insert(member)
 
-        groupsRef.document(group.id).set(group).await()
+        groupsRef.document(group.groupId).set(group).await()
         membersRef.document(member.id).set(member).await()
     }
 
