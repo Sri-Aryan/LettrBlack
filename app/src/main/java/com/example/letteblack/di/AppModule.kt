@@ -16,8 +16,8 @@ import com.google.firebase.firestore.FirebaseFirestore
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
 @Module
@@ -42,8 +42,8 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideGroupMemberRepository(dao: GroupMemberDao, fs: FirebaseFirestore): GroupMemberRepository =
-        GroupMemberRepositoryImpl(dao, fs)
+    fun provideGroupMemberRepository(dao: GroupMemberDao, gd: GroupDao,fs: FirebaseFirestore): GroupMemberRepository =
+        GroupMemberRepositoryImpl(dao,gd, fs)
 
     @Provides
     @Singleton
