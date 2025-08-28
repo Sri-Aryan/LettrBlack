@@ -9,6 +9,8 @@ import androidx.navigation.compose.rememberNavController
 import com.example.letteblack.data.Routes
 import com.example.letteblack.screens.HomeScreen
 import com.example.letteblack.screens.LoginScreen
+import com.example.letteblack.screens.ProfileScreen
+import com.example.letteblack.screens.SettingsScreen
 import com.example.letteblack.screens.SignUpScreen
 import com.example.letteblack.screens.SplashScreen
 
@@ -31,4 +33,13 @@ fun Navigation(modifier: Modifier = Modifier){
             val authViewModel: AuthViewModel = viewModel()
             HomeScreen(navController,modifier,authViewModel)
         }
-    }}
+        composable(Routes.Profile.toString()) {
+            ProfileScreen(navController)
+        }
+
+        // Settings route using Routes object
+        composable("settings") {
+            SettingsScreen(navController)
+        }
+    }
+}
