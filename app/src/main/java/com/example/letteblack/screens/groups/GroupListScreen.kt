@@ -1,4 +1,4 @@
-package com.example.letteblack.screens
+package com.example.letteblack.screens.groups
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
