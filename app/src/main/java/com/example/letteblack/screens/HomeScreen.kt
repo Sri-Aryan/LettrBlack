@@ -230,7 +230,7 @@ fun HomeScreen(navController: NavHostController, modifier: Modifier, authViewMod
             }
 
             composable("puzzles") { CenterText("Puzzles") }
-            composable("you") { ProfileScreen() }
+            composable("you") { ProfileScreen(navController) }
         }
     }
 }
