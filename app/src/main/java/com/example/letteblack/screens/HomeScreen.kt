@@ -32,6 +32,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,6 +46,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -57,14 +59,21 @@ import com.example.letteblack.UserState
 import com.example.letteblack.Utils
 import com.example.letteblack.data.Routes
 import com.example.letteblack.data.UserDetails
+import com.example.letteblack.screens.groups.GroupListScreen
+import com.example.letteblack.screens.groups.JoinGroupScreen
+import com.example.letteblack.screens.notes.AddNoteScreen
+import com.example.letteblack.screens.notes.NoteDetailScreen
+import com.example.letteblack.screens.notes.UpdateNoteScreen
+import com.example.letteblack.viewmodel.NotesViewModel
+import com.example.letteblack.viewmodel.TaskViewModel
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
 @Composable
 
-fun HomeScreen(navController: NavHostController, modifier: Modifier, authViewModel: AuthViewModel){
-    LaunchedEffect(authViewModel.userState.value){
-        when(authViewModel.userState.value){
+fun HomeScreen(navController: NavHostController, modifier: Modifier, authViewModel: AuthViewModel) {
+    LaunchedEffect(authViewModel.userState.value) {
+        when (authViewModel.userState.value) {
 
             is UserState.Unauthenticated -> navController.navigate(Routes.Login.toString())
             else -> null
@@ -86,7 +95,6 @@ fun HomeScreen(navController: NavHostController, modifier: Modifier, authViewMod
     val innerNavController = rememberNavController()
 
     Scaffold(
-
         bottomBar = { BottomNavigationBar(innerNavController) }
     ) { innerPadding ->
         NavHost(
@@ -104,13 +112,123 @@ fun HomeScreen(navController: NavHostController, modifier: Modifier, authViewMod
                     }
                 )
             }
+            // ---------- Group Main ----------
             composable("group/{groupId}") { backStackEntry ->
                 val groupId = backStackEntry.arguments?.getString("groupId") ?: ""
                 JoinGroupScreen(
                     groupId = groupId,
-                    userId = user.uid // same logged-in userId
+                    userId = user.uid,
+                    navController = navController,
+                    onAddNoteClick = { gId, uId ->
+                        innerNavController.navigate("group/$gId/addNote")
+                    },
+                    onAddTaskClick = { gId, uId ->
+                        innerNavController.navigate("group/$gId/addTask")
+                    }
                 )
             }
+
+            // ---------- Add Note ----------
+            composable("group/{groupId}/addNote") { backStackEntry ->
+                val groupId = backStackEntry.arguments?.getString("groupId") ?: ""
+                AddNoteScreen(
+                    groupId = groupId,
+                    userId = user.uid,
+                    onNoteSaved = { innerNavController.popBackStack() }
+                )
+            }
+
+            // ---------- Note Detail ----------
+            composable("group/{groupId}/noteDetail/{noteId}") { backStackEntry ->
+                val groupId = backStackEntry.arguments?.getString("groupId") ?: ""
+                val noteId = backStackEntry.arguments?.getString("noteId") ?: ""
+
+                val notesViewModel: NotesViewModel = hiltViewModel()
+                val notes by notesViewModel.notes(groupId).collectAsState(emptyList())
+
+                notes.find { it.noteId == noteId }?.let { note ->
+                    NoteDetailScreen(
+                        note = note,
+                        viewModel = notesViewModel,
+                        onEdit = { selectedNote ->
+                            innerNavController.navigate("group/$groupId/updateNote/${selectedNote.noteId}")
+                        },
+                        onDeleted = {
+                            innerNavController.popBackStack() // after delete, go back
+                        }
+                    )
+                }
+            }
+
+            // ---------- Update Note ----------
+            composable("group/{groupId}/updateNote/{noteId}") { backStackEntry ->
+                val groupId = backStackEntry.arguments?.getString("groupId") ?: ""
+                val noteId = backStackEntry.arguments?.getString("noteId") ?: ""
+
+                val notesViewModel: NotesViewModel = hiltViewModel()
+                val notes by notesViewModel.notes(groupId).collectAsState(emptyList())
+
+                notes.find { it.noteId == noteId }?.let { note ->
+                    UpdateNoteScreen(
+                        note = note,
+                        viewModel = notesViewModel,
+                        onNoteUpdated = { innerNavController.popBackStack() }
+                    )
+                }
+            }
+
+            // ---------- Add Task ----------
+            composable("group/{groupId}/addTask") { backStackEntry ->
+                val groupId = backStackEntry.arguments?.getString("groupId") ?: ""
+                val taskViewModel: TaskViewModel = hiltViewModel()
+
+                AddTaskScreen(
+                    groupId = groupId,
+                    assignerId = user.uid,
+                    assigneeId = "someUserId", // TODO: replace with UI to pick assignee
+                    viewModel = taskViewModel,
+                    onTaskSaved = { innerNavController.popBackStack() }
+                )
+            }
+
+            // ---------- Task Detail ----------
+            composable("group/{groupId}/taskDetail/{taskId}") { backStackEntry ->
+                val groupId = backStackEntry.arguments?.getString("groupId") ?: ""
+                val taskId = backStackEntry.arguments?.getString("taskId") ?: ""
+
+                val taskViewModel: TaskViewModel = hiltViewModel()
+                val tasks by taskViewModel.observeTasks(groupId).collectAsState(emptyList())
+
+                tasks.find { it.taskId == taskId }?.let { task ->
+                    TaskDetailScreen(
+                        task = task,
+                        viewModel = taskViewModel,
+                        onEdit = { selectedTask ->
+                            innerNavController.navigate("group/$groupId/updateTask/${selectedTask.taskId}")
+                        },
+                        onDeleted = { innerNavController.popBackStack() }
+                    )
+                }
+            }
+
+            // ---------- Update Task ----------
+            composable("group/{groupId}/updateTask/{taskId}") { backStackEntry ->
+                val groupId = backStackEntry.arguments?.getString("groupId") ?: ""
+                val taskId = backStackEntry.arguments?.getString("taskId") ?: ""
+
+                val taskViewModel: TaskViewModel = hiltViewModel()
+                val tasks by taskViewModel.observeTasks(groupId).collectAsState(emptyList())
+
+                tasks.find { it.taskId == taskId }?.let { task ->
+                    UpdateTaskScreen(
+                        task = task,
+                        viewModel = taskViewModel,
+                        onTaskUpdated = { innerNavController.popBackStack() },
+                        onCancel = { innerNavController.popBackStack() }
+                    )
+                }
+            }
+
             composable("puzzles") { CenterText("Puzzles") }
             composable("you") { ProfileScreen(navController) }
         }
@@ -120,27 +238,31 @@ fun HomeScreen(navController: NavHostController, modifier: Modifier, authViewMod
 @Composable
 fun HomeContent(user: UserDetails, authViewModel: AuthViewModel) {
     Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-            Row(
-                Modifier.fillMaxWidth().padding(8.dp, top = 10.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.lettrblack),
-                    contentDescription = "Company Logo",
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.surface)
-                )
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .padding(8.dp, top = 10.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.lettrblack),
+                contentDescription = "Company Logo",
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.surface)
+            )
 
-                TextButton(onClick = { authViewModel.signOut() }) {
-                    Text("Logout", fontSize = 14.sp,)
-                }
+            TextButton(onClick = { authViewModel.signOut() }) {
+                Text("Logout", fontSize = 14.sp)
             }
+        }
 
         Spacer(Modifier.height(35.dp))
         Text(

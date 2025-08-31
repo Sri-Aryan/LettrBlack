@@ -10,6 +10,7 @@ data class NoteEntity(
     val authorId: String,
     val title: String,
     val content: String,
+    val attachmentUrl: String?,
     val createdAt: Long,
     val updatedAt: Long
 )

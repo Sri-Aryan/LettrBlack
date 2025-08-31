@@ -1,0 +1,30 @@
+package com.example.letteblack.repositories
+
+import com.example.letteblack.db.TaskEntity
+import kotlinx.coroutines.flow.Flow
+
+interface TaskRepository {
+    fun observeTasks(groupId: String): Flow<List<TaskEntity>>
+
+    suspend fun assignTask(
+        groupId: String,
+        assignerId: String,
+        assigneeId: String,
+        title: String,
+        description: String,
+        pointsRewarded: Int,
+        dueDate: Long?
+    )
+
+    suspend fun updateStatus(taskId: String, status: String)
+
+    suspend fun updateTask(
+        taskId: String,
+        title: String,
+        description: String,
+        dueDate: Long?,
+        pointsRewarded: Int
+    )
+
+    suspend fun deleteTask(taskId: String)
+}

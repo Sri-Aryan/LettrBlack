@@ -6,12 +6,15 @@ import com.example.letteblack.db.AppDatabase
 import com.example.letteblack.db.GroupDao
 import com.example.letteblack.db.GroupMemberDao
 import com.example.letteblack.db.NoteDao
+import com.example.letteblack.db.TaskDao
 import com.example.letteblack.repositories.GroupMemberRepository
 import com.example.letteblack.repositories.GroupMemberRepositoryImpl
 import com.example.letteblack.repositories.GroupRepository
 import com.example.letteblack.repositories.GroupRepositoryImpl
 import com.example.letteblack.repositories.NoteRepository
 import com.example.letteblack.repositories.NoteRepositoryImpl
+import com.example.letteblack.repositories.TaskRepository
+import com.example.letteblack.repositories.TaskRepositoryImpl
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.Module
 import dagger.Provides
@@ -23,6 +26,7 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
+
     @Provides
     @Singleton
     fun provideFirestore(): FirebaseFirestore = FirebaseFirestore.getInstance()
@@ -41,22 +45,37 @@ object AppModule {
     fun provideNoteDao(db: AppDatabase): NoteDao = db.noteDao()
 
     @Provides
+    fun provideGroupDao(db: AppDatabase): GroupDao = db.groupDao()
+
+    @Provides
+    fun provideTaskDao(db: AppDatabase): TaskDao = db.taskDao()
+
+    @Provides
     @Singleton
-    fun provideGroupMemberRepository(dao: GroupMemberDao, gd: GroupDao,fs: FirebaseFirestore): GroupMemberRepository =
-        GroupMemberRepositoryImpl(dao,gd, fs)
+
+    fun provideGroupMemberRepository(
+        dao: GroupMemberDao,
+        groupDao: GroupDao,
+        fs: FirebaseFirestore
+    ): GroupMemberRepository =
+        GroupMemberRepositoryImpl(dao, groupDao, fs)
+
 
     @Provides
     @Singleton
     fun provideNoteRepository(dao: NoteDao, fs: FirebaseFirestore): NoteRepository =
         NoteRepositoryImpl(dao, fs)
 
-    @Provides fun provideGroupDao(db: AppDatabase): GroupDao = db.groupDao()
-
-    @Provides @Singleton
+    @Provides
+    @Singleton
     fun provideGroupRepository(
         dao: GroupDao,
         memberDao: GroupMemberDao,
         fs: FirebaseFirestore
     ): GroupRepository = GroupRepositoryImpl(dao, memberDao, fs)
 
+    @Provides
+    @Singleton
+    fun provideTaskRepository(dao: TaskDao, fs: FirebaseFirestore): TaskRepository =
+        TaskRepositoryImpl(dao, fs)
 }

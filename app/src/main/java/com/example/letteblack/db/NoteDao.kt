@@ -13,4 +13,23 @@ interface NoteDao {
 
     @Query("SELECT * FROM notes WHERE groupId = :groupId ORDER BY createdAt DESC")
     fun observeNotes(groupId: String): Flow<List<NoteEntity>>
+
+    @Query("""
+        UPDATE notes 
+        SET title = :title, 
+            content = :content, 
+            attachmentUrl = :attachmentUrl, 
+            updatedAt = :updatedAt
+        WHERE noteId = :noteId
+    """)
+    suspend fun updateFields(
+        noteId: String,
+        title: String,
+        content: String,
+        attachmentUrl: String?,
+        updatedAt: Long
+    )
+
+    @Query("DELETE FROM notes WHERE noteId = :noteId")
+    suspend fun deleteById(noteId: String)
 }

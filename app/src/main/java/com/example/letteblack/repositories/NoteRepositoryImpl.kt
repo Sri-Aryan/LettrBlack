@@ -3,6 +3,7 @@ package com.example.letteblack.repositories
 import com.example.letteblack.db.NoteDao
 import com.example.letteblack.db.NoteEntity
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 import kotlinx.coroutines.tasks.await
 import java.util.*
 
@@ -15,7 +16,13 @@ class NoteRepositoryImpl(
 
     override fun observeNotes(groupId: String) = dao.observeNotes(groupId)
 
-    override suspend fun addNote(groupId: String, authorId: String, title: String, content: String) {
+    override suspend fun addNote(
+        groupId: String,
+        authorId: String,
+        title: String,
+        content: String,
+        attachmentUrl: String?
+    ) {
         val now = System.currentTimeMillis()
         val note = NoteEntity(
             noteId = UUID.randomUUID().toString(),
@@ -23,6 +30,7 @@ class NoteRepositoryImpl(
             authorId = authorId,
             title = title,
             content = content,
+            attachmentUrl = attachmentUrl,
             createdAt = now,
             updatedAt = now
         )
@@ -37,9 +45,45 @@ class NoteRepositoryImpl(
             "authorId" to note.authorId,
             "title" to note.title,
             "content" to note.content,
+            "attachmentUrl" to note.attachmentUrl,
             "createdAt" to note.createdAt,
             "updatedAt" to note.updatedAt
         )
         collection.document(note.noteId).set(map).await()
+    }
+
+    override suspend fun updateNote(
+        noteId: String,
+        title: String,
+        content: String,
+        attachmentUrl: String?
+    ) {
+        val now = System.currentTimeMillis()
+
+        // 1) Local update (instant UI)
+        dao.updateFields(
+            noteId = noteId,
+            title = title,
+            content = content,
+            attachmentUrl = attachmentUrl,
+            updatedAt = now
+        )
+
+        // 2) Remote merge (only provided fields)
+        val map = mapOf(
+            "title" to title,
+            "content" to content,
+            "attachmentUrl" to attachmentUrl,
+            "updatedAt" to now
+        )
+        collection.document(noteId).set(map, SetOptions.merge()).await()
+    }
+
+    override suspend fun deleteNote(noteId: String) {
+        // 1) Local delete (instant UI)
+        dao.deleteById(noteId)
+
+        // 2) Remote delete
+        collection.document(noteId).delete().await()
     }
 }
