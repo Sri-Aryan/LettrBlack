@@ -5,4 +5,8 @@ sealed class Routes(route: String){
     object Login: Routes("login")
     object SignUp: Routes("sign")
     object Home: Routes("Home")
+
+    object Profile : Routes("profile")
+
+    object Settings : Routes("settings")
 }

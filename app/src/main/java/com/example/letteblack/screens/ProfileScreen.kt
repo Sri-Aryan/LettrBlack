@@ -37,15 +37,16 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.letteblack.R
 
 
 @Composable
 fun ProfileScreen(
+    navController: NavController,
     userName: String = "User Name",
     level: Int = 5,
-    xpProgress: Float = 0.65f,
-    onSettingsClick: () -> Unit = {}
+    xpProgress: Float = 0.65f
 ) {
     Scaffold(
         topBar = {
@@ -53,7 +54,7 @@ fun ProfileScreen(
                 Modifier.fillMaxWidth().padding(16.dp),
                 horizontalArrangement = Arrangement.End
             ) {
-                IconButton(onClick = onSettingsClick) {
+                IconButton(onClick = { navController.navigate("settings") }) {
                     Icon(
                         imageVector = Icons.Default.Settings,
                         contentDescription = "Settings",
@@ -72,7 +73,7 @@ fun ProfileScreen(
         ) {
             // Avatar
             Image(
-                painter = painterResource(id = R.drawable.lettrblack), // replace with user avatar or company logo
+                painter = painterResource(id = R.drawable.lettrblack),
                 contentDescription = "User Avatar",
                 modifier = Modifier
                     .size(100.dp)
@@ -121,7 +122,7 @@ fun ProfileScreen(
 fun BadgeCard(emoji: String, label: String) {
     Card(
         modifier = Modifier
-            .aspectRatio(1f) // makes it square
+            .aspectRatio(1f)
             .padding(8.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
         elevation = CardDefaults.cardElevation(
@@ -168,5 +169,4 @@ fun BadgeSection() {
         }
     }
 }
-
 
