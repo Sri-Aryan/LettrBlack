@@ -63,7 +63,11 @@ import com.example.letteblack.screens.groups.GroupListScreen
 import com.example.letteblack.screens.groups.JoinGroupScreen
 import com.example.letteblack.screens.notes.AddNoteScreen
 import com.example.letteblack.screens.notes.NoteDetailScreen
+import com.example.letteblack.screens.notes.NotesSection
 import com.example.letteblack.screens.notes.UpdateNoteScreen
+import com.example.letteblack.screens.tasks.AddTaskScreen
+import com.example.letteblack.screens.tasks.TaskDetailScreen
+import com.example.letteblack.screens.tasks.UpdateTaskScreen
 import com.example.letteblack.viewmodel.NotesViewModel
 import com.example.letteblack.viewmodel.TaskViewModel
 import com.google.firebase.firestore.ktx.firestore
@@ -134,48 +138,62 @@ fun HomeScreen(navController: NavHostController, modifier: Modifier, authViewMod
                 AddNoteScreen(
                     groupId = groupId,
                     userId = user.uid,
-                    onNoteSaved = { innerNavController.popBackStack() }
+                    onNoteSaved = {
+                        innerNavController.popBackStack()
+                    })
+            }
+
+            // ---------- Notes List ----------
+            composable("group/{groupId}/notes") { backStackEntry ->
+                val groupId = backStackEntry.arguments?.getString("groupId")!!
+                val viewModel: NotesViewModel = hiltViewModel()
+
+                NotesSection(
+                    groupId = groupId,
+                    viewModel = viewModel,
+                    onNoteClick = { note ->
+                        navController.navigate("group/$groupId/noteDetail/${note.noteId}")
+                    }
                 )
             }
 
             // ---------- Note Detail ----------
             composable("group/{groupId}/noteDetail/{noteId}") { backStackEntry ->
-                val groupId = backStackEntry.arguments?.getString("groupId") ?: ""
-                val noteId = backStackEntry.arguments?.getString("noteId") ?: ""
+                val groupId = backStackEntry.arguments?.getString("groupId")!!
+                val noteId = backStackEntry.arguments?.getString("noteId")!!
+                val viewModel: NotesViewModel = hiltViewModel()
 
-                val notesViewModel: NotesViewModel = hiltViewModel()
-                val notes by notesViewModel.notes(groupId).collectAsState(emptyList())
+                val note by viewModel.getNoteById(noteId).collectAsState(initial = null)
 
-                notes.find { it.noteId == noteId }?.let { note ->
+                note?.let {
                     NoteDetailScreen(
-                        note = note,
-                        viewModel = notesViewModel,
-                        onEdit = { selectedNote ->
-                            innerNavController.navigate("group/$groupId/updateNote/${selectedNote.noteId}")
+                        note = it,
+                        viewModel = viewModel,
+                        onEdit = { noteEntity ->
+                            navController.navigate("group/$groupId/noteEdit/${noteEntity.noteId}")
                         },
-                        onDeleted = {
-                            innerNavController.popBackStack() // after delete, go back
-                        }
+                        onDeleted = { navController.popBackStack() }
                     )
                 }
             }
 
             // ---------- Update Note ----------
-            composable("group/{groupId}/updateNote/{noteId}") { backStackEntry ->
-                val groupId = backStackEntry.arguments?.getString("groupId") ?: ""
-                val noteId = backStackEntry.arguments?.getString("noteId") ?: ""
+            composable("group/{groupId}/noteEdit/{noteId}") { backStackEntry ->
+                val groupId = backStackEntry.arguments?.getString("groupId")!!
+                val noteId = backStackEntry.arguments?.getString("noteId")!!
+                val viewModel: NotesViewModel = hiltViewModel()
 
-                val notesViewModel: NotesViewModel = hiltViewModel()
-                val notes by notesViewModel.notes(groupId).collectAsState(emptyList())
+                val note by viewModel.getNoteById(noteId).collectAsState(initial = null)
 
-                notes.find { it.noteId == noteId }?.let { note ->
+                note?.let {
                     UpdateNoteScreen(
-                        note = note,
-                        viewModel = notesViewModel,
-                        onNoteUpdated = { innerNavController.popBackStack() }
+                        note = it,
+                        viewModel = viewModel,
+                        onNoteUpdated = { navController.popBackStack() }
                     )
                 }
             }
+
 
             // ---------- Add Task ----------
             composable("group/{groupId}/addTask") { backStackEntry ->
@@ -193,38 +211,37 @@ fun HomeScreen(navController: NavHostController, modifier: Modifier, authViewMod
 
             // ---------- Task Detail ----------
             composable("group/{groupId}/taskDetail/{taskId}") { backStackEntry ->
-                val groupId = backStackEntry.arguments?.getString("groupId") ?: ""
-                val taskId = backStackEntry.arguments?.getString("taskId") ?: ""
+                val groupId = backStackEntry.arguments?.getString("groupId")!!
+                val taskId = backStackEntry.arguments?.getString("taskId")!!
+                val viewModel: TaskViewModel = hiltViewModel()
 
-                val taskViewModel: TaskViewModel = hiltViewModel()
-                val tasks by taskViewModel.observeTasks(groupId).collectAsState(emptyList())
+                val task by viewModel.getTaskById(taskId).collectAsState(initial = null)
 
-                tasks.find { it.taskId == taskId }?.let { task ->
+                task?.let {
                     TaskDetailScreen(
-                        task = task,
-                        viewModel = taskViewModel,
-                        onEdit = { selectedTask ->
-                            innerNavController.navigate("group/$groupId/updateTask/${selectedTask.taskId}")
+                        task = it,
+                        viewModel = viewModel,
+                        onEdit = { taskEntity ->
+                            navController.navigate("group/$groupId/taskEdit/${taskEntity.taskId}")
                         },
-                        onDeleted = { innerNavController.popBackStack() }
+                        onDeleted = { navController.popBackStack() }
                     )
                 }
             }
 
-            // ---------- Update Task ----------
-            composable("group/{groupId}/updateTask/{taskId}") { backStackEntry ->
-                val groupId = backStackEntry.arguments?.getString("groupId") ?: ""
-                val taskId = backStackEntry.arguments?.getString("taskId") ?: ""
+            composable("group/{groupId}/taskEdit/{taskId}") { backStackEntry ->
+                val groupId = backStackEntry.arguments?.getString("groupId")!!
+                val taskId = backStackEntry.arguments?.getString("taskId")!!
+                val viewModel: TaskViewModel = hiltViewModel()
 
-                val taskViewModel: TaskViewModel = hiltViewModel()
-                val tasks by taskViewModel.observeTasks(groupId).collectAsState(emptyList())
+                val task by viewModel.getTaskById(taskId).collectAsState(initial = null)
 
-                tasks.find { it.taskId == taskId }?.let { task ->
+                task?.let {
                     UpdateTaskScreen(
-                        task = task,
-                        viewModel = taskViewModel,
-                        onTaskUpdated = { innerNavController.popBackStack() },
-                        onCancel = { innerNavController.popBackStack() }
+                        task = it,
+                        viewModel = viewModel,
+                        onTaskUpdated = { navController.popBackStack() },
+                        onCancel = { navController.popBackStack() }
                     )
                 }
             }

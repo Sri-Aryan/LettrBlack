@@ -1,4 +1,4 @@
-package com.example.letteblack.screens
+package com.example.letteblack.screens.tasks
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.letteblack.db.TaskEntity
 import com.example.letteblack.viewmodel.TaskViewModel
+import java.text.SimpleDateFormat
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -76,7 +77,7 @@ fun UpdateTaskScreen(
 
         Button(onClick = { showDatePicker = true }, modifier = Modifier.fillMaxWidth()) {
             Text(
-                text = dueDateMillis?.let { java.text.SimpleDateFormat("dd MMM yyyy").format(it) }
+                text = dueDateMillis?.let { SimpleDateFormat("dd MMM yyyy").format(it) }
                     ?: "Pick Due Date"
             )
         }

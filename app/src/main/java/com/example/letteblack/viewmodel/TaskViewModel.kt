@@ -54,4 +54,8 @@ class TaskViewModel @Inject constructor(
             repo.deleteTask(taskId)
         }
     }
+
+    fun getTaskById(taskId: String): Flow<TaskEntity?> {
+        return repo.getTaskById(taskId)
+    }
 }

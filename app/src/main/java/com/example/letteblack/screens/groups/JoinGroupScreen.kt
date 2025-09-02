@@ -22,9 +22,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.letteblack.screens.notes.NotesSection
-import com.example.letteblack.screens.TasksSection
+import com.example.letteblack.screens.tasks.TasksSection
 import com.example.letteblack.viewmodel.GroupViewModel
 import com.example.letteblack.viewmodel.NotesViewModel
+import com.example.letteblack.viewmodel.TaskViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -37,7 +38,8 @@ fun JoinGroupScreen(
     onAddNoteClick: (String, String) -> Unit,
     onAddTaskClick: (String, String) -> Unit,
     groupViewModel: GroupViewModel = hiltViewModel(),
-    notesViewModel: NotesViewModel = hiltViewModel()
+    notesViewModel: NotesViewModel = hiltViewModel(),
+    taskViewModel: TaskViewModel = hiltViewModel()
 ) {
     val group by groupViewModel.getGroup(groupId).collectAsState(initial = null)
     val members by groupViewModel.members(groupId).collectAsState(emptyList())
@@ -92,6 +94,18 @@ fun JoinGroupScreen(
                 )
             }
 
+            Text("Members", style = MaterialTheme.typography.titleMedium)
+
+            if (members.isEmpty()) {
+                Text("No members yet", style = MaterialTheme.typography.bodySmall)
+            } else {
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    members.forEach { member ->
+                        Text("👤 ${member.userName}", style = MaterialTheme.typography.bodySmall)
+                    }
+                }
+            }
+
             Divider()
 
             // Tabs
@@ -121,7 +135,7 @@ fun JoinGroupScreen(
 
                 1 -> TasksSection(
                     groupId = groupId,
-                    viewModel = groupViewModel,
+                    viewModel = taskViewModel,
                     onTaskClick = { taskId ->
                         navController.navigate("group/$groupId/taskDetail/$taskId")
                     }

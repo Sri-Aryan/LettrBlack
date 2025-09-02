@@ -39,23 +39,14 @@ fun NotesSection(
                     elevation = CardDefaults.cardElevation(4.dp)
                 ) {
                     Column(Modifier.padding(12.dp)) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(note.title, style = MaterialTheme.typography.titleMedium)
-                            IconButton(onClick = { viewModel.deleteNote(note.noteId) }) {
-                                Icon(Icons.Outlined.Delete, contentDescription = "Delete")
-                            }
-                        }
+                        Text(note.title, style = MaterialTheme.typography.titleMedium)
                         Text(
                             note.content,
                             style = MaterialTheme.typography.bodyMedium,
                             maxLines = 2
                         )
                         Text(
-                            "By ${note.authorId} • ${Date(note.createdAt)}",
+                            "By ${note.givenBy} • ${Date(note.createdAt)}",
                             style = MaterialTheme.typography.labelSmall
                         )
                     }

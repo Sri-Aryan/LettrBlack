@@ -8,7 +8,7 @@ interface NoteRepository {
 
     suspend fun addNote(
         groupId: String,
-        authorId: String,
+        givenBy: String,
         title: String,
         content: String,
         attachmentUrl: String ?
@@ -22,4 +22,6 @@ interface NoteRepository {
     )
 
     suspend fun deleteNote(noteId: String)
+
+    fun getNoteById(noteId: String): Flow<NoteEntity?>
 }
