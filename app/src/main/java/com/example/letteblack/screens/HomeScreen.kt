@@ -18,9 +18,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.Groups3
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -335,7 +335,7 @@ fun AnimatedCard(title: String, containerColor: androidx.compose.ui.graphics.Col
 fun BottomNavigationBar(navController: NavHostController) {
     val items = listOf(
         BottomNavItem("Home", "home", Icons.Default.Home),
-        BottomNavItem("Courses", "courses", Icons.Default.ShoppingCart),
+        BottomNavItem("Groups", "courses", Icons.Default.Groups3),
         BottomNavItem("Puzzles", "puzzles", Icons.Default.Build),
         BottomNavItem("You", "you", Icons.Default.Person)
     )
