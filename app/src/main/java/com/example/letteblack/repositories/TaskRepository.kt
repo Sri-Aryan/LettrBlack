@@ -27,4 +27,6 @@ interface TaskRepository {
     )
 
     suspend fun deleteTask(taskId: String)
+
+    fun getTaskById(taskId: String): Flow<TaskEntity?>
 }

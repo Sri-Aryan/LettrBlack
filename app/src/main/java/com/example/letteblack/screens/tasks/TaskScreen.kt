@@ -1,4 +1,4 @@
-package com.example.letteblack.screens
+package com.example.letteblack.screens.tasks
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -24,7 +24,6 @@ fun TaskDetailScreen(
             .fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        // ---- Actions ----
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Button(onClick = { onEdit(task) }) {
                 Text("Edit")
@@ -34,24 +33,17 @@ fun TaskDetailScreen(
             }
         }
 
-        // ---- Task Info ----
         Text(task.title, style = MaterialTheme.typography.titleLarge)
-        Text(
-            "Assigned to ${task.assigneeId} • Status: ${task.status}",
-            style = MaterialTheme.typography.labelMedium
-        )
-        Text("Reward: ${task.pointsRewarded} points", style = MaterialTheme.typography.labelSmall)
+        Text("Assigned to ${task.assigneeId} • Status: ${task.status}")
+        Text("Reward: ${task.pointsRewarded} points")
 
-        task.dueDate?.let {
-            Text("Due: ${Date(it)}", style = MaterialTheme.typography.labelSmall)
-        }
+        task.dueDate?.let { Text("Due: ${Date(it)}") }
 
         Divider()
 
-        Text(task.description, style = MaterialTheme.typography.bodyMedium)
+        Text(task.description)
     }
 
-    // ---- Delete Confirmation Dialog ----
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
@@ -59,7 +51,6 @@ fun TaskDetailScreen(
             text = { Text("This action cannot be undone.") },
             confirmButton = {
                 TextButton(onClick = {
-                    showDeleteDialog = false
                     viewModel.deleteTask(task.taskId)
                     onDeleted()
                 }) { Text("Delete") }

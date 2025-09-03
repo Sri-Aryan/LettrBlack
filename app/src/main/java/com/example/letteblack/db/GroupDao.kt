@@ -19,4 +19,8 @@ interface GroupDao {
 
     @Query("UPDATE groups SET memberCount = memberCount + 1 WHERE groupId = :groupId")
     suspend fun incrementMemberCount(groupId: String)
+
+    @Query("SELECT * FROM groups WHERE groupId = :groupId LIMIT 1")
+    suspend fun getGroupById(groupId: String): GroupEntity?
+
 }

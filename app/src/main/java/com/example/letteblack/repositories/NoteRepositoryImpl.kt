@@ -4,6 +4,7 @@ import com.example.letteblack.db.NoteDao
 import com.example.letteblack.db.NoteEntity
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.tasks.await
 import java.util.*
 
@@ -18,7 +19,7 @@ class NoteRepositoryImpl(
 
     override suspend fun addNote(
         groupId: String,
-        authorId: String,
+        givenBy: String,
         title: String,
         content: String,
         attachmentUrl: String?
@@ -27,7 +28,7 @@ class NoteRepositoryImpl(
         val note = NoteEntity(
             noteId = UUID.randomUUID().toString(),
             groupId = groupId,
-            authorId = authorId,
+            givenBy = givenBy,
             title = title,
             content = content,
             attachmentUrl = attachmentUrl,
@@ -35,14 +36,12 @@ class NoteRepositoryImpl(
             updatedAt = now
         )
 
-        // 1) Local insert
         dao.insert(note)
 
-        // 2) Remote write
         val map = mapOf(
             "noteId" to note.noteId,
             "groupId" to note.groupId,
-            "authorId" to note.authorId,
+            "givenBy" to note.givenBy,
             "title" to note.title,
             "content" to note.content,
             "attachmentUrl" to note.attachmentUrl,
@@ -85,5 +84,9 @@ class NoteRepositoryImpl(
 
         // 2) Remote delete
         collection.document(noteId).delete().await()
+    }
+
+    override fun getNoteById(noteId: String): Flow<NoteEntity?> {
+        return dao.getNoteById(noteId)
     }
 }

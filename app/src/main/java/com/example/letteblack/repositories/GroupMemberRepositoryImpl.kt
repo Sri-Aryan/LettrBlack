@@ -5,6 +5,7 @@ import com.example.letteblack.db.GroupMemberDao
 import com.example.letteblack.db.GroupMemberEntity
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
+import java.util.UUID
 
 class GroupMemberRepositoryImpl(
     private val dao: GroupMemberDao,
@@ -13,16 +14,17 @@ class GroupMemberRepositoryImpl(
 ) : GroupMemberRepository {
 
     private val collection get() = firestore.collection("group_members")
-    private val groupsRef get() = firestore.collection("groups")
 
     override fun observeMembers(groupId: String) = dao.observeMembers(groupId)
 
-    override suspend fun joinGroup(groupId: String, userId: String, userName: String) {
+    override suspend fun joinGroup(
+        groupId: String,
+        userId: String,
+        userName: String
+    ) {
         val now = System.currentTimeMillis()
-        val id = "${groupId}_$userId"
-
         val member = GroupMemberEntity(
-            id = id,
+            id = UUID.randomUUID().toString(),
             groupId = groupId,
             userId = userId,
             userName = userName,
@@ -31,7 +33,11 @@ class GroupMemberRepositoryImpl(
 
         dao.insert(member)
 
-        groupDao.incrementMemberCount(groupId)
+        val group = groupDao.getGroupById(groupId)
+        if (group != null) {
+            val updated = group.copy(memberCount = group.memberCount + 1)
+            groupDao.insert(updated) // since it's REPLACE, it updates
+        }
 
         val map = mapOf(
             "id" to member.id,
@@ -41,12 +47,5 @@ class GroupMemberRepositoryImpl(
             "joinedAt" to member.joinedAt
         )
         collection.document(member.id).set(map).await()
-
-        val groupDoc = groupsRef.document(groupId)
-        firestore.runTransaction { transaction ->
-            val snapshot = transaction.get(groupDoc)
-            val currentCount = snapshot.getLong("memberCount") ?: 0L
-            transaction.update(groupDoc, "memberCount", currentCount + 1)
-        }.await()
     }
 }

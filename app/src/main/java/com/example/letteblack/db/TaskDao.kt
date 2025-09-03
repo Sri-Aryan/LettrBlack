@@ -34,4 +34,7 @@ interface TaskDao {
         pointsRewarded: Int,
         updatedAt: Long
     )
+
+    @Query("SELECT * FROM tasks WHERE taskId = :taskId LIMIT 1")
+    fun getTaskById(taskId: String): Flow<TaskEntity?>
 }

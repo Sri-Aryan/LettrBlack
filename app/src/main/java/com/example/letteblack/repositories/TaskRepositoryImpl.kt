@@ -3,6 +3,7 @@ package com.example.letteblack.repositories
 import com.example.letteblack.db.TaskDao
 import com.example.letteblack.db.TaskEntity
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.tasks.await
 import java.util.*
 
@@ -22,7 +23,7 @@ class TaskRepositoryImpl(
         title: String,
         description: String,
         pointsRewarded: Int,
-        dueDate: Long?
+        dueDate: Long?   // 👈 must be passed from UI
     ) {
         val now = System.currentTimeMillis()
         val task = TaskEntity(
@@ -48,7 +49,7 @@ class TaskRepositoryImpl(
             "title" to task.title,
             "description" to task.description,
             "pointsRewarded" to task.pointsRewarded,
-            "dueDate" to task.dueDate,
+            "dueDate" to task.dueDate,   // 👈 check this is not null
             "status" to task.status,
             "createdAt" to task.createdAt,
             "updatedAt" to task.updatedAt
@@ -88,6 +89,10 @@ class TaskRepositoryImpl(
     override suspend fun deleteTask(taskId: String) {
         dao.delete(taskId)
         collection.document(taskId).delete().await()
+    }
+
+    override fun getTaskById(taskId: String): Flow<TaskEntity?> {
+        return dao.getTaskById(taskId)
     }
 
 }

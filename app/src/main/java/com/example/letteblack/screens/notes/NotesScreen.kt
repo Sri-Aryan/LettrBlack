@@ -17,8 +17,8 @@ import java.util.Date
 fun NoteDetailScreen(
     note: NoteEntity,
     viewModel: NotesViewModel,
-    onEdit: (NoteEntity) -> Unit, // navigate to UpdateNoteScreen
-    onDeleted: () -> Unit         // e.g., navController.popBackStack()
+    onEdit: (NoteEntity) -> Unit,
+    onDeleted: () -> Unit
 ) {
     var showDeleteDialog by remember { mutableStateOf(false) }
 
@@ -28,32 +28,50 @@ fun NoteDetailScreen(
             .fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Button(onClick = { onEdit(note) }) {
-                Text("Edit")
-            }
-
-            OutlinedButton(onClick = { showDeleteDialog = true }) {
-                Text("Delete")
-            }
-        }
-
+        // 🔹 Title
         Text(note.title, style = MaterialTheme.typography.titleLarge)
+
+        // 🔹 Meta info
         Text(
-            "By ${note.authorId} • ${Date(note.createdAt)}",
+            "By ${note.givenBy} • ${Date(note.createdAt)}",
             style = MaterialTheme.typography.labelMedium
         )
 
         Divider()
 
+        // 🔹 Content
         Text(note.content, style = MaterialTheme.typography.bodyMedium)
 
+        // 🔹 Attachment (if available)
         note.attachmentUrl?.let {
             Divider()
             Text("Attachment: $it", style = MaterialTheme.typography.labelSmall)
         }
+
+        Divider()
+
+        // 🔹 Buttons at the bottom
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Button(
+                onClick = { onEdit(note) },
+                modifier = Modifier.weight(1f)
+            ) {
+                Text("Edit")
+            }
+
+            OutlinedButton(
+                onClick = { showDeleteDialog = true },
+                modifier = Modifier.weight(1f)
+            ) {
+                Text("Delete")
+            }
+        }
     }
 
+    // 🔹 Delete confirmation dialog
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },

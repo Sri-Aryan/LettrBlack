@@ -78,7 +78,7 @@ fun GroupListScreen(
 
                     if (!group.description.isNullOrBlank()) {
                         Spacer(Modifier.height(4.dp))
-                        Text(group.description!!, style = MaterialTheme.typography.bodySmall)
+                        Text(group.description, style = MaterialTheme.typography.bodySmall)
                     }
 
                     Spacer(Modifier.height(8.dp))
@@ -111,6 +111,8 @@ fun GroupListScreen(
 
     // Dialog for joining existing group
     if (showJoinDialog && selectedGroupId != null) {
+        val selectedGroup = groups.find { it.groupId == selectedGroupId }
+
         AlertDialog(
             onDismissRequest = {
                 showJoinDialog = false
@@ -118,18 +120,34 @@ fun GroupListScreen(
             },
             title = { Text("Join Group") },
             text = {
-                OutlinedTextField(
-                    value = userName,
-                    onValueChange = { userName = it },
-                    label = { Text("Enter your name") }
-                )
+                Column {
+                    // Prefilled Group Name (read only)
+                    OutlinedTextField(
+                        value = selectedGroup?.groupName ?: "",
+                        onValueChange = {},
+                        label = { Text("Group Name") },
+                        enabled = false // readonly
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    OutlinedTextField(
+                        value = userName,
+                        onValueChange = { userName = it },
+                        label = { Text("Enter your name") }
+                    )
+                }
             },
             confirmButton = {
                 TextButton(onClick = {
                     if (userName.isNotBlank()) {
+                        val nameToSave = userName
                         scope.launch {
-                            viewModel.joinGroup(selectedGroupId!!, userId, userName)
+                            viewModel.joinGroup(
+                                selectedGroupId!!,
+                                userId,
+                                nameToSave
+                            )
                         }
+                        // reset AFTER launch call
                         userName = ""
                         showJoinDialog = false
                     }
@@ -180,11 +198,12 @@ fun GroupListScreen(
                                 userId,
                                 creatorName
                             )
+                            // reset AFTER insertion
+                            newGroupName = ""
+                            newGroupDescription = ""
+                            creatorName = ""
+                            showCreateDialog = false
                         }
-                        newGroupName = ""
-                        newGroupDescription = ""
-                        creatorName = ""
-                        showCreateDialog = false
                     }
                 }) { Text("Create") }
             },
