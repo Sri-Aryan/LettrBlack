@@ -29,7 +29,6 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -276,9 +275,6 @@ fun HomeContent(user: UserDetails, authViewModel: AuthViewModel) {
                     .background(MaterialTheme.colorScheme.surface)
             )
 
-            TextButton(onClick = { authViewModel.signOut() }) {
-                Text("Logout", fontSize = 14.sp)
-            }
         }
 
         Spacer(Modifier.height(35.dp))

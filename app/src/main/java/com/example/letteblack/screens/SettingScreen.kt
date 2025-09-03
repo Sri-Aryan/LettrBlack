@@ -17,8 +17,6 @@ import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PrivacyTip
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -27,8 +25,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,14 +36,25 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.letteblack.AuthViewModel
+import com.example.letteblack.UserState
+import com.example.letteblack.data.Routes
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreen(navController: NavHostController) {
+fun SettingsScreen(navController: NavHostController, authViewModel: AuthViewModel) {
     var darkMode by remember { mutableStateOf(false) }
     var notifications by remember { mutableStateOf(true) }
 
+    LaunchedEffect(authViewModel.userState.value) {
+        if(authViewModel.userState.value is UserState.Unauthenticated){
+            navController.navigate(Routes.Login.toString()){
+                popUpTo(Routes.Login.toString()){inclusive = true}
+            }
+        }
+    }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -97,16 +108,8 @@ fun SettingsScreen(navController: NavHostController) {
             Spacer(modifier = Modifier.weight(1f))
 
             // Logout button
-            Button(
-                onClick = {  },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.error
-                )
-            ) {
-                Text("Logout", color = MaterialTheme.colorScheme.onError)
+            TextButton(onClick = { authViewModel.signOut() }, Modifier.padding(horizontal = 155.dp)) {
+                Text("Logout", fontSize = 14.sp)
             }
         }
     }
