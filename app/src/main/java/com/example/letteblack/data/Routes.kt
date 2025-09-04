@@ -7,6 +7,6 @@ sealed class Routes(route: String){
     object Home: Routes("Home")
 
     object Profile : Routes("profile")
-
+// Lets get started
     object Settings : Routes("settings")
 }
