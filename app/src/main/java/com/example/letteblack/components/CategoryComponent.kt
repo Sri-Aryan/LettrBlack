@@ -32,8 +32,9 @@ fun CategoryComponent(
     Column(modifier = modifier.fillMaxWidth()) {
         Text(
             text = categoryModel.categoryName,
-            style = MaterialTheme.typography.headlineSmall.copy(
-                fontWeight = FontWeight.Bold
+            style = TextStyle(
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp
             )
         )
 

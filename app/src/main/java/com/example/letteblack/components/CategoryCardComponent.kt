@@ -41,37 +41,76 @@ fun CategoryCardComponent(
 @Preview(showBackground = true)
 @Composable
 fun PreviewCategoryList() {
-    val categories = remember { mockCategories() }
+    val categories = remember { MockData.mockCategories() }
     CategoryCardComponent(categories = categories, modifier = Modifier.statusBarsPadding())
 }
 
 // ----------------- MOCK DATA ----------------- //
-fun mockCategories(): List<CategoryModel> = listOf(
-    CategoryModel(
-        categoryName = "Data Analysis",
-        subCourses = listOf(
-            SubCourseModel("Exploring Data Visually", R.drawable.ic_launcher_background),
-            SubCourseModel("Probability in Data", R.drawable.ic_launcher_background),
-            SubCourseModel("Clustering and Classification", R.drawable.ic_launcher_background),
-            SubCourseModel("Regression", R.drawable.ic_launcher_background),
-        )
-    ),
-    CategoryModel(
-        categoryName = "Computer Science",
-        subCourses = listOf(
-            SubCourseModel("Variables", R.drawable.ic_launcher_background),
-            SubCourseModel("Functions", R.drawable.ic_launcher_background),
-            SubCourseModel("Algorithms", R.drawable.ic_launcher_background),
-            SubCourseModel("Artificial Intelligence", R.drawable.ic_launcher_background),
-        )
-    ),
-    CategoryModel(
-        categoryName = "Mobile Development",
-        subCourses = listOf(
-            SubCourseModel("Kotlin Basics", R.drawable.ic_launcher_background),
-            SubCourseModel("Jetpack Compose", R.drawable.ic_launcher_background),
-            SubCourseModel("Android Architecture Components", R.drawable.ic_launcher_background),
-            SubCourseModel("Firebase Integration", R.drawable.ic_launcher_background),
+
+object MockData {
+    fun mockCategories(): List<CategoryModel> = listOf(
+        CategoryModel(
+            categoryName = "Data Analysis",
+            subCourses = listOf(
+                SubCourseModel("Exploring Data Visually", R.drawable.ic_launcher_background),
+                SubCourseModel("Probability in Data", R.drawable.ic_launcher_background),
+                SubCourseModel("Clustering and Classification", R.drawable.ic_launcher_background),
+                SubCourseModel("Regression", R.drawable.ic_launcher_background),
+            )
+        ),
+        CategoryModel(
+            categoryName = "Computer Science",
+            subCourses = listOf(
+                SubCourseModel("Variables", R.drawable.ic_launcher_background),
+                SubCourseModel("Functions", R.drawable.ic_launcher_background),
+                SubCourseModel("Algorithms", R.drawable.ic_launcher_background),
+                SubCourseModel("Artificial Intelligence", R.drawable.ic_launcher_background),
+            )
+        ),
+        CategoryModel(
+            categoryName = "Mobile Development",
+            subCourses = listOf(
+                SubCourseModel("Kotlin Basics", R.drawable.ic_launcher_background),
+                SubCourseModel("Jetpack Compose", R.drawable.ic_launcher_background),
+                SubCourseModel("Android Architecture Components", R.drawable.ic_launcher_background),
+                SubCourseModel("Firebase Integration", R.drawable.ic_launcher_background),
+            )
+        ),
+        CategoryModel(
+            categoryName = "Web Development",
+            subCourses = listOf(
+                SubCourseModel("HTML & CSS", R.drawable.ic_launcher_background),
+                SubCourseModel("JavaScript", R.drawable.ic_launcher_background),
+                SubCourseModel("React.js", R.drawable.ic_launcher_background),
+                SubCourseModel("Node.js", R.drawable.ic_launcher_background),
+            )
+        ),
+        CategoryModel(
+            categoryName = "Machine Learning",
+            subCourses = listOf(
+                SubCourseModel("Supervised Learning", R.drawable.ic_launcher_background),
+                SubCourseModel("Unsupervised Learning", R.drawable.ic_launcher_background),
+                SubCourseModel("Neural Networks", R.drawable.ic_launcher_background),
+                SubCourseModel("Natural Language Processing", R.drawable.ic_launcher_background),
+            )
+        ),
+        CategoryModel(
+            categoryName = "Cloud Computing",
+            subCourses = listOf(
+                SubCourseModel("AWS Basics", R.drawable.ic_launcher_background),
+                SubCourseModel("Google Cloud Platform", R.drawable.ic_launcher_background),
+                SubCourseModel("Microsoft Azure", R.drawable.ic_launcher_background),
+                SubCourseModel("Cloud Security", R.drawable.ic_launcher_background),
+            )
+        ),
+        CategoryModel(
+            categoryName = "Cyber Security",
+            subCourses = listOf(
+                SubCourseModel("Network Security", R.drawable.ic_launcher_background),
+                SubCourseModel("Ethical Hacking", R.drawable.ic_launcher_background),
+                SubCourseModel("Cryptography", R.drawable.ic_launcher_background),
+                SubCourseModel("Malware Analysis", R.drawable.ic_launcher_background),
+            )
         )
     )
-)
+}
