@@ -4,12 +4,9 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -17,10 +14,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Groups3
@@ -61,9 +56,7 @@ import com.example.letteblack.AuthViewModel
 import com.example.letteblack.R
 import com.example.letteblack.UserState
 import com.example.letteblack.Utils
-import com.example.letteblack.components.CategoryCardComponent
-import com.example.letteblack.components.CategoryComponent
-import com.example.letteblack.components.MockData
+import com.example.letteblack.components.category.CategoryComponent
 import com.example.letteblack.data.Routes
 import com.example.letteblack.data.UserDetails
 import com.example.letteblack.screens.groups.GroupListScreen
@@ -75,6 +68,7 @@ import com.example.letteblack.screens.notes.UpdateNoteScreen
 import com.example.letteblack.screens.tasks.AddTaskScreen
 import com.example.letteblack.screens.tasks.TaskDetailScreen
 import com.example.letteblack.screens.tasks.UpdateTaskScreen
+import com.example.letteblack.util.MockData
 import com.example.letteblack.viewmodel.NotesViewModel
 import com.example.letteblack.viewmodel.TaskViewModel
 import com.google.firebase.firestore.ktx.firestore
@@ -253,7 +247,15 @@ fun HomeScreen(navController: NavHostController, modifier: Modifier, authViewMod
                 }
             }
 
-            composable("puzzles") { CenterText("Puzzles") }
+            composable("puzzles") {
+                PuzzleScreen(
+                    onClick = {
+                        navController.navigate(Routes.PuzzleCategory.toString())
+                    },
+                    onPuzzleClick = {},
+                    modifier = modifier
+                )
+            }
             composable("you") { ProfileScreen(navController) }
         }
     }

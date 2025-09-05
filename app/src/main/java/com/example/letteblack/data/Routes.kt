@@ -9,4 +9,7 @@ sealed class Routes(route: String){
     object Profile : Routes("profile")
 
     object Settings : Routes("settings")
+
+    object Puzzle : Routes("puzzle")
+    object PuzzleCategory : Routes("puzzle")
 }

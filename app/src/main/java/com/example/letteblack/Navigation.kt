@@ -10,6 +10,8 @@ import com.example.letteblack.data.Routes
 import com.example.letteblack.screens.HomeScreen
 import com.example.letteblack.screens.LoginScreen
 import com.example.letteblack.screens.ProfileScreen
+import com.example.letteblack.screens.PuzzleCategoryScreen
+import com.example.letteblack.screens.PuzzleScreen
 import com.example.letteblack.screens.SettingsScreen
 import com.example.letteblack.screens.SignUpScreen
 import com.example.letteblack.screens.SplashScreen
@@ -41,6 +43,14 @@ fun Navigation(modifier: Modifier = Modifier){
         composable("settings") {
             val authViewModel: AuthViewModel = viewModel()
             SettingsScreen(navController,authViewModel)
+        }
+
+        composable(Routes.Puzzle.toString()){
+
+        }
+
+        composable(Routes.PuzzleCategory.toString()){
+            PuzzleCategoryScreen(modifier = modifier)
         }
     }
 }
