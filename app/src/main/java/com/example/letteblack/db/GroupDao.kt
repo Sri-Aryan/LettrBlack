@@ -23,4 +23,6 @@ interface GroupDao {
     @Query("SELECT * FROM groups WHERE groupId = :groupId LIMIT 1")
     suspend fun getGroupById(groupId: String): GroupEntity?
 
+    @Query("DELETE FROM groups WHERE groupId = :groupId")
+    suspend fun deleteGroupById(groupId: String)
 }

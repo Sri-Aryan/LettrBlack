@@ -69,9 +69,12 @@ object AppModule {
     @Provides
     @Singleton
     fun provideGroupRepository(
-        dao: GroupDao,
+        groupDao: GroupDao,
+        groupMemberDao: GroupMemberDao,
+        taskDao: TaskDao,
+        noteDao: NoteDao,
         fs: FirebaseFirestore
-    ): GroupRepository = GroupRepositoryImpl(dao, fs)
+    ): GroupRepository = GroupRepositoryImpl(groupDao, groupMemberDao, taskDao, noteDao, fs)
 
     @Provides
     @Singleton
