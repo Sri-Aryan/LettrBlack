@@ -4,6 +4,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,8 +15,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Groups3
@@ -56,6 +61,9 @@ import com.example.letteblack.AuthViewModel
 import com.example.letteblack.R
 import com.example.letteblack.UserState
 import com.example.letteblack.Utils
+import com.example.letteblack.components.CategoryCardComponent
+import com.example.letteblack.components.CategoryComponent
+import com.example.letteblack.components.MockData
 import com.example.letteblack.data.Routes
 import com.example.letteblack.data.UserDetails
 import com.example.letteblack.screens.groups.GroupListScreen
@@ -253,53 +261,48 @@ fun HomeScreen(navController: NavHostController, modifier: Modifier, authViewMod
 
 @Composable
 fun HomeContent(user: UserDetails, authViewModel: AuthViewModel) {
-    Column(
+    val categoryList=remember { MockData.mockCategories() }
+    LazyColumn(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
-        Row(
-            Modifier
-                .fillMaxWidth()
-                .padding(8.dp, top = 10.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.lettrblack),
-                contentDescription = "Company Logo",
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.surface)
+        // ---------- HEADER ---------- //
+        item {
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(top = 10.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.lettrblack),
+                    contentDescription = "Company Logo",
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.surface)
+                )
+            }
+        }
+
+        // ---------- TITLE ---------- //
+        item {
+            Text(
+                "Discover, Learn, and Grow",
+                fontSize = 22.sp,
+                fontFamily = FontFamily.SansSerif,
+                fontWeight = FontWeight.SemiBold
             )
-
         }
 
-        Spacer(Modifier.height(35.dp))
-        Text(
-            "Discover, Learn, and Grow",
-            fontSize = 22.sp,
-            fontFamily = FontFamily.SansSerif,
-
-            fontWeight = FontWeight.SemiBold
-        )
-        Spacer(modifier = Modifier.height(70.dp))
-
-        val sections = listOf("Maths", "Science", "History & Civics", "Others")
-        val colors = listOf(
-            MaterialTheme.colorScheme.primaryContainer,
-            MaterialTheme.colorScheme.secondaryContainer,
-            MaterialTheme.colorScheme.tertiaryContainer,
-            MaterialTheme.colorScheme.errorContainer
-        )
-
-        sections.forEachIndexed { index, section ->
-            AnimatedCard(title = section, containerColor = colors[index % colors.size])
-            Spacer(modifier = Modifier.height(12.dp))
+        // ---------- CATEGORIES ---------- //
+        items(categoryList) { category ->
+            CategoryComponent(categoryModel = category)
         }
-
     }
 }
 
