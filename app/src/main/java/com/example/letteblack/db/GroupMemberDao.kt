@@ -13,4 +13,7 @@ interface GroupMemberDao {
 
     @Query("SELECT * FROM group_members WHERE groupId = :groupId")
     fun observeMembers(groupId: String): Flow<List<GroupMemberEntity>>
+
+    @Query("DELETE FROM group_members WHERE groupId = :groupId")
+    suspend fun deleteByGroupId(groupId: String)
 }

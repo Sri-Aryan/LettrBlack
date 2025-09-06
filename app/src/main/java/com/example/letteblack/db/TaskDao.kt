@@ -37,4 +37,7 @@ interface TaskDao {
 
     @Query("SELECT * FROM tasks WHERE taskId = :taskId LIMIT 1")
     fun getTaskById(taskId: String): Flow<TaskEntity?>
+
+    @Query("DELETE FROM tasks WHERE groupId = :groupId")
+    suspend fun deleteByGroupId(groupId: String)
 }
