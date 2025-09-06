@@ -129,7 +129,7 @@ fun HomeScreen(navController: NavHostController, modifier: Modifier, authViewMod
                 JoinGroupScreen(
                     groupId = groupId,
                     userId = user.uid,
-                    navController = navController,
+                    navController = innerNavController,
                     onAddNoteClick = { gId, uId ->
                         innerNavController.navigate("group/$gId/addNote")
                     },
@@ -177,9 +177,9 @@ fun HomeScreen(navController: NavHostController, modifier: Modifier, authViewMod
                         note = it,
                         viewModel = viewModel,
                         onEdit = { noteEntity ->
-                            navController.navigate("group/$groupId/noteEdit/${noteEntity.noteId}")
+                            innerNavController.navigate("group/$groupId/noteEdit/${noteEntity.noteId}")
                         },
-                        onDeleted = { navController.popBackStack() }
+                        onDeleted = { innerNavController.popBackStack() }
                     )
                 }
             }
@@ -196,7 +196,7 @@ fun HomeScreen(navController: NavHostController, modifier: Modifier, authViewMod
                     UpdateNoteScreen(
                         note = it,
                         viewModel = viewModel,
-                        onNoteUpdated = { navController.popBackStack() }
+                        onNoteUpdated = { innerNavController.popBackStack() }
                     )
                 }
             }
@@ -210,7 +210,7 @@ fun HomeScreen(navController: NavHostController, modifier: Modifier, authViewMod
                 AddTaskScreen(
                     groupId = groupId,
                     assignerId = user.uid,
-                    assigneeId = "someUserId", // TODO: replace with UI to pick assignee
+                    assigneeId = "someUserId",
                     viewModel = taskViewModel,
                     onTaskSaved = { innerNavController.popBackStack() }
                 )
@@ -229,9 +229,9 @@ fun HomeScreen(navController: NavHostController, modifier: Modifier, authViewMod
                         task = it,
                         viewModel = viewModel,
                         onEdit = { taskEntity ->
-                            navController.navigate("group/$groupId/taskEdit/${taskEntity.taskId}")
+                            innerNavController.navigate("group/$groupId/taskEdit/${taskEntity.taskId}")
                         },
-                        onDeleted = { navController.popBackStack() }
+                        onDeleted = { innerNavController.popBackStack() }
                     )
                 }
             }
@@ -247,8 +247,8 @@ fun HomeScreen(navController: NavHostController, modifier: Modifier, authViewMod
                     UpdateTaskScreen(
                         task = it,
                         viewModel = viewModel,
-                        onTaskUpdated = { navController.popBackStack() },
-                        onCancel = { navController.popBackStack() }
+                        onTaskUpdated = { innerNavController.popBackStack() },
+                        onCancel = { innerNavController.popBackStack() }
                     )
                 }
             }
