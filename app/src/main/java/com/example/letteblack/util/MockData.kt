@@ -108,6 +108,11 @@ object MockData {
         PuzzleModel("Crossword", R.drawable.ic_launcher_background),
         PuzzleModel("Find the Difference", R.drawable.ic_launcher_background),
         PuzzleModel("Guess the Output (Code)", R.drawable.ic_launcher_background),
-        PuzzleModel("Riddles", R.drawable.ic_launcher_background)
+        PuzzleModel("Riddles", R.drawable.ic_launcher_background),
+        PuzzleModel(
+            title = "Visual Puzzle Game",
+            image = R.drawable.ic_launcher_background,
+            description = "guess the shape."
+        )
     )
 }

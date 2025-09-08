@@ -37,7 +37,7 @@ import com.example.letteblack.util.MockData
 @Composable
 fun PuzzleScreen(
     onClick: () -> Unit,
-    onPuzzleClick:()->Unit,
+    onPuzzleClick:(String,Int,String)->Unit,
     modifier: Modifier = Modifier
 ) {
     val puzzleCategoryList = remember { MockData.getPuzzleCategories() }
@@ -80,11 +80,11 @@ fun PuzzleScreen(
         item{
             LazyRow (modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp,vertical = 20.dp),
+                .padding(horizontal = 16.dp, vertical = 20.dp),
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
             ){
                 items(topPuzzleList){puzzle->
-                    TopPuzzleComponent(puzzle, onClick = onPuzzleClick)
+                    TopPuzzleComponent(puzzle, onClick = { onPuzzleClick(puzzle.title,puzzle.image,"hello world") })
                 }
             }
         }
@@ -124,7 +124,7 @@ private fun PuzzlePreview() {
     LetteBlackTheme {
         PuzzleScreen(
             onClick = {},
-            onPuzzleClick = {}
+            onPuzzleClick = {_,_,d->}
         )
     }
 

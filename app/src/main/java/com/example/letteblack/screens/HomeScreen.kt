@@ -1,5 +1,6 @@
 package com.example.letteblack.screens
 
+import android.net.Uri
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -252,7 +253,10 @@ fun HomeScreen(navController: NavHostController, modifier: Modifier, authViewMod
                     onClick = {
                         navController.navigate(Routes.PuzzleCategory.toString())
                     },
-                    onPuzzleClick = {},
+                    onPuzzleClick = { title, image, description ->
+
+                        navController.navigate("puzzlePlay/$title/$image/$description")
+                    },
                     modifier = modifier
                 )
             }
