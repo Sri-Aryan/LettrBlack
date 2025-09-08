@@ -239,6 +239,7 @@ fun HomeScreen(navController: NavHostController, modifier: Modifier, authViewMod
                 task?.let {
                     UpdateTaskScreen(
                         task = it,
+                        groupId = groupId,
                         viewModel = viewModel,
                         onTaskUpdated = { innerNavController.popBackStack() },
                         onCancel = { innerNavController.popBackStack() }

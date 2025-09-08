@@ -10,15 +10,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.letteblack.db.GroupEntity
-import com.example.letteblack.db.GroupMemberEntity
 import com.example.letteblack.viewmodel.GroupViewModel
 import kotlinx.coroutines.launch
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
-import com.example.letteblack.R
-import me.saket.swipe.SwipeAction
-import me.saket.swipe.SwipeableActionsBox
-import java.util.UUID
 
 @Composable
 fun GroupListScreen(
@@ -28,17 +21,16 @@ fun GroupListScreen(
 ) {
     val groups by viewModel.groups().collectAsState(initial = emptyList())
 
+    // state for joining existing group
     var showJoinDialog by remember { mutableStateOf(false) }
     var selectedGroupId by remember { mutableStateOf<String?>(null) }
     var userName by remember { mutableStateOf("") }
 
+    // state for creating new group
     var showCreateDialog by remember { mutableStateOf(false) }
     var newGroupName by remember { mutableStateOf("") }
     var newGroupDescription by remember { mutableStateOf("") }
     var creatorName by remember { mutableStateOf("") }
-
-    // members editing as GroupMemberEntity
-    var members by remember { mutableStateOf(listOf<GroupMemberEntity>()) }
 
     val scope = rememberCoroutineScope()
 
@@ -52,80 +44,46 @@ fun GroupListScreen(
         Spacer(Modifier.height(8.dp))
 
         groups.forEach { group: GroupEntity ->
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp)
+                    .clickable { onGroupClick(group.groupId) },
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer
+                )
+            ) {
+                Column(Modifier.padding(16.dp)) {
+                    Text(group.groupName, style = MaterialTheme.typography.titleMedium)
 
-            val deleteAction = SwipeAction(
-                onSwipe = { viewModel.deleteGroup(group.groupId) },
-                icon = {
-                    Icon(
-                        painter = painterResource(id = R.drawable.baseline_delete_24),
-                        contentDescription = "Delete",
-                        tint = Color.White,
-                        modifier = Modifier.padding(16.dp)
-                    )
-                },
-                background = Color.Red
-            )
-
-            val editAction = SwipeAction(
-                onSwipe = {
-                    selectedGroupId = group.groupId
-                    newGroupName = group.groupName
-                    newGroupDescription = group.description ?: ""
-                    creatorName = group.createdByUserName
-
-                    scope.launch {
-                        val m = viewModel.getGroupMembers(group.groupId)
-                        members = m // full entities
+                    if (!group.description.isNullOrBlank()) {
+                        Spacer(Modifier.height(4.dp))
+                        Text(
+                            group.description,
+                            style = MaterialTheme.typography.bodySmall
+                        )
                     }
 
-                    showCreateDialog = true
-                },
-                icon = {
-                    Icon(
-                        painter = painterResource(id = R.drawable.baseline_edit_24),
-                        contentDescription = "Edit",
-                        tint = Color.White,
-                        modifier = Modifier.padding(16.dp)
-                    )
-                },
-                background = Color.Blue
-            )
+                    Spacer(Modifier.height(8.dp))
 
-            SwipeableActionsBox(
-                startActions = listOf(editAction),
-                endActions = listOf(deleteAction)
-            ) {
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 4.dp)
-                        .clickable { onGroupClick(group.groupId) },
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
-                ) {
-                    Column(Modifier.padding(16.dp)) {
-                        Text(group.groupName, style = MaterialTheme.typography.titleMedium)
-
-                        if (!group.description.isNullOrBlank()) {
-                            Spacer(Modifier.height(4.dp))
-                            Text(group.description, style = MaterialTheme.typography.bodySmall)
-                        }
-
-                        Spacer(Modifier.height(8.dp))
-
-                        Row(
-                            Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(
-                                "👤 ${group.createdByUserName} • ${group.memberCount} members",
-                                style = MaterialTheme.typography.labelSmall
-                            )
-                            IconButton(onClick = {
+                    Row(
+                        Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            "👤 ${group.createdByUserName} • ${group.memberCount} members",
+                            style = MaterialTheme.typography.labelSmall
+                        )
+                        IconButton(
+                            onClick = {
                                 selectedGroupId = group.groupId
                                 showJoinDialog = true
-                            }) {
-                                Icon(Icons.Default.Add, contentDescription = "Join")
                             }
+                        ) {
+                            Icon(
+                                Icons.Default.Add,
+                                contentDescription = "Join"
+                            )
                         }
                     }
                 }
@@ -134,22 +92,14 @@ fun GroupListScreen(
 
         Spacer(Modifier.height(16.dp))
 
-        Button(onClick = {
-            selectedGroupId = null
-            newGroupName = ""
-            newGroupDescription = ""
-            creatorName = ""
-            members = listOf()
-            showCreateDialog = true
-        }) {
+        Button(onClick = { showCreateDialog = true }) {
             Text("➕ Create New Group")
         }
     }
 
-    // Join Group dialog
+    // Dialog for joining existing group
     if (showJoinDialog && selectedGroupId != null) {
         val selectedGroup = groups.find { it.groupId == selectedGroupId }
-
         AlertDialog(
             onDismissRequest = {
                 showJoinDialog = false
@@ -158,6 +108,7 @@ fun GroupListScreen(
             title = { Text("Join Group") },
             text = {
                 Column {
+                    // Prefilled Group Name (read only)
                     OutlinedTextField(
                         value = selectedGroup?.groupName ?: "",
                         onValueChange = {},
@@ -173,34 +124,40 @@ fun GroupListScreen(
                 }
             },
             confirmButton = {
-                TextButton(onClick = {
-                    if (userName.isNotBlank()) {
-                        scope.launch {
-                            viewModel.joinGroup(
-                                selectedGroupId!!,
-                                userId,
-                                userName
-                            )
+                TextButton(
+                    onClick = {
+                        if (userName.isNotBlank()) {
+                            val nameToSave = userName
+                            scope.launch {
+                                viewModel.joinGroup(selectedGroupId!!, userId, nameToSave)
+                            }
+                            // reset AFTER launch
+                            userName = ""
+                            showJoinDialog = false
                         }
-                        userName = ""
-                        showJoinDialog = false
                     }
-                }) { Text("Join") }
+                ) {
+                    Text("Join")
+                }
             },
             dismissButton = {
-                TextButton(onClick = {
-                    showJoinDialog = false
-                    userName = ""
-                }) { Text("Cancel") }
+                TextButton(
+                    onClick = {
+                        showJoinDialog = false
+                        userName = ""
+                    }
+                ) {
+                    Text("Cancel")
+                }
             }
         )
     }
 
-    // Create/Update dialog
+    // Dialog for creating new group
     if (showCreateDialog) {
         AlertDialog(
             onDismissRequest = { showCreateDialog = false },
-            title = { Text(if (selectedGroupId == null) "New Group" else "Edit Group") },
+            title = { Text("New Group") },
             text = {
                 Column {
                     OutlinedTextField(
@@ -220,84 +177,35 @@ fun GroupListScreen(
                         onValueChange = { creatorName = it },
                         label = { Text("Your Name") }
                     )
-
-                    Spacer(Modifier.height(12.dp))
-                    Text("Group Members", style = MaterialTheme.typography.titleMedium)
-
-                    members.forEachIndexed { index, member ->
-                        Row(Modifier.fillMaxWidth()) {
-                            OutlinedTextField(
-                                value = member.userName,
-                                onValueChange = { newName ->
-                                    members = members.toMutableList().apply {
-                                        this[index] = member.copy(userName = newName)
-                                    }
-                                },
-                                label = { Text("Member ${index + 1}") },
-                                modifier = Modifier.weight(1f)
-                            )
-                            IconButton(onClick = {
-                                members = members.toMutableList().apply { removeAt(index) }
-                            }) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.baseline_delete_24),
-                                    contentDescription = "Remove"
-                                )
-                            }
-                        }
-                        Spacer(Modifier.height(4.dp))
-                    }
-
-                    Spacer(Modifier.height(8.dp))
-                    Button(onClick = {
-                        members = members + GroupMemberEntity(
-                            id = UUID.randomUUID().toString(),
-                            groupId = selectedGroupId ?: "temp",
-                            userId = UUID.randomUUID().toString(),
-                            userName = "",
-                            joinedAt = System.currentTimeMillis()
-                        )
-                    }) {
-                        Text("➕ Add Member")
-                    }
                 }
             },
             confirmButton = {
-                TextButton(onClick = {
-                    if (newGroupName.isNotBlank() && creatorName.isNotBlank()) {
-                        scope.launch {
-                            if (selectedGroupId == null) {
+                TextButton(
+                    onClick = {
+                        if (newGroupName.isNotBlank() && creatorName.isNotBlank()) {
+                            scope.launch {
                                 viewModel.createGroup(
                                     newGroupName,
                                     newGroupDescription,
                                     userId,
                                     creatorName
                                 )
-                                // members added after creation
-                                // (optional: auto insert)
-                            } else {
-                                viewModel.updateGroupWithMembers(
-                                    selectedGroupId!!,
-                                    newGroupName,
-                                    newGroupDescription,
-                                    creatorName,
-                                    members
-                                )
+                                // reset AFTER insertion
+                                newGroupName = ""
+                                newGroupDescription = ""
+                                creatorName = ""
+                                showCreateDialog = false
                             }
-                            newGroupName = ""
-                            newGroupDescription = ""
-                            creatorName = ""
-                            members = emptyList()
-                            selectedGroupId = null
-                            showCreateDialog = false
                         }
                     }
-                }) {
-                    Text(if (selectedGroupId == null) "Create" else "Update")
+                ) {
+                    Text("Create")
                 }
             },
             dismissButton = {
-                TextButton(onClick = { showCreateDialog = false }) { Text("Cancel") }
+                TextButton(onClick = { showCreateDialog = false }) {
+                    Text("Cancel")
+                }
             }
         )
     }

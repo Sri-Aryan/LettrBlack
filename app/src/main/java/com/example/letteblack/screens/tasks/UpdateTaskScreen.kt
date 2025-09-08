@@ -8,7 +8,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -17,6 +20,7 @@ import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.letteblack.db.GroupMemberEntity
 import com.example.letteblack.db.TaskEntity
 import com.example.letteblack.viewmodel.TaskViewModel
 import java.text.SimpleDateFormat
@@ -25,6 +29,7 @@ import java.text.SimpleDateFormat
 @Composable
 fun UpdateTaskScreen(
     task: TaskEntity,
+    groupId: String,
     viewModel: TaskViewModel,
     onTaskUpdated: () -> Unit,
     onCancel: () -> Unit
@@ -33,6 +38,20 @@ fun UpdateTaskScreen(
     var description by remember(task.taskId) { mutableStateOf(task.description) }
     var assigneeId by remember(task.taskId) { mutableStateOf(task.assigneeId) }
     var points by remember(task.taskId) { mutableStateOf(task.pointsRewarded.toString()) }
+
+    // Members dropdown
+    var expanded by remember { mutableStateOf(false) }
+    val members by viewModel.members(groupId).collectAsState(initial = emptyList())
+    var selectedMember by remember(task.taskId) {
+        mutableStateOf<GroupMemberEntity?>(null)
+    }
+
+    // Initialize selected member from task.assigneeId
+    LaunchedEffect(members, task.assigneeId) {
+        if (selectedMember == null) {
+            selectedMember = members.find { it.userId == task.assigneeId }
+        }
+    }
 
     // Date picker
     var showDatePicker by remember { mutableStateOf(false) }
@@ -61,12 +80,35 @@ fun UpdateTaskScreen(
             minLines = 3
         )
 
-        OutlinedTextField(
-            value = assigneeId,
-            onValueChange = { assigneeId = it },
-            label = { Text("Assignee Id") },
-            modifier = Modifier.fillMaxWidth()
-        )
+        ExposedDropdownMenuBox(
+            expanded = expanded,
+            onExpandedChange = { expanded = !expanded }
+        ) {
+            OutlinedTextField(
+                value = selectedMember?.userName ?: "",
+                onValueChange = {},
+                readOnly = true,
+                label = { Text("Assigned To") },
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
+                modifier = Modifier
+                    .menuAnchor()
+                    .fillMaxWidth()
+            )
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                members.forEach { member ->
+                    DropdownMenuItem(
+                        text = { Text(member.userName) },
+                        onClick = {
+                            selectedMember = member
+                            expanded = false
+                        }
+                    )
+                }
+            }
+        }
 
         OutlinedTextField(
             value = points,
@@ -90,7 +132,8 @@ fun UpdateTaskScreen(
                         title = title,
                         description = description,
                         dueDate = dueDateMillis,
-                        pointsRewarded = points.toIntOrNull() ?: 0
+                        pointsRewarded = points.toIntOrNull() ?: 0,
+                        assigneeId = selectedMember!!.userId
                     )
                     onTaskUpdated()
                 },

@@ -24,12 +24,14 @@ fun TasksSection(
     onTaskClick: (String) -> Unit   // pass clicked taskId
 ) {
     val tasks by viewModel.observeTasks(groupId).collectAsState(emptyList())
+    val members by viewModel.members(groupId).collectAsState(emptyList())
 
     if (tasks.isEmpty()) {
         Text("No tasks yet.")
     } else {
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             tasks.forEach { task ->
+                val assigneeName = members.find { it.userId == task.assigneeId }?.userName ?: "Unknown"
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -44,7 +46,7 @@ fun TasksSection(
                             maxLines = 2
                         )
                         Text(
-                            "Assigned to ${task.assigneeId} • Status: ${task.status}",
+                            "Assigned to $assigneeName • Status: ${task.status}",
                             style = MaterialTheme.typography.labelSmall
                         )
                     }

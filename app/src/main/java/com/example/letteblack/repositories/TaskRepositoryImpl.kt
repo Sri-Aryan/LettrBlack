@@ -70,10 +70,11 @@ class TaskRepositoryImpl(
         title: String,
         description: String,
         dueDate: Long?,
-        pointsRewarded: Int
+        pointsRewarded: Int,
+        assigneeId: String
     ) {
         val now = System.currentTimeMillis()
-        dao.updateTask(taskId, title, description, dueDate, pointsRewarded, now)
+        dao.updateTask(taskId, title, description, dueDate, pointsRewarded,assigneeId, now)
 
         collection.document(taskId).update(
             mapOf(

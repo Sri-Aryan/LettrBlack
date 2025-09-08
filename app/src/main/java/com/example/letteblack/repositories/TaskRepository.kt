@@ -23,7 +23,8 @@ interface TaskRepository {
         title: String,
         description: String,
         dueDate: Long?,
-        pointsRewarded: Int
+        pointsRewarded: Int,
+        assigneeId: String
     )
 
     suspend fun deleteTask(taskId: String)
