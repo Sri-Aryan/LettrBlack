@@ -13,6 +13,7 @@ import com.example.letteblack.screens.ProfileScreen
 import com.example.letteblack.screens.SettingsScreen
 import com.example.letteblack.screens.SignUpScreen
 import com.example.letteblack.screens.SplashScreen
+import com.example.letteblack.screens.settings.AccountScreen
 
 @Composable
 fun Navigation(modifier: Modifier = Modifier){
@@ -41,6 +42,14 @@ fun Navigation(modifier: Modifier = Modifier){
         composable("settings") {
             val authViewModel: AuthViewModel = viewModel()
             SettingsScreen(navController,authViewModel)
+        }
+
+        composable(Routes.Account.toString()) {
+            AccountScreen(
+                navController = navController,
+                onDeleteAccount = { /* hook into authViewModel.deleteUser() */ },
+                onChangeAvatar = { /* open avatar picker */ }
+            )
         }
     }
 }

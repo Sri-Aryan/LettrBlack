@@ -8,5 +8,7 @@ sealed class Routes(route: String){
 
     object Profile : Routes("profile")
 
+    object Account : Routes("account")
+
     object Settings : Routes("settings")
 }

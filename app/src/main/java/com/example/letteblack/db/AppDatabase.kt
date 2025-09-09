@@ -4,7 +4,7 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 
 
-@Database(entities = [GroupMemberEntity::class, NoteEntity::class, GroupEntity::class, TaskEntity::class], version = 1, exportSchema = false)
+@Database(entities = [GroupMemberEntity::class, NoteEntity::class, GroupEntity::class, TaskEntity::class], version = 2, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun groupMemberDao(): GroupMemberDao
     abstract fun noteDao(): NoteDao
