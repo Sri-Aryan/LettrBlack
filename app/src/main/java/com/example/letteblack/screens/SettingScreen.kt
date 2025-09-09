@@ -17,6 +17,7 @@ import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PrivacyTip
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -95,6 +96,15 @@ fun SettingsScreen(navController: NavHostController) {
             }
 
             Spacer(modifier = Modifier.weight(1f))
+
+            Button(
+                onClick = { navController.navigate("leaderboard") }, // navigate to leaderboard
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp)
+            ) {
+                Text("Leaderboard")
+            }
 
             // Logout button
             Button(

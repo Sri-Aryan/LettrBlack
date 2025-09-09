@@ -41,4 +41,7 @@ interface TaskDao {
 
     @Query("DELETE FROM tasks WHERE groupId = :groupId")
     suspend fun deleteByGroupId(groupId: String)
+
+    @Query("SELECT * FROM tasks WHERE taskId = :taskId LIMIT 1")
+    suspend fun getTaskByIdOnce(taskId: String): TaskEntity?
 }

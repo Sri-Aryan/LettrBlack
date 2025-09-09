@@ -17,11 +17,12 @@ class TaskViewModel @Inject constructor(
     private val memberRepo: GroupMemberRepository
 ) : ViewModel() {
 
+    // --- Tasks ---
     fun observeTasks(groupId: String): Flow<List<TaskEntity>> =
         repo.observeTasks(groupId)
 
-    fun members(groupId: String): Flow<List<GroupMemberEntity>> =
-        memberRepo.observeMembers(groupId)
+    fun getTaskById(taskId: String): Flow<TaskEntity?> =
+        repo.getTaskById(taskId)
 
     fun assignTask(
         groupId: String,
@@ -34,12 +35,6 @@ class TaskViewModel @Inject constructor(
     ) {
         viewModelScope.launch {
             repo.assignTask(groupId, assignerId, assigneeId, title, description, pointsRewarded, dueDate)
-        }
-    }
-
-    fun updateStatus(taskId: String, status: String) {
-        viewModelScope.launch {
-            repo.updateStatus(taskId, status)
         }
     }
 
@@ -62,7 +57,30 @@ class TaskViewModel @Inject constructor(
         }
     }
 
-    fun getTaskById(taskId: String): Flow<TaskEntity?> {
-        return repo.getTaskById(taskId)
+    /**
+     * Update task status.
+     * If marking complete, automatically adds points to the assignee.
+     */
+    fun updateStatus(taskId: String, newStatus: String) {
+        viewModelScope.launch {
+            val task = repo.getTaskByIdOnce(taskId)
+            if (task != null) {
+                repo.updateStatus(taskId, newStatus)
+                // Award points automatically if task completed
+                if (newStatus == "complete") {
+                    memberRepo.addPointsToMember(task.assigneeId, task.pointsRewarded)
+                }
+            }
+        }
     }
+
+    // --- Members ---
+    fun members(groupId: String): Flow<List<GroupMemberEntity>> =
+        memberRepo.observeMembers(groupId)
+
+    fun getMemberById(memberId: String): Flow<GroupMemberEntity?> =
+        memberRepo.getMemberById(memberId)
+
+    fun observeLeaderboard(groupId: String): Flow<List<GroupMemberEntity>> =
+        memberRepo.observeMembersByPoints(groupId) // sorted by points descending
 }

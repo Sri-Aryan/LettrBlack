@@ -96,4 +96,8 @@ class TaskRepositoryImpl(
         return dao.getTaskById(taskId)
     }
 
+    override suspend fun getTaskByIdOnce(taskId: String): TaskEntity? {
+        return dao.getTaskByIdOnce(taskId)
+    }
+
 }

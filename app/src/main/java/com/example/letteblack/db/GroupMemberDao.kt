@@ -8,11 +8,21 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface GroupMemberDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(member: GroupMemberEntity)
 
     @Query("SELECT * FROM group_members WHERE groupId = :groupId")
     fun observeMembers(groupId: String): Flow<List<GroupMemberEntity>>
+
+    @Query("SELECT * FROM group_members WHERE groupId = :groupId ORDER BY points DESC")
+    fun observeMembersSortedByPoints(groupId: String): Flow<List<GroupMemberEntity>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(member: GroupMemberEntity)
+
+    @Query("UPDATE group_members SET points = points + :points WHERE id = :memberId")
+    suspend fun addPoints(memberId: String, points: Int)
+
+    @Query("SELECT * FROM group_members WHERE id = :memberId LIMIT 1")
+    fun getMemberByIdFlow(memberId: String): Flow<GroupMemberEntity?>
 
     @Query("DELETE FROM group_members WHERE groupId = :groupId")
     suspend fun deleteByGroupId(groupId: String)
