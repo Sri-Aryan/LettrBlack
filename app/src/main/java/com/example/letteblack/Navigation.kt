@@ -17,7 +17,7 @@ import com.example.letteblack.screens.SplashScreen
 @Composable
 fun Navigation(modifier: Modifier = Modifier){
     val navController = rememberNavController()
-    NavHost(navController, Routes.Splash.toString()) {
+    NavHost(navController, Routes.Splash.toString(),modifier = modifier) {
         composable(Routes.Splash.toString()) {
             SplashScreen(modifier,navController)
         }

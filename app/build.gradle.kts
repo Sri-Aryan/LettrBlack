@@ -68,8 +68,8 @@ dependencies {
     // --- Room ---
     implementation("androidx.room:room-runtime:2.7.2")
     implementation("androidx.room:room-ktx:2.7.2")
-    implementation(libs.transportation.consumer)
-    implementation(libs.androidx.work.runtime.ktx)
+    //implementation(libs.transportation.consumer)
+    //implementation(libs.androidx.work.runtime.ktx)
     kapt("androidx.room:room-compiler:2.7.2")
 
     // --- Hilt ---
@@ -99,5 +99,11 @@ dependencies {
     implementation("androidx.compose.material:material-icons-extended")
     implementation("androidx.compose.material3:material3")
     implementation("me.saket.swipe:swipe:1.1.1")
+
+    // WorkManager
+    implementation("androidx.work:work-runtime-ktx:2.9.1")
+
+    // Notifications (part of core-ktx + support libs; you'll use NotificationCompat)
+    implementation("androidx.core:core-ktx:1.13.1")
 
 }
