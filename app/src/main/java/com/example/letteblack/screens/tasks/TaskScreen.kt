@@ -16,6 +16,9 @@ fun TaskDetailScreen(
     onEdit: (TaskEntity) -> Unit,
     onDeleted: () -> Unit
 ) {
+    val members by viewModel.members(task.groupId).collectAsState(initial = emptyList())
+    val assigneeName = members.find { it.userId == task.assigneeId }?.userName ?: "Unknown"
+
     var showDeleteDialog by remember { mutableStateOf(false) }
 
     Column(
@@ -34,7 +37,7 @@ fun TaskDetailScreen(
         }
 
         Text(task.title, style = MaterialTheme.typography.titleLarge)
-        Text("Assigned to ${task.assigneeId} • Status: ${task.status}")
+        Text("Assigned to $assigneeName • Status: ${task.status}")
         Text("Reward: ${task.pointsRewarded} points")
 
         task.dueDate?.let { Text("Due: ${Date(it)}") }

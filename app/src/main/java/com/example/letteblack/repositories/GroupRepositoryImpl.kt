@@ -97,10 +97,7 @@ class GroupRepositoryImpl(
     }
 
     override suspend fun getMembers(groupId: String): List<GroupMemberEntity> {
-        return groupMemberDao.observeMembers(groupId) // Flow
-            .let { flow ->
-                flow.first() // collect once
-            }
+        return groupMemberDao.observeMembers(groupId).first()
     }
 
     override suspend fun updateMembers(groupId: String, members: List<GroupMemberEntity>) {

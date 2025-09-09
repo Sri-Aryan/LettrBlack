@@ -18,6 +18,9 @@ import androidx.compose.material.icons.filled.Help
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
+
+import androidx.compose.material.icons.filled.PrivacyTip
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.material3.Button
@@ -120,6 +123,17 @@ fun SettingsScreen(navController: NavHostController, authViewModel: AuthViewMode
 
             Spacer(modifier = Modifier.weight(1f))
 
+
+            Button(
+                onClick = { navController.navigate("leaderboard") }, // navigate to leaderboard
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp)
+            ) {
+                Text("Leaderboard")
+            }
+
+            // Logout button
             // Logout
             Button(
                 onClick = { authViewModel.signOut() },

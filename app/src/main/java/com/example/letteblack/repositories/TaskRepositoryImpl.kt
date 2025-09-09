@@ -70,10 +70,11 @@ class TaskRepositoryImpl(
         title: String,
         description: String,
         dueDate: Long?,
-        pointsRewarded: Int
+        pointsRewarded: Int,
+        assigneeId: String
     ) {
         val now = System.currentTimeMillis()
-        dao.updateTask(taskId, title, description, dueDate, pointsRewarded, now)
+        dao.updateTask(taskId, title, description, dueDate, pointsRewarded,assigneeId, now)
 
         collection.document(taskId).update(
             mapOf(
@@ -93,6 +94,10 @@ class TaskRepositoryImpl(
 
     override fun getTaskById(taskId: String): Flow<TaskEntity?> {
         return dao.getTaskById(taskId)
+    }
+
+    override suspend fun getTaskByIdOnce(taskId: String): TaskEntity? {
+        return dao.getTaskByIdOnce(taskId)
     }
 
 }

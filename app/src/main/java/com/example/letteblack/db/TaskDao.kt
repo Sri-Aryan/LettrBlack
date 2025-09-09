@@ -23,7 +23,7 @@ interface TaskDao {
     @Query("""
         UPDATE tasks 
         SET title = :title, description = :description, dueDate = :dueDate, 
-            pointsRewarded = :pointsRewarded, updatedAt = :updatedAt
+            pointsRewarded = :pointsRewarded, assigneeId = :assigneeId,updatedAt = :updatedAt
         WHERE taskId = :taskId
     """)
     suspend fun updateTask(
@@ -32,6 +32,7 @@ interface TaskDao {
         description: String,
         dueDate: Long?,
         pointsRewarded: Int,
+        assigneeId: String,
         updatedAt: Long
     )
 
@@ -40,4 +41,7 @@ interface TaskDao {
 
     @Query("DELETE FROM tasks WHERE groupId = :groupId")
     suspend fun deleteByGroupId(groupId: String)
+
+    @Query("SELECT * FROM tasks WHERE taskId = :taskId LIMIT 1")
+    suspend fun getTaskByIdOnce(taskId: String): TaskEntity?
 }
