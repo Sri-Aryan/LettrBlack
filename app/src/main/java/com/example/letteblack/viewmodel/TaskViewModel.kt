@@ -1,9 +1,12 @@
 package com.example.letteblack.viewmodel
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.letteblack.db.TaskEntity
 import com.example.letteblack.repositories.TaskRepository
+import com.example.letteblack.streak.StreakManager
+import com.example.letteblack.streak.StudyResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
@@ -14,6 +17,7 @@ class TaskViewModel @Inject constructor(
     private val repo: TaskRepository
 ) : ViewModel() {
 
+    // ================== Task Management ==================
     fun observeTasks(groupId: String): Flow<List<TaskEntity>> =
         repo.observeTasks(groupId)
 
@@ -57,5 +61,13 @@ class TaskViewModel @Inject constructor(
 
     fun getTaskById(taskId: String): Flow<TaskEntity?> {
         return repo.getTaskById(taskId)
+    }
+
+    // ================== Streak & Milestones ==================
+    fun logStudySession(context: Context, onResult: (StudyResult) -> Unit) {
+        viewModelScope.launch {
+            val result = StreakManager.recordStudySession(context)
+            onResult(result)
+        }
     }
 }

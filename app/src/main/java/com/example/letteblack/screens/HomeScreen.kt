@@ -1,50 +1,23 @@
 package com.example.letteblack.screens
 
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.scrollable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Groups3
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -57,41 +30,39 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.compose.ui.platform.LocalContext
 import com.example.letteblack.AuthViewModel
 import com.example.letteblack.R
 import com.example.letteblack.UserState
 import com.example.letteblack.Utils
-import com.example.letteblack.components.CategoryCardComponent
 import com.example.letteblack.components.CategoryComponent
 import com.example.letteblack.components.MockData
 import com.example.letteblack.data.Routes
 import com.example.letteblack.data.UserDetails
 import com.example.letteblack.screens.groups.GroupListScreen
 import com.example.letteblack.screens.groups.JoinGroupScreen
-import com.example.letteblack.screens.notes.AddNoteScreen
-import com.example.letteblack.screens.notes.NoteDetailScreen
-import com.example.letteblack.screens.notes.NotesSection
-import com.example.letteblack.screens.notes.UpdateNoteScreen
-import com.example.letteblack.screens.tasks.AddTaskScreen
-import com.example.letteblack.screens.tasks.TaskDetailScreen
-import com.example.letteblack.screens.tasks.UpdateTaskScreen
+import com.example.letteblack.screens.notes.*
+import com.example.letteblack.screens.tasks.*
 import com.example.letteblack.viewmodel.NotesViewModel
 import com.example.letteblack.viewmodel.TaskViewModel
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.example.letteblack.streak.StreakManager
+import kotlinx.coroutines.launch
 
+// ----------------- HOME SCREEN ----------------- //
 @Composable
-
-fun HomeScreen(navController: NavHostController, modifier: Modifier, authViewModel: AuthViewModel) {
+fun HomeScreen(navController: NavHostController, modifier: Modifier = Modifier, authViewModel: AuthViewModel) {
     LaunchedEffect(authViewModel.userState.value) {
         when (authViewModel.userState.value) {
-
             is UserState.Unauthenticated -> navController.navigate(Routes.Login.toString())
-            else -> null
+            else -> {}
         }
     }
 
-    var user: UserDetails by remember { mutableStateOf(UserDetails()) }
+    var user by remember { mutableStateOf(UserDetails()) }
+
+    // Load user details
     LaunchedEffect(Unit) {
         Utils.uid()?.let {
             Firebase.firestore.collection("users")
@@ -114,154 +85,127 @@ fun HomeScreen(navController: NavHostController, modifier: Modifier, authViewMod
             modifier = Modifier.padding(innerPadding)
         ) {
 
+            // ---------- HOME ---------- //
             composable("home") { HomeContent(user, authViewModel) }
+
+            // ---------- GROUPS ---------- //
             composable("courses") {
                 GroupListScreen(
-                    userId = user.uid, // pass logged-in userId
+                    userId = user.uid,
                     onGroupClick = { groupId ->
                         innerNavController.navigate("group/$groupId")
                     }
                 )
             }
-            // ---------- Group Main ----------
             composable("group/{groupId}") { backStackEntry ->
                 val groupId = backStackEntry.arguments?.getString("groupId") ?: ""
                 JoinGroupScreen(
                     groupId = groupId,
                     userId = user.uid,
                     navController = innerNavController,
-                    onAddNoteClick = { gId, uId ->
-                        innerNavController.navigate("group/$gId/addNote")
-                    },
-                    onAddTaskClick = { gId, uId ->
-                        innerNavController.navigate("group/$gId/addTask")
-                    }
+                    onAddNoteClick = { gId, _ -> innerNavController.navigate("group/$gId/addNote") },
+                    onAddTaskClick = { gId, _ -> innerNavController.navigate("group/$gId/addTask") }
                 )
             }
 
-            // ---------- Add Note ----------
+            // ---------- NOTES ---------- //
             composable("group/{groupId}/addNote") { backStackEntry ->
                 val groupId = backStackEntry.arguments?.getString("groupId") ?: ""
-                AddNoteScreen(
-                    groupId = groupId,
-                    userId = user.uid,
-                    onNoteSaved = {
-                        innerNavController.popBackStack()
-                    })
+                AddNoteScreen(groupId, user.uid) { innerNavController.popBackStack() }
             }
-
-            // ---------- Notes List ----------
             composable("group/{groupId}/notes") { backStackEntry ->
                 val groupId = backStackEntry.arguments?.getString("groupId")!!
                 val viewModel: NotesViewModel = hiltViewModel()
-
-                NotesSection(
-                    groupId = groupId,
-                    viewModel = viewModel,
-                    onNoteClick = { note ->
-                        navController.navigate("group/$groupId/noteDetail/${note.noteId}")
-                    }
-                )
+                NotesSection(groupId, viewModel) { note ->
+                    navController.navigate("group/$groupId/noteDetail/${note.noteId}")
+                }
             }
-
-            // ---------- Note Detail ----------
             composable("group/{groupId}/noteDetail/{noteId}") { backStackEntry ->
                 val groupId = backStackEntry.arguments?.getString("groupId")!!
                 val noteId = backStackEntry.arguments?.getString("noteId")!!
                 val viewModel: NotesViewModel = hiltViewModel()
-
                 val note by viewModel.getNoteById(noteId).collectAsState(initial = null)
-
                 note?.let {
-                    NoteDetailScreen(
-                        note = it,
-                        viewModel = viewModel,
-                        onEdit = { noteEntity ->
-                            innerNavController.navigate("group/$groupId/noteEdit/${noteEntity.noteId}")
-                        },
+                    NoteDetailScreen(it, viewModel,
+                        onEdit = { noteEntity -> innerNavController.navigate("group/$groupId/noteEdit/${noteEntity.noteId}") },
                         onDeleted = { innerNavController.popBackStack() }
                     )
                 }
             }
-
-            // ---------- Update Note ----------
             composable("group/{groupId}/noteEdit/{noteId}") { backStackEntry ->
                 val groupId = backStackEntry.arguments?.getString("groupId")!!
                 val noteId = backStackEntry.arguments?.getString("noteId")!!
                 val viewModel: NotesViewModel = hiltViewModel()
-
                 val note by viewModel.getNoteById(noteId).collectAsState(initial = null)
-
                 note?.let {
-                    UpdateNoteScreen(
-                        note = it,
-                        viewModel = viewModel,
-                        onNoteUpdated = { innerNavController.popBackStack() }
-                    )
+                    UpdateNoteScreen(it, viewModel) { innerNavController.popBackStack() }
                 }
             }
 
-
-            // ---------- Add Task ----------
+            // ---------- TASKS ---------- //
             composable("group/{groupId}/addTask") { backStackEntry ->
                 val groupId = backStackEntry.arguments?.getString("groupId") ?: ""
                 val taskViewModel: TaskViewModel = hiltViewModel()
-
                 AddTaskScreen(
                     groupId = groupId,
                     assignerId = user.uid,
                     assigneeId = "someUserId",
-                    viewModel = taskViewModel,
-                    onTaskSaved = { innerNavController.popBackStack() }
-                )
+                    viewModel = taskViewModel
+                ) { innerNavController.popBackStack() }
             }
-
-            // ---------- Task Detail ----------
             composable("group/{groupId}/taskDetail/{taskId}") { backStackEntry ->
                 val groupId = backStackEntry.arguments?.getString("groupId")!!
                 val taskId = backStackEntry.arguments?.getString("taskId")!!
                 val viewModel: TaskViewModel = hiltViewModel()
-
                 val task by viewModel.getTaskById(taskId).collectAsState(initial = null)
-
                 task?.let {
-                    TaskDetailScreen(
-                        task = it,
-                        viewModel = viewModel,
-                        onEdit = { taskEntity ->
-                            innerNavController.navigate("group/$groupId/taskEdit/${taskEntity.taskId}")
-                        },
+                    TaskDetailScreen(it, viewModel,
+                        onEdit = { taskEntity -> innerNavController.navigate("group/$groupId/taskEdit/${taskEntity.taskId}") },
                         onDeleted = { innerNavController.popBackStack() }
                     )
                 }
             }
-
             composable("group/{groupId}/taskEdit/{taskId}") { backStackEntry ->
                 val groupId = backStackEntry.arguments?.getString("groupId")!!
                 val taskId = backStackEntry.arguments?.getString("taskId")!!
                 val viewModel: TaskViewModel = hiltViewModel()
-
                 val task by viewModel.getTaskById(taskId).collectAsState(initial = null)
-
                 task?.let {
-                    UpdateTaskScreen(
-                        task = it,
-                        viewModel = viewModel,
+                    UpdateTaskScreen(it, viewModel,
                         onTaskUpdated = { innerNavController.popBackStack() },
                         onCancel = { innerNavController.popBackStack() }
                     )
                 }
             }
 
+            // ---------- OTHER ---------- //
             composable("puzzles") { CenterText("Puzzles") }
             composable("you") { ProfileScreen(navController) }
         }
     }
 }
 
+// ----------------- HOME CONTENT ----------------- //
 @Composable
 fun HomeContent(user: UserDetails, authViewModel: AuthViewModel) {
-    val categoryList=remember { MockData.mockCategories() }
+    val categoryList = remember { MockData.mockCategories() }
+
+    // Context for SharedPreferences
+    val context = LocalContext.current
+
+    // Streak state
+    var streak by remember { mutableStateOf(0) }
+    var showMilestone by remember { mutableStateOf(false) }
+
+    // Load streak on first render
+    LaunchedEffect(Unit) {
+        val result = StreakManager.recordStudySession(context)
+        streak = result.streak
+        if (result.streakMilestone) {
+            showMilestone = true
+        }
+    }
+
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -272,9 +216,7 @@ fun HomeContent(user: UserDetails, authViewModel: AuthViewModel) {
         // ---------- HEADER ---------- //
         item {
             Row(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(top = 10.dp),
+                Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -299,6 +241,16 @@ fun HomeContent(user: UserDetails, authViewModel: AuthViewModel) {
             )
         }
 
+        // ---------- DAILY STREAK BANNER ---------- //
+        item { StreakBanner(streak) }
+
+        // ---------- MILESTONE POPUP ---------- //
+        if (showMilestone) {
+            item {
+                MilestoneCard(streak) { showMilestone = false }
+            }
+        }
+
         // ---------- CATEGORIES ---------- //
         items(categoryList) { category ->
             CategoryComponent(categoryModel = category)
@@ -306,30 +258,44 @@ fun HomeContent(user: UserDetails, authViewModel: AuthViewModel) {
     }
 }
 
+// ----------------- STREAK BANNER ----------------- //
 @Composable
-fun AnimatedCard(title: String, containerColor: androidx.compose.ui.graphics.Color) {
-    var pressed by remember { mutableStateOf(false) }
-    val scale by animateFloatAsState(if (pressed) 1.05f else 1f, label = "")
-
+fun StreakBanner(streak: Int) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(120.dp)
-            .scale(scale)
-            .clickable { pressed = !pressed },
+            .height(80.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFFFE082)),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = containerColor),
-        elevation = CardDefaults.cardElevation(8.dp)
+        elevation = CardDefaults.cardElevation(4.dp)
     ) {
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier.fillMaxSize()
-        ) {
-            Text(title, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+        Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+            Text(
+                text = "🔥 $streak Day Streak",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFFD84315)
+            )
         }
     }
 }
 
+// ----------------- MILESTONE CARD ----------------- //
+@Composable
+fun MilestoneCard(streak: Int, onDismiss: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = { onDismiss() },
+        confirmButton = {
+            TextButton(onClick = { onDismiss() }) {
+                Text("Awesome!")
+            }
+        },
+        title = { Text("🎉 Milestone Reached!") },
+        text = { Text("Congratulations! You've hit a $streak-day streak!") }
+    )
+}
+
+// ----------------- BOTTOM NAV ----------------- //
 @Composable
 fun BottomNavigationBar(navController: NavHostController) {
     val items = listOf(

@@ -6,6 +6,8 @@ import androidx.core.app.NotificationCompat
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.example.letteblack.R
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 class ReminderWorker(
     private val ctx: Context,
@@ -13,17 +15,34 @@ class ReminderWorker(
 ) : Worker(ctx, params) {
 
     override fun doWork(): Result {
-        // Basic example: decide what to show
         val prefs = ctx.getSharedPreferences("lettr_prefs", Context.MODE_PRIVATE)
         val streak = prefs.getInt("streak", 0)
         val sessions = prefs.getInt("sessions", 0)
+        val lastDateStr = prefs.getString("lastDate", null)
 
-        // Simple logic (customize later)
+        val today = LocalDate.now()
+        val formatter = DateTimeFormatter.ISO_DATE
+        val lastDate = lastDateStr?.let { LocalDate.parse(it, formatter) }
+
+        var newStreak = streak
+
+        // Reset streak if no activity logged for today
+        if (lastDate == null || lastDate.isBefore(today)) {
+            if (lastDate == null || lastDate.isBefore(today.minusDays(1))) {
+                // Missed a day → reset
+                newStreak = 0
+                prefs.edit().putInt("streak", newStreak).apply()
+            }
+        }
+
+        // Decide notification
         val (title, message) = when {
-            streak > 0 && streak % 3 == 0 ->
-                "🔥 Streak Milestone!" to "You’re on a $streak-day streak. Keep it going!"
+            newStreak > 0 && newStreak in listOf(7, 30, 100) ->
+                "🔥 Streak Milestone!" to "You’re on a $newStreak-day streak. Keep it going!"
+
             sessions > 0 && sessions % 10 == 0 ->
                 "🌟 Milestone Reached!" to "You’ve completed $sessions sessions! Awesome work!"
+
             else ->
                 "📚 Study Reminder" to "Stay on track! Log today’s study to keep your streak."
         }
@@ -34,7 +53,7 @@ class ReminderWorker(
 
     private fun notify(title: String, message: String) {
         val notification = NotificationCompat.Builder(ctx, "lettrblack_channel")
-            .setSmallIcon(R.drawable.ic_notification) // ensure this exists (next step)
+            .setSmallIcon(R.drawable.ic_notification) // add this drawable in res/drawable
             .setContentTitle(title)
             .setContentText(message)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
