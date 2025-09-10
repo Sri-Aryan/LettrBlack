@@ -122,17 +122,6 @@ fun SettingsScreen(navController: NavHostController, authViewModel: AuthViewMode
 
             Spacer(modifier = Modifier.weight(1f))
 
-
-            Button(
-                onClick = { navController.navigate("leaderboard") }, // navigate to leaderboard
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp)
-            ) {
-                Text("Leaderboard")
-            }
-
-            // Logout button
             // Logout
             Button(
                 onClick = { authViewModel.signOut() },
