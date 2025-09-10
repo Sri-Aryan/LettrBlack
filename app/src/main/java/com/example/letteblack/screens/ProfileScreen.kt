@@ -20,7 +20,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -52,9 +51,7 @@ fun ProfileScreen(
     Scaffold(
         topBar = {
             Row(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
+                Modifier.fillMaxWidth().padding(16.dp),
                 horizontalArrangement = Arrangement.End
             ) {
                 IconButton(onClick = { navController.navigate("settings") }) {
@@ -97,10 +94,7 @@ fun ProfileScreen(
             Spacer(modifier = Modifier.height(8.dp))
             LinearProgressIndicator(
                 progress = xpProgress,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(10.dp)
-                    .clip(CircleShape),
+                modifier = Modifier.fillMaxWidth().height(10.dp).clip(CircleShape),
                 color = MaterialTheme.colorScheme.primary,
                 trackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
             )
@@ -113,22 +107,9 @@ fun ProfileScreen(
             Text("Achievements", fontWeight = FontWeight.Medium, fontSize = 16.sp)
             Spacer(modifier = Modifier.height(5.dp))
 
-            Button(
-                onClick = { navController.navigate("leaderboard") }, // navigate to leaderboard
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp)
-            ) {
-                Text("Leaderboard")
-            }
-            
-            Spacer(modifier = Modifier.height(16.dp))
-
             Column(
                 verticalArrangement = Arrangement.SpaceEvenly,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(0.dp),
+                modifier = Modifier.fillMaxWidth().padding(0.dp),
             ) {
                 BadgeSection()
             }
@@ -152,9 +133,7 @@ fun BadgeCard(emoji: String, label: String) {
         shape = RoundedCornerShape(12.dp)
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(8.dp),
+            modifier = Modifier.fillMaxSize().padding(8.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally
         ) {

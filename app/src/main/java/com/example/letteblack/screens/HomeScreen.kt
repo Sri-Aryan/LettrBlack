@@ -248,10 +248,6 @@ fun HomeScreen(navController: NavHostController, modifier: Modifier, authViewMod
                 }
             }
 
-            composable("leaderboard") {
-                LeaderboardScreen(groupId = "your_group_id_here")
-            }
-
             composable("puzzles") { CenterText("Puzzles") }
             composable("you") { ProfileScreen(navController) }
         }
