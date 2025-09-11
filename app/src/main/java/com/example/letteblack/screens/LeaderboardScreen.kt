@@ -13,10 +13,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LeaderboardScreen(
-    groupId: String,
+    userId: String,
     viewModel: TaskViewModel = hiltViewModel()
 ) {
-    val members by viewModel.observeLeaderboard(groupId).collectAsState(initial = emptyList())
+    val members by viewModel.observeLeaderboard(userId).collectAsState(initial = emptyList())
 
     Scaffold(
         topBar = {

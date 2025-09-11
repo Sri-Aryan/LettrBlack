@@ -1,5 +1,6 @@
 package com.example.letteblack.screens
 
+import androidx.compose.material.icons.filled.Groups3
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -18,9 +19,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Build
-import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -55,7 +56,6 @@ import androidx.navigation.compose.rememberNavController
 import com.example.letteblack.AuthViewModel
 import com.example.letteblack.R
 import com.example.letteblack.UserState
-import com.example.letteblack.Utils
 import com.example.letteblack.components.CategoryComponent
 import com.example.letteblack.components.MockData
 import com.example.letteblack.data.Routes
@@ -71,31 +71,23 @@ import com.example.letteblack.screens.tasks.TaskDetailScreen
 import com.example.letteblack.screens.tasks.UpdateTaskScreen
 import com.example.letteblack.viewmodel.NotesViewModel
 import com.example.letteblack.viewmodel.TaskViewModel
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
 
 @Composable
-
-fun HomeScreen(navController: NavHostController, modifier: Modifier, authViewModel: AuthViewModel) {
+fun HomeScreen(
+    navController: NavHostController,
+    modifier: Modifier = Modifier,
+    authViewModel: AuthViewModel
+) {
+    // Redirect to login if unauthenticated
     LaunchedEffect(authViewModel.userState.value) {
         when (authViewModel.userState.value) {
-
             is UserState.Unauthenticated -> navController.navigate(Routes.Login.toString())
-            else -> null
+            else -> Unit
         }
     }
 
-    var user: UserDetails by remember { mutableStateOf(UserDetails()) }
-    LaunchedEffect(Unit) {
-        Utils.uid()?.let {
-            Firebase.firestore.collection("users")
-                .document(it).get().addOnCompleteListener { listener ->
-                    if (listener.isSuccessful) {
-                        user = listener.result.toObject(UserDetails()::class.java) as UserDetails
-                    }
-                }
-        }
-    }
+    // Observe user from Room
+    val userInfo by authViewModel.userRepository.observeUser().collectAsState(initial = null)
 
     val innerNavController = rememberNavController()
 
@@ -107,41 +99,54 @@ fun HomeScreen(navController: NavHostController, modifier: Modifier, authViewMod
             startDestination = "home",
             modifier = Modifier.padding(innerPadding)
         ) {
-
-            composable("home") { HomeContent(user, authViewModel) }
-            composable("courses") {
-                GroupListScreen(
-                    userId = user.uid, // pass logged-in userId
-                    onGroupClick = { groupId ->
-                        innerNavController.navigate("group/$groupId")
-                    }
-                )
+            composable("home") {
+                userInfo?.let { user ->
+                    HomeContent(
+                        user = UserDetails(user.uid, user.name, user.email),
+                        authViewModel = authViewModel
+                    )
+                } ?: CenterText("Loading user...")
             }
+
+            composable("courses") {
+                userInfo?.let { user ->
+                    GroupListScreen(
+                        userId = user.uid,
+                        onGroupClick = { groupId ->
+                            innerNavController.navigate("group/$groupId")
+                        }
+                    )
+                }
+            }
+
             // ---------- Group Main ----------
             composable("group/{groupId}") { backStackEntry ->
                 val groupId = backStackEntry.arguments?.getString("groupId") ?: ""
-                JoinGroupScreen(
-                    groupId = groupId,
-                    userId = user.uid,
-                    navController = innerNavController,
-                    onAddNoteClick = { gId, uId ->
-                        innerNavController.navigate("group/$gId/addNote")
-                    },
-                    onAddTaskClick = { gId, uId ->
-                        innerNavController.navigate("group/$gId/addTask")
-                    }
-                )
+                userInfo?.let { user ->
+                    JoinGroupScreen(
+                        groupId = groupId,
+                        userId = user.uid,
+                        navController = innerNavController,
+                        onAddNoteClick = { gId, _ ->
+                            innerNavController.navigate("group/$gId/addNote")
+                        },
+                        onAddTaskClick = { gId, _ ->
+                            innerNavController.navigate("group/$gId/addTask")
+                        }
+                    )
+                }
             }
 
             // ---------- Add Note ----------
             composable("group/{groupId}/addNote") { backStackEntry ->
                 val groupId = backStackEntry.arguments?.getString("groupId") ?: ""
-                AddNoteScreen(
-                    groupId = groupId,
-                    userId = user.uid,
-                    onNoteSaved = {
-                        innerNavController.popBackStack()
-                    })
+                userInfo?.let { user ->
+                    AddNoteScreen(
+                        groupId = groupId,
+                        userId = user.uid,
+                        onNoteSaved = { innerNavController.popBackStack() }
+                    )
+                }
             }
 
             // ---------- Notes List ----------
@@ -165,7 +170,6 @@ fun HomeScreen(navController: NavHostController, modifier: Modifier, authViewMod
                 val viewModel: NotesViewModel = hiltViewModel()
 
                 val note by viewModel.getNoteById(noteId).collectAsState(initial = null)
-
                 note?.let {
                     NoteDetailScreen(
                         note = it,
@@ -185,7 +189,6 @@ fun HomeScreen(navController: NavHostController, modifier: Modifier, authViewMod
                 val viewModel: NotesViewModel = hiltViewModel()
 
                 val note by viewModel.getNoteById(noteId).collectAsState(initial = null)
-
                 note?.let {
                     UpdateNoteScreen(
                         note = it,
@@ -195,19 +198,19 @@ fun HomeScreen(navController: NavHostController, modifier: Modifier, authViewMod
                 }
             }
 
-
             // ---------- Add Task ----------
             composable("group/{groupId}/addTask") { backStackEntry ->
                 val groupId = backStackEntry.arguments?.getString("groupId") ?: ""
                 val taskViewModel: TaskViewModel = hiltViewModel()
-
-                AddTaskScreen(
-                    groupId = groupId,
-                    assignerId = user.uid,
-                    assigneeId = "someUserId",
-                    viewModel = taskViewModel,
-                    onTaskSaved = { innerNavController.popBackStack() }
-                )
+                userInfo?.let { user ->
+                    AddTaskScreen(
+                        groupId = groupId,
+                        assignerId = user.uid,
+                        assigneeId = "someUserId",
+                        viewModel = taskViewModel,
+                        onTaskSaved = { innerNavController.popBackStack() }
+                    )
+                }
             }
 
             // ---------- Task Detail ----------
@@ -217,7 +220,6 @@ fun HomeScreen(navController: NavHostController, modifier: Modifier, authViewMod
                 val viewModel: TaskViewModel = hiltViewModel()
 
                 val task by viewModel.getTaskById(taskId).collectAsState(initial = null)
-
                 task?.let {
                     TaskDetailScreen(
                         task = it,
@@ -236,7 +238,6 @@ fun HomeScreen(navController: NavHostController, modifier: Modifier, authViewMod
                 val viewModel: TaskViewModel = hiltViewModel()
 
                 val task by viewModel.getTaskById(taskId).collectAsState(initial = null)
-
                 task?.let {
                     UpdateTaskScreen(
                         task = it,
@@ -248,6 +249,13 @@ fun HomeScreen(navController: NavHostController, modifier: Modifier, authViewMod
                 }
             }
 
+            // ---------- Leaderboard ----------
+            composable("leaderboard") {
+                userInfo?.let { user ->
+                    LeaderboardScreen(userId = user.uid)
+                } ?: CenterText("Loading user...")
+            }
+
             composable("puzzles") { CenterText("Puzzles") }
             composable("you") { ProfileScreen(navController) }
         }
@@ -256,7 +264,7 @@ fun HomeScreen(navController: NavHostController, modifier: Modifier, authViewMod
 
 @Composable
 fun HomeContent(user: UserDetails, authViewModel: AuthViewModel) {
-    val categoryList=remember { MockData.mockCategories() }
+    val categoryList = remember { MockData.mockCategories() }
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -329,7 +337,10 @@ fun AnimatedCard(title: String, containerColor: androidx.compose.ui.graphics.Col
 fun BottomNavigationBar(navController: NavHostController) {
     val items = listOf(
         BottomNavItem("Home", "home", Icons.Default.Home),
-        BottomNavItem("Groups", "courses", Icons.Default.Groups),
+        BottomNavItem(
+            "Groups", "courses",
+            Icons.Default.Groups3
+        ),
         BottomNavItem("Puzzles", "puzzles", Icons.Default.Build),
         BottomNavItem("You", "you", Icons.Default.Person)
     )

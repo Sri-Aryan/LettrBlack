@@ -1,4 +1,4 @@
-package com.example.letteblack.Worker
+package com.example.letteblack.worker
 
 import android.content.Context
 import androidx.work.Worker
