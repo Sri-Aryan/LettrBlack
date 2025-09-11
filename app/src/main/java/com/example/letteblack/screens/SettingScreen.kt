@@ -18,7 +18,6 @@ import androidx.compose.material.icons.filled.Help
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
-
 import androidx.compose.material.icons.filled.PrivacyTip
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Star
@@ -117,8 +116,14 @@ fun SettingsScreen(navController: NavHostController, authViewModel: AuthViewMode
 
             // Help & Report
             SettingsSection("Support") {
-                SettingsItem(Icons.Default.Help, "Help", "Get app guidance")
-                SettingsItem(Icons.Default.BugReport, "Report", "Report a problem")
+                SettingsItem(
+                    Icons.Default.Help,
+                    "Help",
+                    "Get app guidance")
+                SettingsItem(
+                    Icons.Default.BugReport,
+                    "Report",
+                    "Report a problem")
             }
 
             Spacer(modifier = Modifier.weight(1f))
