@@ -1,5 +1,6 @@
 package com.example.letteblack.screens
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -18,8 +19,6 @@ import androidx.compose.material.icons.filled.Help
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.PrivacyTip
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.material3.Button
@@ -85,7 +84,8 @@ fun SettingsScreen(navController: NavHostController, authViewModel: AuthViewMode
         ) {
             // Account Section
             SettingsSection("Account") {
-                SettingsItem(Icons.Default.Person, "Profile", "Manage your account")
+                SettingsItem(Icons.Default.Person, "Profile", "Manage your account",
+                onClick = {navController.navigate(Routes.Account.toString())})
                 SettingsItem(Icons.Default.Lock, "Privacy", "Control your privacy")
             }
 
@@ -176,11 +176,13 @@ fun SettingsSection(title: String, content: @Composable ColumnScope.() -> Unit) 
 fun SettingsItem(
     icon: androidx.compose.ui.graphics.vector.ImageVector,
     title: String,
-    description: String
+    description: String,
+    onClick: () -> Unit = {}
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .clickable{onClick()}
             .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
