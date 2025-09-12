@@ -84,7 +84,7 @@ class OnBoardingViewModel : ViewModel() {
             R.raw.goal,
             motiveText = "How and when do you want to learn?",
             color = Amber,
-            R.raw.subject
+            R.raw.time
         )
     )
 
