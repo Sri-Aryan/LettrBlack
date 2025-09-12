@@ -34,10 +34,10 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.letteblack.AuthViewModel
 import com.example.letteblack.R
 import com.example.letteblack.UserState
 import com.example.letteblack.Utils
-import com.example.letteblack.AuthViewModel
 import com.example.letteblack.data.Routes
 
 @Composable
@@ -48,8 +48,6 @@ fun LoginScreen(navController: NavHostController, modifier: Modifier, authViewMo
         when(authViewModel.userState.value){
             is UserState.Authenticated -> navController.navigate(Routes.Home.toString())
             is UserState.Error -> Utils.showToast(context,authViewModel.userState.value.toString())
-
-
             else -> null
         }
     }
@@ -125,7 +123,7 @@ fun LoginScreen(navController: NavHostController, modifier: Modifier, authViewMo
         }
 
         TextButton(
-            onClick = { navController.navigate(Routes.Home.toString()) },
+            onClick = { navController.navigate(Routes.OnBoarding.toString()) },
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .padding(16.dp)

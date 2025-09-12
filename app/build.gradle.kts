@@ -86,6 +86,8 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore-ktx")
     implementation("com.google.firebase:firebase-analytics-ktx")
 
+    // --- Lottie ---
+    implementation("com.airbnb.android:lottie-compose:6.0.0")
     // --- Testing ---
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

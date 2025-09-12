@@ -13,25 +13,31 @@ import com.example.letteblack.screens.ProfileScreen
 import com.example.letteblack.screens.SettingsScreen
 import com.example.letteblack.screens.SignUpScreen
 import com.example.letteblack.screens.SplashScreen
+import com.example.letteblack.screens.onboarding.OnBoardingViewModel
+import com.example.letteblack.screens.onboarding.OnboardingScreen
 
 @Composable
-fun Navigation(modifier: Modifier = Modifier){
+fun Navigation(modifier: Modifier = Modifier) {
     val navController = rememberNavController()
     NavHost(navController, Routes.Splash.toString()) {
         composable(Routes.Splash.toString()) {
-            SplashScreen(modifier,navController)
+            SplashScreen(modifier, navController)
         }
         composable(Routes.Login.toString()) {
             val authViewModel: AuthViewModel = viewModel()
-            LoginScreen(navController,modifier,authViewModel)
+            LoginScreen(navController, modifier, authViewModel)
         }
         composable(Routes.SignUp.toString()) {
             val authViewModel: AuthViewModel = viewModel()
-            SignUpScreen(navController,modifier,authViewModel)
+            SignUpScreen(navController, modifier, authViewModel)
+        }
+        composable(Routes.OnBoarding.toString()) {
+            val viewModel: OnBoardingViewModel = viewModel()
+            OnboardingScreen(navController,viewModel)
         }
         composable(Routes.Home.toString()) {
             val authViewModel: AuthViewModel = viewModel()
-            HomeScreen(navController,modifier,authViewModel)
+            HomeScreen(navController, modifier, authViewModel)
         }
         composable(Routes.Profile.toString()) {
             ProfileScreen(navController)
@@ -40,7 +46,7 @@ fun Navigation(modifier: Modifier = Modifier){
         // Settings route using Routes object
         composable("settings") {
             val authViewModel: AuthViewModel = viewModel()
-            SettingsScreen(navController,authViewModel)
+            SettingsScreen(navController, authViewModel)
         }
     }
 }

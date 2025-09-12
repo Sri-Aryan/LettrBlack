@@ -9,4 +9,6 @@ sealed class Routes(route: String){
     object Profile : Routes("profile")
 // Lets get started
     object Settings : Routes("settings")
+
+    object OnBoarding: Routes("onboarding")
 }
