@@ -1,5 +1,6 @@
 package com.example.letteblack.screens
 
+import android.net.Uri
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -55,6 +56,9 @@ import androidx.navigation.compose.rememberNavController
 import com.example.letteblack.AuthViewModel
 import com.example.letteblack.R
 import com.example.letteblack.UserState
+
+import com.example.letteblack.Utils
+import com.example.letteblack.components.category.CategoryComponent
 import com.example.letteblack.components.CategoryComponent
 import com.example.letteblack.components.MockData
 import com.example.letteblack.data.Routes
@@ -68,6 +72,7 @@ import com.example.letteblack.screens.notes.UpdateNoteScreen
 import com.example.letteblack.screens.tasks.AddTaskScreen
 import com.example.letteblack.screens.tasks.TaskDetailScreen
 import com.example.letteblack.screens.tasks.UpdateTaskScreen
+import com.example.letteblack.util.MockData
 import com.example.letteblack.viewmodel.NotesViewModel
 import com.example.letteblack.viewmodel.TaskViewModel
 
@@ -247,7 +252,18 @@ fun HomeScreen(
                     )
                 }
             }
+            composable("puzzles") {
+                PuzzleScreen(
+                    onClick = {
+                        navController.navigate(Routes.PuzzleCategory.toString())
+                    },
+                    onPuzzleClick = { title, image, description ->
 
+                        navController.navigate("puzzlePlay/$title/$image/$description")
+                    },
+                    modifier = modifier
+                )
+            }
             // ---------- Leaderboard ----------
             composable("leaderboard") {
                 userInfo?.let { user ->
@@ -255,7 +271,7 @@ fun HomeScreen(
                 } ?: CenterText("Loading user...")
             }
 
-            composable("puzzles") { CenterText("Puzzles") }
+
             composable("you") { ProfileScreen(navController) }
         }
     }
