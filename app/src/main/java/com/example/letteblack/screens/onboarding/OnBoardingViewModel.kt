@@ -25,40 +25,40 @@ class OnBoardingViewModel : ViewModel() {
         Subjects(
             title = "Technology",
             subjects = arrayListOf(
-                SubjectChips("Programming", icon = R.drawable.biology, false),
-                SubjectChips("AI", icon = R.drawable.chemistry, false),
-                SubjectChips("Data Science", icon = R.drawable.math, false),
-                SubjectChips("Design", icon = R.drawable.physics, false),
+                SubjectChips("Programming", icon = R.drawable.programming, false),
+                SubjectChips("AI", icon = R.drawable.ai, false),
+                SubjectChips("Data Science", icon = R.drawable.analyse, false),
+                SubjectChips("Design", icon = R.drawable.design, false),
             )
         ),
         Subjects(
             title = "Humanities",
             subjects = arrayListOf(
-                SubjectChips("History", icon = R.drawable.biology, false),
-                SubjectChips("Philosophy", icon = R.drawable.chemistry, false),
-                SubjectChips("Literature", icon = R.drawable.math, false),
-                SubjectChips("Languages", icon = R.drawable.physics, false),
+                SubjectChips("History", icon = R.drawable.history, false),
+                SubjectChips("Philosophy", icon = R.drawable.philosophy, false),
+                SubjectChips("Literature", icon = R.drawable.literature, false),
+                SubjectChips("Languages", icon = R.drawable.language, false),
             )
         ), Subjects(
             title = "Business",
             subjects = arrayListOf(
-                SubjectChips("Marketing", icon = R.drawable.biology, false),
-                SubjectChips("Finance", icon = R.drawable.chemistry, false),
-                SubjectChips("Management", icon = R.drawable.math, false),
+                SubjectChips("Marketing", icon = R.drawable.marketing, false),
+                SubjectChips("Finance", icon = R.drawable.finance, false),
+                SubjectChips("Management", icon = R.drawable.management, false),
             )
         ), Subjects(
             title = "Creative",
             subjects = arrayListOf(
-                SubjectChips("Art", icon = R.drawable.biology, false),
-                SubjectChips("Music", icon = R.drawable.chemistry, false),
-                SubjectChips("Media", icon = R.drawable.math, false),
+                SubjectChips("Art", icon = R.drawable.art, false),
+                SubjectChips("Music", icon = R.drawable.music, false),
+                SubjectChips("Media", icon = R.drawable.media, false),
             )
         ), Subjects(
             title = "Exam prep",
             subjects = arrayListOf(
-                SubjectChips("SAT", icon = R.drawable.biology, false),
-                SubjectChips("IELTS", icon = R.drawable.chemistry, false),
-                SubjectChips("GMAT", icon = R.drawable.math, false),
+                SubjectChips("SAT", icon = R.drawable.folder_math, false),
+                SubjectChips("IELTS", icon = R.drawable.ielts, false),
+                SubjectChips("GMAT", icon = R.drawable.gmat, false),
             )
         )
     )
@@ -91,27 +91,27 @@ class OnBoardingViewModel : ViewModel() {
     val goals = arrayListOf<Goal>(
         Goal(
             "Pass an exam",
-            R.drawable.math,
+            R.drawable.exam,
             false
         ),
         Goal(
             "Certification",
-            R.drawable.math,
+            R.drawable.certificate,
             false
         ),
         Goal(
             "career skill",
-            R.drawable.math,
+            R.drawable.career,
             false
         ),
         Goal(
             "Improve grade",
-            R.drawable.math,
+            R.drawable.grade,
             false
         ),
         Goal(
             "Personal curiosity",
-            R.drawable.math,
+            R.drawable.hobby,
             false
         ),
 
