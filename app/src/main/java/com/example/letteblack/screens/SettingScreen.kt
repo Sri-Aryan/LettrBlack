@@ -1,5 +1,6 @@
 package com.example.letteblack.screens
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -13,10 +14,15 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.BugReport
+import androidx.compose.material.icons.filled.Help
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.PrivacyTip
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.VolumeUp
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -25,7 +31,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -45,16 +50,18 @@ import com.example.letteblack.data.Routes
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(navController: NavHostController, authViewModel: AuthViewModel) {
-    var darkMode by remember { mutableStateOf(false) }
     var notifications by remember { mutableStateOf(true) }
+    var sounds by remember { mutableStateOf(true) }
 
+    // React to logout
     LaunchedEffect(authViewModel.userState.value) {
-        if(authViewModel.userState.value is UserState.Unauthenticated){
-            navController.navigate(Routes.Login.toString()){
-                popUpTo(Routes.Login.toString()){inclusive = true}
+        if (authViewModel.userState.value is UserState.Unauthenticated) {
+            navController.navigate(Routes.Login.toString()) {
+                popUpTo(Routes.Login.toString()) { inclusive = true }
             }
         }
     }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -73,44 +80,74 @@ fun SettingsScreen(navController: NavHostController, authViewModel: AuthViewMode
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
                 .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(20.dp)
+            verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            // Profile section
-            SettingsSection(title = "Account") {
-                SettingsItem(
-                    icon = Icons.Default.Person,
-                    title = "Profile",
-                    description = "Manage your account details"
-                )
-                SettingsItem(
-                    icon = Icons.Default.PrivacyTip,
-                    title = "Privacy",
-                    description = "Control your privacy preferences"
-                )
+            // Account Section
+            SettingsSection("Account") {
+                SettingsItem(Icons.Default.Person, "Profile", "Manage your account",
+                onClick = {navController.navigate(Routes.Account.toString())})
+                SettingsItem(Icons.Default.Lock, "Privacy", "Control your privacy")
             }
 
-            // Preferences section
-            SettingsSection(title = "Preferences") {
-                SwitchSettingItem(
-                    icon = Icons.Default.DarkMode,
-                    title = "Dark Mode",
-                    checked = darkMode,
-                    onCheckedChange = { darkMode = it }
-                )
+            // Premium Section
+            SettingsSection("Premium") {
+                SettingsItem(Icons.Default.Star, "Upgrade", "Unlock premium courses")
+            }
+
+            // Notifications
+            SettingsSection("Notifications") {
                 SwitchSettingItem(
                     icon = Icons.Default.Notifications,
-                    title = "Notifications",
+                    title = "Enable Notifications",
                     checked = notifications,
                     onCheckedChange = { notifications = it }
                 )
             }
 
+            // Sounds
+            SettingsSection("Sounds") {
+                SwitchSettingItem(
+                    icon = Icons.Default.VolumeUp,
+                    title = "App Sounds",
+                    checked = sounds,
+                    onCheckedChange = { sounds = it }
+                )
+            }
+
+            // Help & Report
+            SettingsSection("Support") {
+                SettingsItem(
+                    Icons.Default.Help,
+                    "Help",
+                    "Get app guidance")
+                SettingsItem(
+                    Icons.Default.BugReport,
+                    "Report",
+                    "Report a problem")
+            }
+
             Spacer(modifier = Modifier.weight(1f))
 
-            // Logout button
-            TextButton(onClick = { authViewModel.signOut() }, Modifier.padding(horizontal = 155.dp)) {
-                Text("Logout", fontSize = 14.sp)
+            // Logout
+            Button(
+                onClick = { authViewModel.signOut() },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 32.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+            ) {
+                Text("Logout", color = MaterialTheme.colorScheme.onError)
             }
+
+            // Version Info
+            Text(
+                text = "Version 1.0.0",
+                fontSize = 12.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(top = 12.dp, bottom = 4.dp)
+            )
         }
     }
 }
@@ -136,10 +173,16 @@ fun SettingsSection(title: String, content: @Composable ColumnScope.() -> Unit) 
 }
 
 @Composable
-fun SettingsItem(icon: androidx.compose.ui.graphics.vector.ImageVector, title: String, description: String) {
+fun SettingsItem(
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    title: String,
+    description: String,
+    onClick: () -> Unit = {}
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .clickable{onClick()}
             .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -147,7 +190,11 @@ fun SettingsItem(icon: androidx.compose.ui.graphics.vector.ImageVector, title: S
         Spacer(modifier = Modifier.width(16.dp))
         Column {
             Text(title, style = MaterialTheme.typography.bodyLarge)
-            Text(description, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(
+                description,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
     }
 }

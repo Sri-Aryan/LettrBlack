@@ -73,6 +73,7 @@ dependencies {
     implementation("androidx.room:room-runtime:2.7.2")
     implementation("androidx.room:room-ktx:2.7.2")
     implementation(libs.transportation.consumer)
+    implementation(libs.androidx.work.runtime.ktx)
     kapt("androidx.room:room-compiler:2.7.2")
 
     // --- Hilt ---
@@ -90,6 +91,8 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore-ktx")
     implementation("com.google.firebase:firebase-analytics-ktx")
 
+    // --- Lottie ---
+    implementation("com.airbnb.android:lottie-compose:6.0.0")
     // --- Testing ---
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -101,4 +104,8 @@ dependencies {
 
     implementation("androidx.compose.material:material-icons-extended")
     implementation("androidx.compose.material3:material3")
+    implementation("me.saket.swipe:swipe:1.1.1")
+
+    //Coil
+    implementation("io.coil-kt:coil-compose:2.4.0")
 }

@@ -36,4 +36,7 @@ interface NoteDao {
     @Query("SELECT * FROM notes WHERE noteId = :noteId LIMIT 1")
     fun getNoteById(noteId: String): Flow<NoteEntity?>
 
+    @Query("DELETE FROM notes WHERE groupId = :groupId")
+    suspend fun deleteByGroupId(groupId: String)
+
 }

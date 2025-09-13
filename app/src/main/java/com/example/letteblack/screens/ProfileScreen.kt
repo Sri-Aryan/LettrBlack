@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -107,6 +108,14 @@ fun ProfileScreen(
             Text("Achievements", fontWeight = FontWeight.Medium, fontSize = 16.sp)
             Spacer(modifier = Modifier.height(5.dp))
 
+            Button(
+                onClick = { navController.navigate("leaderboard") }, // navigate to leaderboard
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp)
+            ) {
+                Text("Leaderboard")
+            }
             Column(
                 verticalArrangement = Arrangement.SpaceEvenly,
                 modifier = Modifier.fillMaxWidth().padding(0.dp),
