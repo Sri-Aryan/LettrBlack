@@ -1,6 +1,5 @@
 package com.example.letteblack.screens
 
-import android.net.Uri
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -56,11 +55,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.letteblack.AuthViewModel
 import com.example.letteblack.R
 import com.example.letteblack.UserState
-
-import com.example.letteblack.Utils
 import com.example.letteblack.components.category.CategoryComponent
-import com.example.letteblack.components.CategoryComponent
-import com.example.letteblack.components.MockData
 import com.example.letteblack.data.Routes
 import com.example.letteblack.data.UserDetails
 import com.example.letteblack.screens.groups.GroupListScreen

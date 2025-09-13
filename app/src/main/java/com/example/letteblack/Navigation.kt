@@ -1,12 +1,9 @@
 package com.example.letteblack
 
-import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavType
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -17,7 +14,6 @@ import com.example.letteblack.screens.LoginScreen
 import com.example.letteblack.screens.ProfileScreen
 import com.example.letteblack.screens.PuzzleCategoryScreen
 import com.example.letteblack.screens.PuzzlePlayScreen
-import com.example.letteblack.screens.PuzzleScreen
 import com.example.letteblack.screens.SettingsScreen
 import com.example.letteblack.screens.SignUpScreen
 import com.example.letteblack.screens.SplashScreen
@@ -57,7 +53,7 @@ fun Navigation(modifier: Modifier = Modifier) {
         // Settings route using Routes object
         composable("settings") {
 
-            val authViewModel: AuthViewModel = viewModel()
+            val authViewModel: AuthViewModel = hiltViewModel()
             SettingsScreen(navController, authViewModel)
         }
 
