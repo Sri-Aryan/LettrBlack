@@ -10,5 +10,8 @@ sealed class Routes(route: String){
 
     object Account : Routes("account")
 
+// Lets get started
     object Settings : Routes("settings")
+
+    object OnBoarding: Routes("onboarding")
 }
