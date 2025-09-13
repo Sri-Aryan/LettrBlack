@@ -43,7 +43,7 @@ import com.example.letteblack.db.UserEntity
 import com.example.letteblack.viewmodel.UserViewModel
 
 @Composable
-fun SignUpScreen(
+fun SignUpScreens(
     navController: NavHostController,
     modifier: Modifier,
     authViewModel: AuthViewModel

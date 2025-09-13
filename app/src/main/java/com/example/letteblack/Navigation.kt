@@ -2,7 +2,7 @@ package com.example.letteblack
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -13,9 +13,10 @@ import com.example.letteblack.screens.ProfileScreen
 import com.example.letteblack.screens.SettingsScreen
 import com.example.letteblack.screens.SignUpScreen
 import com.example.letteblack.screens.SplashScreen
-import com.example.letteblack.screens.settings.AccountScreen
 import com.example.letteblack.screens.onboarding.OnBoardingViewModel
 import com.example.letteblack.screens.onboarding.OnboardingScreen
+import com.example.letteblack.screens.settings.AccountScreen
+
 @Composable
 fun Navigation(modifier: Modifier = Modifier){
     val navController = rememberNavController()
@@ -24,19 +25,19 @@ fun Navigation(modifier: Modifier = Modifier){
             SplashScreen(modifier,navController)
         }
         composable(Routes.Login.toString()) {
-            val authViewModel: AuthViewModel = viewModel()
+            val authViewModel: AuthViewModel = hiltViewModel()
             LoginScreen(navController,modifier,authViewModel)
         }
         composable(Routes.SignUp.toString()) {
-            val authViewModel: AuthViewModel = viewModel()
+            val authViewModel: AuthViewModel = hiltViewModel()
             SignUpScreen(navController,modifier,authViewModel)
         }
         composable(Routes.OnBoarding.toString()) {
-            val viewModel: OnBoardingViewModel = viewModel()
+            val viewModel: OnBoardingViewModel = hiltViewModel()
             OnboardingScreen(navController,viewModel)
         }
         composable(Routes.Home.toString()) {
-            val authViewModel: AuthViewModel = viewModel()
+            val authViewModel: AuthViewModel = hiltViewModel()
             HomeScreen(navController,modifier,authViewModel)
         }
         composable(Routes.Profile.toString()) {
@@ -45,7 +46,7 @@ fun Navigation(modifier: Modifier = Modifier){
 
         // Settings route using Routes object
         composable("settings") {
-            val authViewModel: AuthViewModel = viewModel()
+            val authViewModel: AuthViewModel = hiltViewModel()
             SettingsScreen(navController,authViewModel)
         }
         composable(Routes.Account.toString()) {
