@@ -182,7 +182,6 @@ fun ProfileScreen(
             ) {
                 Text("Leaderboard")
             }
-
             Spacer(modifier = Modifier.height(16.dp))
 
             Column(

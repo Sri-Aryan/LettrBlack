@@ -265,20 +265,9 @@ fun HomeScreen(
                     )
                 } ?: CenterText("Loading user...")
             }
-        }
 
-        composable("you") {
-            userInfo?.let { user ->
-                ProfileScreen(
-                    navController = innerNavController,
-                    userId = user.uid,
-                    userName = user.name
-                )
-            } ?: CenterText("Loading user...")
         }
-        >>>>>>> Stashed changes
     }
-}
 }
 
 @Composable
