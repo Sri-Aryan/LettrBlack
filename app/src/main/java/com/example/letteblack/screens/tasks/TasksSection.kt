@@ -50,11 +50,9 @@ fun TasksSection(
                                 style = MaterialTheme.typography.labelSmall
                             )
                         }
-
                         Checkbox(
-                            checked = isChecked,
+                            checked = task.status == "complete",
                             onCheckedChange = { checked ->
-                                isChecked = checked
                                 viewModel.updateStatus(
                                     taskId = task.taskId,
                                     newStatus = if (checked) "complete" else "incomplete"

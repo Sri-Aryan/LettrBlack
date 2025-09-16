@@ -14,7 +14,6 @@ import java.text.SimpleDateFormat
 fun AddTaskScreen(
     groupId: String,
     assignerId: String,
-    assigneeId: String,
     viewModel: TaskViewModel,
     onTaskSaved: () -> Unit
 ) {

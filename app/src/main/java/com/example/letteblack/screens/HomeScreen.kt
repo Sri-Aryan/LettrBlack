@@ -206,7 +206,6 @@ fun HomeScreen(
                     AddTaskScreen(
                         groupId = groupId,
                         assignerId = user.uid,
-                        assigneeId = "someUserId",
                         viewModel = taskViewModel,
                         onTaskSaved = { innerNavController.popBackStack() }
                     )
@@ -250,14 +249,22 @@ fun HomeScreen(
             }
 
             // ---------- Leaderboard ----------
-            composable("leaderboard") {
-                userInfo?.let { user ->
-                    LeaderboardScreen(userId = user.uid)
-                } ?: CenterText("Loading user...")
+            composable("leaderboard/{groupId}") { backStackEntry ->
+                val groupId = backStackEntry.arguments?.getString("groupId") ?: ""
+                LeaderboardScreen(groupId = groupId)
             }
 
             composable("puzzles") { CenterText("Puzzles") }
-            composable("you") { ProfileScreen(navController) }
+
+            composable("you") {
+                userInfo?.let { user ->
+                    ProfileScreen(
+                        navController = innerNavController,
+                        userId = user.uid,
+                        userName = user.name
+                    )
+                } ?: CenterText("Loading user...")
+            }
         }
     }
 }

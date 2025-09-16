@@ -34,8 +34,21 @@ fun Navigation(modifier: Modifier = Modifier) {
             val authViewModel: AuthViewModel = hiltViewModel()
             HomeScreen(navController, modifier, authViewModel)
         }
-        composable(Routes.Profile.toString()) {
-            ProfileScreen(navController)
+        composable(
+            route = "profile/{userId}/{userName}",
+            arguments = listOf(
+                navArgument("userId") { type = NavType.StringType },
+                navArgument("userName") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val userId = backStackEntry.arguments?.getString("userId") ?: ""
+            val userName = backStackEntry.arguments?.getString("userName") ?: "User Name"
+
+            ProfileScreen(
+                navController = navController,
+                userId = userId,
+                userName = userName
+            )
         }
         composable("settings") {
             val authViewModel: AuthViewModel = hiltViewModel()

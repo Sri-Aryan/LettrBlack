@@ -100,4 +100,6 @@ dependencies {
     implementation("androidx.compose.material3:material3")
     implementation("me.saket.swipe:swipe:1.1.1")
 
+    //Coil
+    implementation("io.coil-kt:coil-compose:2.4.0")
 }

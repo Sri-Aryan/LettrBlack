@@ -26,4 +26,11 @@ interface GroupMemberDao {
 
     @Query("DELETE FROM group_members WHERE groupId = :groupId")
     suspend fun deleteByGroupId(groupId: String)
+
+    @Query("""
+        SELECT g.* FROM groups g 
+        INNER JOIN group_members m ON g.groupId = m.groupId 
+        WHERE m.userId = :userId
+        """)
+    fun observeGroupsForUser(userId: String): Flow<List<GroupEntity>>
 }

@@ -2,6 +2,7 @@ package com.example.letteblack.repositories
 
 import com.example.letteblack.db.TaskDao
 import com.example.letteblack.db.TaskEntity
+import com.google.android.gms.common.util.CollectionUtils.mapOf
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.tasks.await
@@ -23,7 +24,7 @@ class TaskRepositoryImpl(
         title: String,
         description: String,
         pointsRewarded: Int,
-        dueDate: Long?   // 👈 must be passed from UI
+        dueDate: Long?
     ) {
         val now = System.currentTimeMillis()
         val task = TaskEntity(
@@ -36,33 +37,35 @@ class TaskRepositoryImpl(
             pointsRewarded = pointsRewarded,
             dueDate = dueDate,
             createdAt = now,
-            updatedAt = now
+            updatedAt = now,
+            status = "incomplete"
         )
 
         dao.insert(task)
 
-        val map = mapOf(
-            "taskId" to task.taskId,
-            "groupId" to task.groupId,
-            "assignerId" to task.assignerId,
-            "assigneeId" to task.assigneeId,
-            "title" to task.title,
-            "description" to task.description,
-            "pointsRewarded" to task.pointsRewarded,
-            "dueDate" to task.dueDate,   // 👈 check this is not null
-            "status" to task.status,
-            "createdAt" to task.createdAt,
-            "updatedAt" to task.updatedAt
-        )
-        collection.document(task.taskId).set(map).await()
+//        val map = mapOf(
+//            "taskId" to task.taskId,
+//            "groupId" to task.groupId,
+//            "assignerId" to task.assignerId,
+//            "assigneeId" to task.assigneeId,
+//            "title" to task.title,
+//            "description" to task.description,
+//            "pointsRewarded" to task.pointsRewarded,
+//            "dueDate" to task.dueDate,
+//            "status" to task.status,
+//            "createdAt" to task.createdAt,
+//            "updatedAt" to task.updatedAt,
+//            "status" to task.status
+//        )
+//        collection.document(task.taskId).set(map).await()
     }
 
     override suspend fun updateStatus(taskId: String, status: String) {
         val now = System.currentTimeMillis()
         dao.updateStatus(taskId, status, now)
-        collection.document(taskId).update(
-            mapOf("status" to status, "updatedAt" to now)
-        ).await()
+//        collection.document(taskId).update(
+//            mapOf("status" to status, "updatedAt" to now)
+//        ).await()
     }
 
     override suspend fun updateTask(
@@ -76,15 +79,15 @@ class TaskRepositoryImpl(
         val now = System.currentTimeMillis()
         dao.updateTask(taskId, title, description, dueDate, pointsRewarded,assigneeId, now)
 
-        collection.document(taskId).update(
-            mapOf(
-                "title" to title,
-                "description" to description,
-                "dueDate" to dueDate,
-                "pointsRewarded" to pointsRewarded,
-                "updatedAt" to now
-            )
-        ).await()
+//        collection.document(taskId).update(
+//            mapOf(
+//                "title" to title,
+//                "description" to description,
+//                "dueDate" to dueDate,
+//                "pointsRewarded" to pointsRewarded,
+//                "updatedAt" to now
+//            )
+//        ).await()
     }
 
     override suspend fun deleteTask(taskId: String) {
