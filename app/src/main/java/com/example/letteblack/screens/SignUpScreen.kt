@@ -32,49 +32,28 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.letteblack.AuthViewModel
 import com.example.letteblack.R
 import com.example.letteblack.UserState
 import com.example.letteblack.Utils
 import com.example.letteblack.data.Routes
-import com.example.letteblack.db.UserEntity
-import com.example.letteblack.viewmodel.UserViewModel
 
 @Composable
-fun SignUpScreens(
+fun SignUpScreen(
     navController: NavHostController,
     modifier: Modifier,
     authViewModel: AuthViewModel
 ) {
     val context = LocalContext.current
-    val userViewModel: UserViewModel = hiltViewModel()
-
     LaunchedEffect(authViewModel.userState.value) {
-        when (val state = authViewModel.userState.value) {
-            is UserState.Authenticated -> {
-                val firebaseUser = state.user
-                userViewModel.saveUser(
-                    UserEntity(
-                        uid = firebaseUser.uid,
-                        name = authViewModel.name,
-                        email = authViewModel.email
-                    )
-                )
-                navController.navigate(Routes.Home.toString()) {
-                    popUpTo(Routes.SignUp.toString()) { inclusive = true }
-                }
-            }
-            is UserState.Error -> {
-                Utils.showToast(context, state.error)
-            }
-            else -> {}
+        when (authViewModel.userState.value) {
+            is UserState.Authenticated -> navController.navigate(Routes.Home.toString())
+            is UserState.Error -> Utils.showToast(context, authViewModel.userState.value.toString())
+            else -> null
         }
     }
-
     var eyeOpener by remember { mutableStateOf(false) }
-
     Column(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
@@ -82,12 +61,11 @@ fun SignUpScreens(
     ) {
         Text(
             "Welcome To SignUp Screen",
-            fontSize = 24.sp,
+            fontSize = (24.sp),
             fontFamily = FontFamily.SansSerif,
             fontWeight = FontWeight.SemiBold
         )
         Spacer(modifier = Modifier.height(8.dp))
-
         OutlinedTextField(
             value = authViewModel.name,
             onValueChange = { authViewModel.onNameChange(it) },
@@ -100,7 +78,6 @@ fun SignUpScreens(
             shape = CircleShape
         )
         Spacer(modifier = Modifier.height(8.dp))
-
         OutlinedTextField(
             value = authViewModel.email,
             onValueChange = { authViewModel.onEmailChange(it) },
@@ -113,7 +90,6 @@ fun SignUpScreens(
             shape = CircleShape
         )
         Spacer(modifier = Modifier.height(8.dp))
-
         OutlinedTextField(
             value = authViewModel.password,
             onValueChange = { authViewModel.onPasswordChange(it) },
@@ -129,50 +105,43 @@ fun SignUpScreens(
                 IconButton(
                     onClick = { eyeOpener = !eyeOpener },
                     modifier = Modifier.size(50.dp)
-                ) {
+                )
+                {
                     Icon(
-                        painterResource(R.drawable.eye),
-                        contentDescription = null,
+                        painterResource(R.drawable.eye), null,
                         tint = Color.Unspecified,
                         modifier = Modifier.size(40.dp)
                     )
                 }
             }
         )
-
         Spacer(modifier = Modifier.height(16.dp))
-
         Button(
             onClick = {
-                if (authViewModel.name.isNotEmpty() &&
-                    authViewModel.email.isNotEmpty() &&
-                    authViewModel.password.isNotEmpty()
-                ) {
+                if (authViewModel.name.isNotEmpty() && authViewModel.email.isNotEmpty() && authViewModel.password.isNotEmpty()) {
                     authViewModel.sign(
                         authViewModel.name,
                         authViewModel.email,
                         authViewModel.password
                     )
-                    // clear fields after request
                     authViewModel.name = ""
                     authViewModel.email = ""
                     authViewModel.password = ""
                 } else {
-                    Utils.showToast(context, "Enter the name, email and password")
+                    Utils.showToast(context, "enter the name, email and password")
                 }
+
             },
             enabled = authViewModel.userState.value != UserState.Loading,
             modifier = Modifier.size(200.dp, 50.dp)
         ) {
-            Text("SignUp")
+            Text("Sign Up")
         }
-
-        Spacer(modifier = Modifier.height(8.dp))
-
+        Spacer(modifier = Modifier.height(0.dp))
         TextButton(onClick = {
             navController.navigate(Routes.Login.toString())
         }) {
-            Text("Already have an account? Login")
+            Text("Already have an account       , Login")
         }
     }
 }

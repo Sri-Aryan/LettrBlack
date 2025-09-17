@@ -1,6 +1,5 @@
 package com.example.letteblack.screens
 
-import androidx.compose.material.icons.filled.Groups3
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -19,9 +18,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.Groups3
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -56,8 +55,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.letteblack.AuthViewModel
 import com.example.letteblack.R
 import com.example.letteblack.UserState
-import com.example.letteblack.components.CategoryComponent
-import com.example.letteblack.components.MockData
+import com.example.letteblack.components.category.CategoryComponent
 import com.example.letteblack.data.Routes
 import com.example.letteblack.data.UserDetails
 import com.example.letteblack.screens.groups.GroupListScreen
@@ -69,6 +67,7 @@ import com.example.letteblack.screens.notes.UpdateNoteScreen
 import com.example.letteblack.screens.tasks.AddTaskScreen
 import com.example.letteblack.screens.tasks.TaskDetailScreen
 import com.example.letteblack.screens.tasks.UpdateTaskScreen
+import com.example.letteblack.util.MockData
 import com.example.letteblack.viewmodel.NotesViewModel
 import com.example.letteblack.viewmodel.TaskViewModel
 
@@ -247,7 +246,18 @@ fun HomeScreen(
                     )
                 }
             }
+            composable("puzzles") {
+                PuzzleScreen(
+                    onClick = {
+                        navController.navigate(Routes.PuzzleCategory.toString())
+                    },
+                    onPuzzleClick = { title, image, description ->
 
+                        navController.navigate("puzzlePlay/$title/$image/$description")
+                    },
+                    modifier = modifier
+                )
+            }
             // ---------- Leaderboard ----------
             composable("leaderboard/{groupId}") { backStackEntry ->
                 val groupId = backStackEntry.arguments?.getString("groupId") ?: ""
@@ -265,6 +275,9 @@ fun HomeScreen(
                     )
                 } ?: CenterText("Loading user...")
             }
+
+
+            composable("you") { ProfileScreen(navController) }
 
         }
     }

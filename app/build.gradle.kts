@@ -6,6 +6,8 @@ plugins {
     alias(libs.plugins.google.gms.google.services)
     alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.dagger.hilt.android)
+    kotlin("plugin.serialization") version "2.2.0"
+
 }
 
 android {
@@ -64,6 +66,8 @@ dependencies {
     // Navigation + ViewModel in Compose
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
     implementation("androidx.navigation:navigation-compose:2.7.7")
+    implementation(libs.kotlinx.serialization.json)
+
 
     // --- Room ---
     implementation("androidx.room:room-runtime:2.7.2")
@@ -87,6 +91,8 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore-ktx")
     implementation("com.google.firebase:firebase-analytics-ktx")
 
+    // --- Lottie ---
+    implementation("com.airbnb.android:lottie-compose:6.0.0")
     // --- Testing ---
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
