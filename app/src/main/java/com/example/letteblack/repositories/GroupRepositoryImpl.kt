@@ -7,6 +7,7 @@ import com.example.letteblack.db.GroupMemberEntity
 import com.example.letteblack.db.NoteDao
 import com.example.letteblack.db.TaskDao
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.tasks.await
 import java.util.UUID
@@ -135,4 +136,8 @@ class GroupRepositoryImpl(
     }
 
     override fun getGroup(groupId: String) = groupDao.getGroup(groupId)
+
+    override fun getUserGroups(userId: String): Flow<List<GroupEntity>> {
+        return groupMemberDao.observeGroupsForUser(userId) // make sure DAO returns Flow<List<GroupEntity>>
+    }
 }

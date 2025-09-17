@@ -27,4 +27,6 @@ interface GroupRepository {
     suspend fun getMembers(groupId: String): List<GroupMemberEntity>
 
     suspend fun updateMembers(groupId: String, members: List<GroupMemberEntity>)
+
+    fun getUserGroups(userId: String): Flow<List<GroupEntity>>
 }

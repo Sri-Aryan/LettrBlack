@@ -42,8 +42,10 @@ fun PuzzleScreen(
 ) {
     val puzzleCategoryList = remember { MockData.getPuzzleCategories() }
     val topPuzzleList = remember { MockData.getTopPuzzles() }
-    LazyColumn(modifier = modifier
-        .fillMaxSize()) {
+    LazyColumn(
+        modifier = modifier
+            .fillMaxSize()
+    ) {
 
         //-------HEADER---------------//
         item {
@@ -105,13 +107,14 @@ fun PuzzleScreen(
 
         //--------------------Category puzzles-------------------//
         items(puzzleCategoryList) { category ->
-            CategoryPuzzleComponent(category,
+
+            CategoryPuzzleComponent(
+                category,
                 onClick = onClick,
-                modifier=Modifier.padding(horizontal = 16.dp))
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
             Spacer(Modifier.height(10.dp))
         }
-
-
 
     }
 
@@ -124,7 +127,8 @@ private fun PuzzlePreview() {
     LetteBlackTheme {
         PuzzleScreen(
             onClick = {},
-            onPuzzleClick = {_,_,d->}
+
+            onPuzzleClick = { _, _, d -> }
         )
     }
 

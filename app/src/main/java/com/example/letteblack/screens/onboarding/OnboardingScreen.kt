@@ -1,6 +1,7 @@
 package com.example.letteblack.screens.onboarding
 
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun OnboardingScreen(navController: NavController, viewModel: OnBoardingViewModel) {
     val onBoardingViewModel = OnBoardingViewModel()
