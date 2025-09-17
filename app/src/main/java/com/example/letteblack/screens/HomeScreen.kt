@@ -264,8 +264,6 @@ fun HomeScreen(
                 LeaderboardScreen(groupId = groupId)
             }
 
-            composable("puzzles") { CenterText("Puzzles") }
-
             composable("you") {
                 userInfo?.let { user ->
                     ProfileScreen(
@@ -277,7 +275,7 @@ fun HomeScreen(
             }
 
 
-            composable("you") { ProfileScreen(navController) }
+            composable("you") { ProfileScreen(navController, userId = "Random") } // UserId needs to be changed as per user
 
         }
     }
