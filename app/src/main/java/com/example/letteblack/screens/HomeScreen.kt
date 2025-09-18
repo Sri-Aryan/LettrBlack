@@ -275,10 +275,6 @@ fun HomeScreen(
                     )
                 } ?: CenterText("Loading user...")
             }
-
-
-            composable("you") { ProfileScreen(navController) }
-
         }
     }
 }

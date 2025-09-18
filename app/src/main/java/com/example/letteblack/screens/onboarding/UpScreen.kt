@@ -1,6 +1,5 @@
 package com.example.letteblack.screens.onboarding
 
-
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -38,8 +37,6 @@ import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.letteblack.ui.theme.Poppins
 import com.example.letteblack.ui.theme.ReemKufi
-
-
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun UpScreen(pagerState: PagerState, viewModel: OnBoardingViewModel) {
@@ -99,7 +96,7 @@ fun DisplayOptions(viewModel: OnBoardingViewModel, pageNumber: Int) {
                     text = subjects[subjectIndex].title,
                     fontWeight = FontWeight.Normal,
                     fontFamily = Poppins,
-                    color = androidx.compose.ui.graphics.Color.DarkGray
+                    color = Color.DarkGray
                 )
 
                 if (enabled) {

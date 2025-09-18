@@ -5,7 +5,10 @@ import kotlinx.coroutines.flow.Flow
 
 interface UserRepository {
     suspend fun saveUser(user: UserEntity)
+
     fun observeUser(): Flow<UserEntity?>
+
     suspend fun getUserOnce(): UserEntity?
+
     suspend fun clearUser()
 }

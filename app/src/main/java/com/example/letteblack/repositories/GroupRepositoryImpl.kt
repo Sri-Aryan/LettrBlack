@@ -85,10 +85,10 @@ class GroupRepositoryImpl(
         taskDao.deleteByGroupId(groupId)
         noteDao.deleteByGroupId(groupId)
 
-        // 2. Remote delete (Firestore)
+        // 2. Remote delete (Fire store)
         val groupDoc = groupsRef.document(groupId)
 
-        // Delete subcollections
+        // Delete sub collections
         groupDoc.collection("members").get().await().forEach { it.reference.delete().await() }
         groupDoc.collection("tasks").get().await().forEach { it.reference.delete().await() }
         groupDoc.collection("notes").get().await().forEach { it.reference.delete().await() }
@@ -138,6 +138,6 @@ class GroupRepositoryImpl(
     override fun getGroup(groupId: String) = groupDao.getGroup(groupId)
 
     override fun getUserGroups(userId: String): Flow<List<GroupEntity>> {
-        return groupMemberDao.observeGroupsForUser(userId) // make sure DAO returns Flow<List<GroupEntity>>
+        return groupMemberDao.observeGroupsForUser(userId)
     }
 }

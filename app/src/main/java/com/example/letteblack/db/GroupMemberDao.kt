@@ -33,4 +33,7 @@ interface GroupMemberDao {
         WHERE m.userId = :userId
         """)
     fun observeGroupsForUser(userId: String): Flow<List<GroupEntity>>
+
+    @Query("UPDATE group_members SET points = points + :points WHERE userId = :userId")
+    suspend fun addPointsByUserId(userId: String, points: Int)
 }

@@ -19,22 +19,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.max
 import com.example.letteblack.R
 import com.example.letteblack.model.PuzzleModel
 
 @Composable
-fun TopPuzzleComponent(puzzle: PuzzleModel,onClick: () -> Unit, modifier: Modifier = Modifier) {
-
-
+fun TopPuzzleComponent(puzzle: PuzzleModel, onClick: () -> Unit, modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
             .width(140.dp)
             .height(170.dp)
             .clip(shape = RoundedCornerShape(16.dp))
-            .clickable(onClick =onClick )
+            .clickable(onClick = onClick)
 
     ) {
         Image(
@@ -43,7 +39,6 @@ fun TopPuzzleComponent(puzzle: PuzzleModel,onClick: () -> Unit, modifier: Modifi
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .fillMaxSize()
-
         )
         Box(
             modifier = Modifier
@@ -58,13 +53,13 @@ fun TopPuzzleComponent(puzzle: PuzzleModel,onClick: () -> Unit, modifier: Modifi
                     )
                 )
         )
-        Box(modifier = Modifier
-            .matchParentSize()
-            .padding(5.dp),
-            contentAlignment = Alignment.BottomCenter){
+        Box(
+            modifier = Modifier
+                .matchParentSize()
+                .padding(5.dp),
+            contentAlignment = Alignment.BottomCenter
+        ) {
             Text(puzzle.title, maxLines = 1, overflow = TextOverflow.Ellipsis)
         }
     }
-
-
 }

@@ -207,7 +207,7 @@ fun BadgeCard(emoji: String, label: String) {
         Column(
             modifier = Modifier.fillMaxSize().padding(8.dp),
             verticalArrangement = Arrangement.Center,
-            horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(emoji, fontSize = 32.sp)
             Spacer(modifier = Modifier.height(6.dp))
