@@ -142,12 +142,21 @@ fun LoginScreen(
         }
 
         TextButton(
-            onClick = { navController.navigate(Routes.Home.toString()) },
+            onClick = { navController.navigate(Routes.OnBoarding.toString()) },
             modifier = Modifier
-                .align(Alignment.BottomCenter)
+                .align(Alignment.BottomEnd)
                 .padding(16.dp)
         ) {
             Text("Skip")
+        }
+        Spacer(modifier = Modifier.height(20.dp))
+        TextButton(
+            onClick = { navController.navigate(Routes.Home.toString()) },
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .padding(16.dp)
+        ) {
+            Text("Skip to Home") // Added to skip the onboarding
         }
     }
 }

@@ -63,9 +63,7 @@ fun Navigation(modifier: Modifier = Modifier) {
             )
         }
 
-        // Settings route using Routes object
         composable("settings") {
-
             val authViewModel: AuthViewModel = hiltViewModel()
             SettingsScreen(navController, authViewModel)
         }
