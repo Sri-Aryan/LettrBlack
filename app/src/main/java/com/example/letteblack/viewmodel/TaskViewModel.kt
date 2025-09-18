@@ -3,11 +3,13 @@ package com.example.letteblack.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.letteblack.db.GroupMemberEntity
+import com.example.letteblack.db.LeaderboardMember
 import com.example.letteblack.db.TaskEntity
 import com.example.letteblack.repositories.GroupMemberRepository
 import com.example.letteblack.repositories.TaskRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -28,13 +30,14 @@ class TaskViewModel @Inject constructor(
         groupId: String,
         assignerId: String,
         assigneeId: String,
+        assigneeName: String,
         title: String,
         description: String,
         pointsRewarded: Int,
         dueDate: Long?
     ) {
         viewModelScope.launch {
-            repo.assignTask(groupId, assignerId, assigneeId, title, description, pointsRewarded, dueDate)
+            repo.assignTask(groupId, assignerId, assigneeId, assigneeName, title, description, pointsRewarded, dueDate)
         }
     }
 
@@ -78,9 +81,22 @@ class TaskViewModel @Inject constructor(
     fun members(groupId: String): Flow<List<GroupMemberEntity>> =
         memberRepo.observeMembers(groupId)
 
-    fun getMemberById(memberId: String): Flow<GroupMemberEntity?> =
-        memberRepo.getMemberById(memberId)
+    fun observeLeaderboard(groupId: String): Flow<List<LeaderboardMember>> {
+        return combine(
+            repo.observeTasks(groupId),
+            memberRepo.observeMembers(groupId)
+        ) { tasks, members ->
+            members.map { member ->
+                val earnedPoints = tasks
+                    .filter { it.assigneeId == member.userId && it.status == "complete" }
+                    .sumOf { it.pointsRewarded }
 
-    fun observeLeaderboard(groupId: String): Flow<List<GroupMemberEntity>> =
-        memberRepo.observeMembersByPoints(groupId) // sorted by points descending
+                LeaderboardMember(
+                    userId = member.userId,
+                    userName = member.userName,
+                    points = earnedPoints
+                )
+            }.sortedByDescending { it.points }
+        }
+    }
 }

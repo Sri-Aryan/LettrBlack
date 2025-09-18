@@ -2,7 +2,6 @@ package com.example.letteblack.repositories
 
 import com.example.letteblack.db.TaskDao
 import com.example.letteblack.db.TaskEntity
-import com.google.android.gms.common.util.CollectionUtils.mapOf
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.tasks.await
@@ -21,6 +20,7 @@ class TaskRepositoryImpl(
         groupId: String,
         assignerId: String,
         assigneeId: String,
+        assigneeName: String,
         title: String,
         description: String,
         pointsRewarded: Int,
@@ -32,6 +32,7 @@ class TaskRepositoryImpl(
             groupId = groupId,
             assignerId = assignerId,
             assigneeId = assigneeId,
+            assigneeName = assigneeName,
             title = title,
             description = description,
             pointsRewarded = pointsRewarded,

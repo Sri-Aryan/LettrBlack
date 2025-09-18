@@ -65,7 +65,7 @@ fun VisualPuzzleGame(modifier: Modifier = Modifier) {
                     }
             )
 
-            //-------------------Traingle-----------------------//
+            //-------------------Triangle-----------------------//
             Box(
                 modifier = Modifier
                     .size(100.dp)

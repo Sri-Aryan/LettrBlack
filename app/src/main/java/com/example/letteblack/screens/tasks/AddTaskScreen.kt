@@ -101,6 +101,7 @@ fun AddTaskScreen(
                         groupId = groupId,
                         assignerId = assignerId,
                         assigneeId = selectedMember!!.userId,
+                        assigneeName = selectedMember!!.userName,
                         title = title.trim(),
                         description = description.trim(),
                         pointsRewarded = points.toIntOrNull() ?: 0,

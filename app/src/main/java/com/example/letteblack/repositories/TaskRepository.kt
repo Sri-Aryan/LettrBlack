@@ -9,6 +9,7 @@ interface TaskRepository {
         groupId: String,
         assignerId: String,
         assigneeId: String,
+        assigneeName: String,
         title: String,
         description: String,
         pointsRewarded: Int,

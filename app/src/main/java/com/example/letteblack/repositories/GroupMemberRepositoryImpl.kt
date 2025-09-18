@@ -50,13 +50,13 @@ class GroupMemberRepositoryImpl(
         collection.document(member.id).set(map).await()
     }
 
-    override suspend fun addPointsToMember(memberId: String, points: Int) {
-        // Update Room
-        groupMemberDao.addPoints(memberId, points)
-
-//        val docRef = collection.document(memberId)
-//        docRef.update("points", increment(points.toLong())).await()
-    }
+//    override suspend fun addPointsToMember(memberId: String, points: Int) {
+//        // Update Room
+//        groupMemberDao.addPoints(memberId, points)
+//
+////        val docRef = collection.document(memberId)
+////        docRef.update("points", increment(points.toLong())).await()
+//    }
 
     override fun observeMembersByPoints(groupId: String): Flow<List<GroupMemberEntity>> {
         return groupMemberDao.observeMembersSortedByPoints(groupId)
@@ -64,5 +64,9 @@ class GroupMemberRepositoryImpl(
 
     override fun getMemberById(memberId: String): Flow<GroupMemberEntity?> {
         return groupMemberDao.getMemberByIdFlow(memberId)
+    }
+
+    override suspend fun addPointsToMember(memberId: String, points: Int) {
+        groupMemberDao.addPointsByUserId(memberId, points)
     }
 }

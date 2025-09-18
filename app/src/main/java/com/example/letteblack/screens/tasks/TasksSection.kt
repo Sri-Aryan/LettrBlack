@@ -46,7 +46,7 @@ fun TasksSection(
                                 maxLines = 2
                             )
                             Text(
-                                "Assigned to $assigneeName • Status: ${if (isChecked) "Complete" else task.status}",
+                                text = "Assigned to ${task.assigneeName} • Status: ${task.status}",
                                 style = MaterialTheme.typography.labelSmall
                             )
                         }
