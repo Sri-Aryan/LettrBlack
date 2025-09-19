@@ -12,6 +12,6 @@ sealed class Routes(route: String){
 
 // Lets get started
     object Settings : Routes("settings")
-
     object OnBoarding: Routes("onboarding")
+    object Privacy: Routes("privacy")
 }

@@ -19,7 +19,10 @@ import com.example.letteblack.screens.SignUpScreen
 import com.example.letteblack.screens.SplashScreen
 import com.example.letteblack.screens.onboarding.OnBoardingViewModel
 import com.example.letteblack.screens.onboarding.OnboardingScreen
+import com.example.letteblack.screens.premium.PremiumContentScreen
+import com.example.letteblack.screens.report.ReportScreen
 import com.example.letteblack.screens.settings.AccountScreen
+import com.example.letteblack.screens.settings.PrivacyScreen
 
 @Composable
 fun Navigation(modifier: Modifier = Modifier) {
@@ -100,6 +103,16 @@ fun Navigation(modifier: Modifier = Modifier) {
                 onDeleteAccount = { /* hook into authViewModel.deleteUser() */ },
                 onChangeAvatar = { /* open avatar picker */ }
             )
+        }
+
+        composable("privacy") {
+            PrivacyScreen(navController)
+        }
+        composable("premium") {
+            PremiumContentScreen(navController)
+        }
+        composable("report") {
+            ReportScreen(navController)
         }
     }
 }
