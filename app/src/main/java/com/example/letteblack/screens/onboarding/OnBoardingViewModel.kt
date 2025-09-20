@@ -100,7 +100,7 @@ class OnBoardingViewModel : ViewModel() {
             false
         ),
         Goal(
-            "career skill",
+            "Career growth",
             R.drawable.career,
             false
         ),
@@ -113,7 +113,22 @@ class OnBoardingViewModel : ViewModel() {
             "Personal curiosity",
             R.drawable.hobby,
             false
+        ), Goal(
+            "Skill Mastery",
+            R.drawable.mastery,
+            false
         ),
-
+        Goal(
+            "Teaching",
+            R.drawable.teaching,
+            false
+        ),
+        Goal(
+            "Learn Together",
+            R.drawable.collab,
+            false
         )
+
+    )
+
 }

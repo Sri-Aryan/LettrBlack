@@ -12,15 +12,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 
 
 @Composable
 fun OnboardingScreen(navController: NavController, viewModel: OnBoardingViewModel) {
-    val onBoardingViewModel = OnBoardingViewModel()
-    val items = onBoardingViewModel.items
+
+    val items = viewModel.items
     val pagerState = rememberPagerState(
-        pageCount = { onBoardingViewModel.items.size },
+        pageCount = { viewModel.items.size },
         initialPage = 0
     )
     val targetColor = items[pagerState.currentPage].color
@@ -43,5 +44,6 @@ fun OnboardingScreen(navController: NavController, viewModel: OnBoardingViewMode
     }
 
 }
+
 
 

@@ -1,6 +1,7 @@
 package com.example.letteblack.screens.onboarding
 
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,11 +16,14 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -73,6 +77,15 @@ fun DownScreen(
                     color = Color.Gray
                 )
             }
+            TextButton(
+                onClick = {
+                    navController.navigate(Routes.Home.toString())
+                },
+                modifier = Modifier.align(Alignment.CenterStart)
+            ) {
+                Text("Skip")
+            }
+
             val coroutineScope = rememberCoroutineScope()
 
             val width = animateDpAsState(if (pagerState.currentPage == 2) 120.dp else 65.dp)
@@ -96,7 +109,10 @@ fun DownScreen(
                     .padding(bottom = 16.dp, end = 16.dp),
             ) {
                 if (pagerState.currentPage == 2) {
-                    Text("Get Started")
+                    Icon(
+                        imageVector = Icons.Default.Check,
+                        contentDescription = ""
+                    )
                 } else {
                     Icon(
                         painter = painterResource(R.drawable.next), contentDescription = ""

@@ -9,5 +9,5 @@ class SubjectChips(
     val icon: Int,
     isChecked: Boolean = false
 ) {
-    var isChecked by mutableStateOf(isChecked)  // 👈 state-backed
+    var isChecked by mutableStateOf(isChecked)
 }

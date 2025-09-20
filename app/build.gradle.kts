@@ -69,6 +69,7 @@ dependencies {
     implementation("androidx.room:room-runtime:2.7.2")
     implementation("androidx.room:room-ktx:2.7.2")
     implementation(libs.transportation.consumer)
+    implementation(libs.androidx.ui.geometry)
     kapt("androidx.room:room-compiler:2.7.2")
 
     // --- Hilt ---
