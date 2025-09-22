@@ -28,7 +28,7 @@ interface GroupMemberDao {
     suspend fun deleteByGroupId(groupId: String)
 
     @Query("""
-        SELECT g.* FROM groups g 
+        SELECT DISTINCT g.* FROM groups g 
         INNER JOIN group_members m ON g.groupId = m.groupId 
         WHERE m.userId = :userId
         """)
