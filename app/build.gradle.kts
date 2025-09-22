@@ -107,5 +107,7 @@ dependencies {
     implementation("me.saket.swipe:swipe:1.1.1")
 
     //Coil
-    implementation("io.coil-kt:coil-compose:2.4.0")
+    implementation("io.coil-kt:coil-compose:2.5.0")
+    implementation("androidx.activity:activity-compose:1.7.2")
+
 }

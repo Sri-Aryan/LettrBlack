@@ -101,8 +101,7 @@ fun Navigation(modifier: Modifier = Modifier) {
             AccountScreen(
                 navController = navController,
                 onDeleteAccount = { /* hook into authViewModel.deleteUser() */ },
-                onChangeAvatar = { /* open avatar picker */ }
-            )
+                )
         }
 
         composable("privacy") {
