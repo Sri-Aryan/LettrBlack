@@ -10,6 +10,7 @@ import com.example.letteblack.repositories.TaskRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -82,21 +83,15 @@ class TaskViewModel @Inject constructor(
         memberRepo.observeMembers(groupId)
 
     fun observeLeaderboard(groupId: String): Flow<List<LeaderboardMember>> {
-        return combine(
-            repo.observeTasks(groupId),
-            memberRepo.observeMembers(groupId)
-        ) { tasks, members ->
+        return memberRepo.observeMembersByPoints(groupId).map { members ->
             members.map { member ->
-                val earnedPoints = tasks
-                    .filter { it.assigneeId == member.userId && it.status == "complete" }
-                    .sumOf { it.pointsRewarded }
-
                 LeaderboardMember(
                     userId = member.userId,
                     userName = member.userName,
-                    points = earnedPoints
+                    points = member.points
                 )
-            }.sortedByDescending { it.points }
+            }
         }
     }
+
 }
