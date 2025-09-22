@@ -19,7 +19,6 @@ import androidx.compose.material.icons.filled.Help
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.material3.Button
@@ -87,12 +86,14 @@ fun SettingsScreen(navController: NavHostController, authViewModel: AuthViewMode
             SettingsSection("Account") {
                 SettingsItem(Icons.Default.Person, "Profile", "Manage your account",
                 onClick = {navController.navigate(Routes.Account.toString())})
-                SettingsItem(Icons.Default.Lock, "Privacy", "Control your privacy")
+                SettingsItem(Icons.Default.Lock, "Privacy", "Control your privacy",
+                    onClick = { navController.navigate("privacy") })
             }
 
             // Premium Section
             SettingsSection("Premium") {
-                SettingsItem(Icons.Default.Star, "Upgrade", "Unlock premium courses")
+                SettingsItem(Icons.Default.Star, "Upgrade", "Unlock premium courses",
+                    onClick = {navController.navigate("premium")})
             }
 
             // Notifications
@@ -124,7 +125,8 @@ fun SettingsScreen(navController: NavHostController, authViewModel: AuthViewMode
                 SettingsItem(
                     Icons.Default.BugReport,
                     "Report",
-                    "Report a problem")
+                    "Report a problem",
+                    onClick = {navController.navigate("report")})
             }
 
             Spacer(modifier = Modifier.weight(1f))
@@ -134,7 +136,7 @@ fun SettingsScreen(navController: NavHostController, authViewModel: AuthViewMode
                 onClick = { authViewModel.signOut() },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 32.dp),
+                    .padding(horizontal = 102.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
             ) {
                 Text("Logout", color = MaterialTheme.colorScheme.onError)
