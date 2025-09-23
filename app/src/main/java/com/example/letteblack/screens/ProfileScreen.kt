@@ -1,46 +1,19 @@
 package com.example.letteblack.screens
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -55,7 +28,6 @@ import com.example.letteblack.R
 import com.example.letteblack.db.GroupEntity
 import com.example.letteblack.viewmodel.GroupViewModel
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
@@ -69,10 +41,7 @@ fun ProfileScreen(
     val groups by groupViewModel.userGroups(userId).collectAsState(initial = emptyList())
     var expanded by remember { mutableStateOf(false) }
     var selectedGroup by remember { mutableStateOf<GroupEntity?>(null) }
-
-    LaunchedEffect(groups) {
-        Log.d("Profile", "DEBUG >>> Groups for $userId: ${groups.map { it.groupName }}")
-    }
+    val scrollState = rememberScrollState()
 
     Scaffold(
         topBar = {
@@ -96,7 +65,8 @@ fun ProfileScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(16.dp),
+                .padding(16.dp)
+                .verticalScroll(scrollState), // <-- make whole screen scrollable
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // Avatar
@@ -138,7 +108,7 @@ fun ProfileScreen(
 
             Spacer(modifier = Modifier.height(32.dp))
 
-
+            // Groups Dropdown
             Text("Your Groups", fontWeight = FontWeight.Medium, fontSize = 16.sp)
             Spacer(Modifier.height(8.dp))
 
@@ -171,23 +141,27 @@ fun ProfileScreen(
                     }
                 }
             }
-            Spacer(modifier = Modifier.height(15.dp))
-            Text("Achievements", fontWeight = FontWeight.Medium, fontSize = 16.sp)
-            Spacer(modifier = Modifier.height(5.dp))
 
-            Spacer(modifier = Modifier.height(16.dp))
-            Column(
-                verticalArrangement = Arrangement.SpaceEvenly,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(0.dp),
+            Spacer(Modifier.height(16.dp))
+            Button(
+                onClick = {
+                    selectedGroup?.let { navController.navigate("leaderboard/${it.groupId}") }
+                },
+                enabled = selectedGroup != null,
+                modifier = Modifier.fillMaxWidth()
             ) {
-                BadgeSection()
+                Text("Leaderboard")
             }
+
+            Spacer(Modifier.height(24.dp))
+
+            // Achievements
+            Text("Achievements", fontWeight = FontWeight.Medium, fontSize = 16.sp)
+            Spacer(modifier = Modifier.height(16.dp))
+            BadgeSection()
         }
     }
 }
-
 
 @Composable
 fun BadgeCard(emoji: String, label: String) {
@@ -228,12 +202,14 @@ fun BadgeSection() {
         "📘" to "Course Master"
     )
 
+    // Wrap LazyVerticalGrid inside a fixed height Box to work inside scroll
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        contentPadding = PaddingValues(8.dp),
+            .fillMaxWidth()
+            .height(400.dp) // adjust based on content
+            .padding(8.dp),
+        contentPadding = PaddingValues(4.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
@@ -242,4 +218,3 @@ fun BadgeSection() {
         }
     }
 }
-

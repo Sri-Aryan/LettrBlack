@@ -29,11 +29,6 @@ fun AddTaskScreen(
     var selectedMember by remember { mutableStateOf<GroupMemberEntity?>(null) }
     val members by viewModel.members(groupId).collectAsState(initial = emptyList())
 
-    LaunchedEffect(members) {
-        println("DEBUG: Members in group $groupId: ${members.size}")
-        members.forEach { println("DEBUG: Member: ${it.userName} (${it.userId})") }
-    }
-
     Column(
         modifier = Modifier
             .padding(16.dp)
