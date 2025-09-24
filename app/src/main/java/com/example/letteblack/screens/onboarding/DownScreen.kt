@@ -1,7 +1,7 @@
 package com.example.letteblack.screens.onboarding
 
+import android.util.Log
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -40,6 +40,7 @@ import androidx.navigation.NavController
 import com.example.letteblack.R
 import com.example.letteblack.data.Routes
 import com.example.letteblack.screens.onboarding.data.ScreenData
+import com.example.letteblack.screens.onboarding.data.UserPreference
 import com.example.letteblack.ui.theme.BottomCardShape
 import kotlinx.coroutines.launch
 
@@ -97,6 +98,13 @@ fun DownScreen(
                             pagerState.animateScrollToPage(pagerState.currentPage + 1)
                         } else {
                             navController.navigate(Routes.Home.toString())
+                            val userPreference = UserPreference(
+                                subjectPreference = viewModel.selectedSubjects,
+                                goalPreference = viewModel.selectedGoals,
+                                studyTimePreference = viewModel.selectedStudyTime
+                            )
+                            Log.d("MYTAG", "DownScreen: ${userPreference.copy()}")
+
                         }
                     }
                 },
@@ -113,6 +121,7 @@ fun DownScreen(
                         imageVector = Icons.Default.Check,
                         contentDescription = ""
                     )
+
                 } else {
                     Icon(
                         painter = painterResource(R.drawable.next), contentDescription = ""

@@ -4,31 +4,26 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.pager.PagerState
-import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.InputChip
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -43,7 +38,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.airbnb.lottie.compose.LottieAnimation
@@ -131,6 +125,7 @@ fun DisplayOptions(viewModel: OnBoardingViewModel, pageNumber: Int) {
                                 selected = chip.isChecked,
                                 onClick = {
                                     chip.isChecked = !chip.isChecked
+                                    viewModel.toggleSubject(chip.subjectTitle)
                                 },
                                 label = {
                                     Text(
@@ -173,6 +168,7 @@ fun DisplayOptions(viewModel: OnBoardingViewModel, pageNumber: Int) {
                         .clickable {
                             isSelected = !isSelected
                             goal.selected = isSelected
+                            viewModel.toggleGoal(goal.name)
                         },
                     shape = RoundedCornerShape(20.dp),
                     elevation = CardDefaults.cardElevation(
@@ -237,7 +233,10 @@ fun DisplayOptions(viewModel: OnBoardingViewModel, pageNumber: Int) {
                                 .weight(1f)
                                 .height(120.dp)
                                 .padding(8.dp)
-                                .clickable { selectedDayPart = item.key }, // ✅ CLICK HANDLER
+                                .clickable {
+                                    selectedDayPart = item.key
+                                    viewModel.selectedStudyTime.dayPart = item.key
+                                }, // ✅ CLICK HANDLER
                             elevation = CardDefaults.cardElevation(16.dp),
                             colors = CardDefaults.cardColors(
                                 containerColor = if (item.key == selectedDayPart) Color(0xFFD6EAF8) else Color.White
@@ -271,7 +270,7 @@ fun DisplayOptions(viewModel: OnBoardingViewModel, pageNumber: Int) {
                 // ---------------- Hours ----------------
                 Text(text = "How many hours you study?")
                 val hourOptions = listOf("30m", "1h", "2h", "2h+")
-                var selectedHours by remember { mutableStateOf(hourOptions[1]) }
+                var selectedHours by remember { mutableStateOf("") }
 
                 Row {
                     hourOptions.forEach { text ->
@@ -279,7 +278,10 @@ fun DisplayOptions(viewModel: OnBoardingViewModel, pageNumber: Int) {
                             modifier = Modifier
                                 .size(width = 90.dp, height = 60.dp)
                                 .padding(8.dp)
-                                .clickable { selectedHours = text }, // ✅ CLICK HANDLER
+                                .clickable {
+                                    selectedHours = text
+                                    viewModel.selectedStudyTime.studyHours = text
+                                }, // ✅ CLICK HANDLER
                             elevation = CardDefaults.cardElevation(12.dp),
                             colors = CardDefaults.cardColors(
                                 containerColor = if (text == selectedHours) Color(0xFFD6EAF8) else Color.White
@@ -313,7 +315,10 @@ fun DisplayOptions(viewModel: OnBoardingViewModel, pageNumber: Int) {
                                 .weight(1f)
                                 .height(120.dp)
                                 .padding(8.dp)
-                                .clickable { selectedStyle = item.key }, // ✅ CLICK HANDLER
+                                .clickable {
+                                    selectedStyle = item.key
+                                    viewModel.selectedStudyTime.studyStyle = item.key
+                                },
                             elevation = CardDefaults.cardElevation(16.dp),
                             colors = CardDefaults.cardColors(
                                 containerColor = if (item.key == selectedStyle) Color(0xFFD6EAF8) else Color.White
@@ -344,141 +349,5 @@ fun DisplayOptions(viewModel: OnBoardingViewModel, pageNumber: Int) {
             }
         }
     }
-
-
 }
-
-@Preview
-@Composable
-fun DisplayScreen() {
-    DisplayOptions(viewModel = OnBoardingViewModel(), 0)
-}
-
-@Composable
-fun DisplayRadioButton() {
-    Column(modifier = Modifier.padding(16.dp)) {
-
-        Text(text = "Day part you study")
-        val dayPartOptions = mapOf(
-            "Morning" to R.drawable.morning,
-            "Noon" to R.drawable.noon,
-            "Evening" to R.drawable.evening
-        )
-        var selectedDayPart by remember { mutableStateOf<String?>(null) }
-
-        Row {
-            dayPartOptions.forEach { item ->
-                Card(
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(120.dp)
-                        .padding(8.dp)
-                        .clickable { selectedDayPart = item.key }, // ✅ CLICK HANDLER
-                    elevation = CardDefaults.cardElevation(16.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = if (item.key == selectedDayPart) Color(0xFFD6EAF8) else Color.White
-                    )
-                ) {
-                    Column(
-                        Modifier.fillMaxWidth(),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Image(
-                            painter = painterResource(item.value),
-                            contentDescription = item.key,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(60.dp)
-                                .padding(8.dp)
-                        )
-                        Text(
-                            text = item.key,
-                            textAlign = TextAlign.Center,
-                            style = MaterialTheme.typography.bodySmall
-                        )
-                    }
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // ---------------- Hours ----------------
-        Text(text = "How many hours you study?")
-        val hourOptions = listOf("30m", "1h", "2h", "2h+")
-        var selectedHours by remember { mutableStateOf(hourOptions[1]) }
-
-        Row {
-            hourOptions.forEach { text ->
-                Card(
-                    modifier = Modifier
-                        .size(width = 90.dp, height = 60.dp)
-                        .padding(8.dp)
-                        .clickable { selectedHours = text }, // ✅ CLICK HANDLER
-                    elevation = CardDefaults.cardElevation(12.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = if (text == selectedHours) Color(0xFFD6EAF8) else Color.White
-                    )
-                ) {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(text = text, style = MaterialTheme.typography.bodySmall)
-                    }
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // ---------------- Session Style ----------------
-        Text(text = "Which session style you like most?")
-        val styleOptions = mapOf(
-            "Pomodoro" to R.drawable.pomodoro,
-            "Deep Work" to R.drawable.deep,
-            "Flow Mode" to R.drawable.flow
-        )
-        var selectedStyle by remember { mutableStateOf<String?>(null) }
-
-        Row {
-            styleOptions.forEach { item ->
-                Card(
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(120.dp)
-                        .padding(8.dp)
-                        .clickable { selectedStyle = item.key }, // ✅ CLICK HANDLER
-                    elevation = CardDefaults.cardElevation(16.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = if (item.key == selectedStyle) Color(0xFFD6EAF8) else Color.White
-                    )
-                ) {
-                    Column(
-                        Modifier.fillMaxWidth(),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Image(
-                            painter = painterResource(item.value),
-                            contentDescription = item.key,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(60.dp)
-                                .padding(8.dp)
-                        )
-                        Text(
-                            text = item.key,
-                            textAlign = TextAlign.Center,
-                            style = MaterialTheme.typography.bodySmall
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
-
-
 
