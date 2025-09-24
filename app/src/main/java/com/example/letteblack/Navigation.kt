@@ -66,7 +66,7 @@ fun Navigation(modifier: Modifier = Modifier) {
             )
         }
 
-        composable("settings") {
+        composable("settings") { baskStackEntry ->
             val authViewModel: AuthViewModel = hiltViewModel()
             SettingsScreen(navController, authViewModel)
         }

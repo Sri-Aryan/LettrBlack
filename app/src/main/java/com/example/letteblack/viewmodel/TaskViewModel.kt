@@ -9,7 +9,6 @@ import com.example.letteblack.repositories.GroupMemberRepository
 import com.example.letteblack.repositories.TaskRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -72,7 +71,7 @@ class TaskViewModel @Inject constructor(
                 repo.updateStatus(taskId, newStatus)
                 // Award points automatically if task completed
                 if (newStatus == "complete") {
-                    memberRepo.addPointsToMember(task.assigneeId, task.pointsRewarded)
+                    memberRepo.addPointsToMember(task.groupId,task.assigneeId, task.pointsRewarded)
                 }
             }
         }
