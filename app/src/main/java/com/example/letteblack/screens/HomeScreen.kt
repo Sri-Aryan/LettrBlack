@@ -273,7 +273,6 @@ fun HomeScreen(
                     )
                 } ?: CenterText("Loading user...")
             }
-            composable("you") { ProfileScreen(navController, userId = "Random") } // UserId needs to be changed as per user
         }
     }
 }

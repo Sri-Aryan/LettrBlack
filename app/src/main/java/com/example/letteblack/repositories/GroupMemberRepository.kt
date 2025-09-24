@@ -10,7 +10,7 @@ interface GroupMemberRepository {
 
     suspend fun joinGroup(groupId: String, userId: String, userName: String)
 
-    suspend fun addPointsToMember(memberId: String, points: Int)
+    suspend fun addPointsToMember(groupId: String, userId: String, points: Int)
 
     fun getMemberById(memberId: String): Flow<GroupMemberEntity?>
 }

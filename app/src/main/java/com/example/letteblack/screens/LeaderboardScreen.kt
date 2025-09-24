@@ -63,7 +63,8 @@ fun LeaderboardScreen(
                 Text("No members yet")
             } else {
                 // --- Top 3 Podium ---
-                val top3 = members.take(3)
+                val sortedMembers = members.sortedByDescending { it.points }
+                val top3 = sortedMembers.take(3)
 
                 Row(
                     modifier = Modifier
@@ -90,7 +91,7 @@ fun LeaderboardScreen(
 
                 // --- Ranking List ---
                 LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    itemsIndexed(members) { index, member ->
+                    itemsIndexed(sortedMembers) { index, member ->
                         Card(
                             modifier = Modifier.fillMaxWidth(),
                             elevation = CardDefaults.cardElevation(4.dp)

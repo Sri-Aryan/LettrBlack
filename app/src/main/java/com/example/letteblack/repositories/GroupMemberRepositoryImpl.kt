@@ -66,7 +66,7 @@ class GroupMemberRepositoryImpl(
         return groupMemberDao.getMemberByIdFlow(memberId)
     }
 
-    override suspend fun addPointsToMember(memberId: String, points: Int) {
-        groupMemberDao.addPointsByUserId(memberId, points)
+    override suspend fun addPointsToMember(groupId: String, userId: String, points: Int) {
+        groupMemberDao.addPoints(groupId, userId, points)
     }
 }

@@ -18,8 +18,8 @@ interface GroupMemberDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(member: GroupMemberEntity)
 
-    @Query("UPDATE group_members SET points = points + :points WHERE id = :memberId")
-    suspend fun addPoints(memberId: String, points: Int)
+    @Query("UPDATE group_members SET points = points + :points WHERE groupId = :groupId AND userId = :userId")
+    suspend fun addPoints(groupId: String, userId: String, points: Int)
 
     @Query("SELECT * FROM group_members WHERE id = :memberId LIMIT 1")
     fun getMemberByIdFlow(memberId: String): Flow<GroupMemberEntity?>

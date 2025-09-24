@@ -84,6 +84,7 @@ class TaskViewModel @Inject constructor(
 
     fun observeLeaderboard(groupId: String): Flow<List<LeaderboardMember>> {
         return memberRepo.observeMembersByPoints(groupId).map { members ->
+            println("DEBUG >>> Raw members = $members")
             members.map { member ->
                 LeaderboardMember(
                     userId = member.userId,
