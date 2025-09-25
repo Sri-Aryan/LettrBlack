@@ -267,7 +267,7 @@ fun HomeScreen(
             composable("you") {
                 userInfo?.let { user ->
                     ProfileScreen(
-                        navController = innerNavController,
+                        navController = navController,
                         userId = user.uid,
                         userName = user.name
                     )

@@ -28,6 +28,7 @@ import com.example.letteblack.screens.settings.PrivacyScreen
 fun Navigation(modifier: Modifier = Modifier) {
     val navController = rememberNavController()
     NavHost(navController, Routes.Splash.toString()) {
+
         composable(Routes.Splash.toString()) {
             SplashScreen(modifier, navController)
         }
@@ -49,6 +50,10 @@ fun Navigation(modifier: Modifier = Modifier) {
             HomeScreen(navController,modifier,authViewModel)
 
         }
+        composable("settings") {
+            val authViewModel: AuthViewModel = hiltViewModel()
+            SettingsScreen(navController, authViewModel)
+        }
         composable(
             route = "profile/{userId}/{userName}",
             arguments = listOf(
@@ -64,11 +69,6 @@ fun Navigation(modifier: Modifier = Modifier) {
                 userId = userId,
                 userName = userName
             )
-        }
-
-        composable("settings") { baskStackEntry ->
-            val authViewModel: AuthViewModel = hiltViewModel()
-            SettingsScreen(navController, authViewModel)
         }
 
         composable(

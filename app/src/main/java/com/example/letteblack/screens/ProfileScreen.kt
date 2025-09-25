@@ -1,5 +1,6 @@
 package com.example.letteblack.screens
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -34,6 +35,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -50,7 +52,6 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.letteblack.R
-import com.example.letteblack.data.Routes
 import com.example.letteblack.db.GroupEntity
 import com.example.letteblack.viewmodel.GroupViewModel
 import com.example.letteblack.viewmodel.UserViewModel
@@ -73,10 +74,10 @@ fun ProfileScreen(
     val userViewModel: UserViewModel = hiltViewModel()
     val avatarUri by userViewModel.avatarUri.collectAsState()
 
-//
-//    LaunchedEffect(groups) {
-//        Log.d("Profile", "DEBUG >>> Groups for $userId: ${groups.map { it.groupName }}")
-//    }
+
+    LaunchedEffect(groups) {
+        Log.d("Profile", "DEBUG >>> Groups for $userId: ${groups.map { it.groupName }}")
+    }
 
     Scaffold(
         topBar = {
@@ -86,7 +87,7 @@ fun ProfileScreen(
                     .padding(16.dp),
                 horizontalArrangement = Arrangement.End
             ) {
-                IconButton(onClick = { navController.navigate(Routes.Settings.toString()) }) {
+                IconButton(onClick = { navController.navigate("settings") }) {
                     Icon(
                         imageVector = Icons.Default.Settings,
                         contentDescription = "Settings",
