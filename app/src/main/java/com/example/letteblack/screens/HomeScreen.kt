@@ -18,7 +18,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Build
-import androidx.compose.material.icons.filled.Groups3
+import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Card
@@ -267,7 +267,7 @@ fun HomeScreen(
             composable("you") {
                 userInfo?.let { user ->
                     ProfileScreen(
-                        navController = navController,
+                        navController = navController, // Don't use innerNavController here
                         userId = user.uid,
                         userName = user.name
                     )
@@ -354,7 +354,7 @@ fun BottomNavigationBar(navController: NavHostController) {
         BottomNavItem("Home", "home", Icons.Default.Home),
         BottomNavItem(
             "Groups", "courses",
-            Icons.Default.Groups3
+            Icons.Default.Groups
         ),
         BottomNavItem("Puzzles", "puzzles", Icons.Default.Build),
         BottomNavItem("You", "you", Icons.Default.Person)
