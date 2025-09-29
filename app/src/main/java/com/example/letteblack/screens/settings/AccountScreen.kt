@@ -1,11 +1,9 @@
 package com.example.letteblack.screens.settings
 
-//import androidx.activity.compose.R
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -46,7 +44,7 @@ import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.example.letteblack.R
 import com.example.letteblack.viewmodel.UserViewModel
-import java.net.URI
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -63,11 +61,11 @@ fun AccountScreen(
     var password by remember { mutableStateOf("") }
 
     val userViewModel: UserViewModel = hiltViewModel()
-    var selectedImageUri by remember { mutableStateOf<URI?>(null) }
+    var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
-        selectedImageUri = uri as URI?
+        selectedImageUri = uri
     }
 
     Scaffold(
@@ -101,11 +99,13 @@ fun AccountScreen(
                 contentDescription = "Avatar",
                 modifier = Modifier
                     .size(100.dp)
-                    .clickable { launcher.launch("image/*") }
             )
             TextButton(onClick = {
+                launcher.launch("image/*")
+                selectedImageUri?.let { uri ->
                 val newUri = selectedImageUri.toString()
                 userViewModel.setAvatar(newUri)
+                }
             }) {
                 Text("Change Avatar", fontSize = 14.sp, color = MaterialTheme.colorScheme.primary)
             }
