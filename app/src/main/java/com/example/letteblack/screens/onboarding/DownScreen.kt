@@ -5,7 +5,6 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -34,6 +33,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -61,28 +61,31 @@ fun DownScreen(
         shape = BottomCardShape.large
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxWidth()
-            ) {
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
                 PagerIndicator(items = items, currentPage = pagerState.currentPage)
-                Text(
-                    text = items[pagerState.currentPage].motiveText,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(24.dp),
-                    fontFamily = FontFamily.SansSerif,
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Light,
-                    fontStyle = FontStyle.Italic,
-                    color = Color.Gray
-                )
             }
+            Text(
+                text = items[pagerState.currentPage].motiveText,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.Center)
+                    .padding(horizontal = 24.dp),
+                fontFamily = FontFamily.SansSerif,
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Light,
+                fontStyle = FontStyle.Italic,
+                color = Color.Gray,
+                textAlign = TextAlign.Center
+
+            )
+
             TextButton(
                 onClick = {
                     navController.navigate(Routes.Home.toString())
                 },
-                modifier = Modifier.align(Alignment.CenterStart)
+                modifier = Modifier
+                    .align(Alignment.BottomStart)
+                    .padding(bottom = 16.dp, start = 16.dp)
             ) {
                 Text("Skip")
             }
@@ -104,7 +107,7 @@ fun DownScreen(
                                 studyTimePreference = viewModel.selectedStudyTime
                             )
                             Log.d("MYTAG", "DownScreen: ${userPreference.copy()}")
-
+                                // Here we can apply user preference to firestore
                         }
                     }
                 },
@@ -118,8 +121,7 @@ fun DownScreen(
             ) {
                 if (pagerState.currentPage == 2) {
                     Icon(
-                        imageVector = Icons.Default.Check,
-                        contentDescription = ""
+                        imageVector = Icons.Default.Check, contentDescription = ""
                     )
 
                 } else {

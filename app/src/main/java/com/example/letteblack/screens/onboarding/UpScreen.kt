@@ -151,7 +151,7 @@ fun DisplayOptions(viewModel: OnBoardingViewModel, pageNumber: Int) {
         }
 
         1 -> LazyVerticalGrid(
-            columns = GridCells.Fixed(3), // always 3 items per row
+            columns = GridCells.Fixed(3),
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(12.dp), // spacing between cards
             verticalArrangement = Arrangement.spacedBy(12.dp),   // spacing between rows
@@ -163,7 +163,7 @@ fun DisplayOptions(viewModel: OnBoardingViewModel, pageNumber: Int) {
 
                 Card(
                     modifier = Modifier
-                        .height(150.dp)
+                        .height(120.dp)
                         .fillMaxWidth()
                         .clickable {
                             isSelected = !isSelected
@@ -192,9 +192,9 @@ fun DisplayOptions(viewModel: OnBoardingViewModel, pageNumber: Int) {
                                 .fillMaxWidth()
                                 .weight(4f)
                                 .padding(8.dp),
-                            contentScale = ContentScale.Fit, // keeps aspect ratio, fills width
-                            colorFilter = ColorFilter.tint( // instead of tint
-                                if (isSelected) Color.White else Color(0xFF1565C0)
+                            contentScale = ContentScale.Fit,
+                            colorFilter = ColorFilter.tint(
+                                if (isSelected) Color.White else Color(0xFF039BE5)
                             )
                         )
 
@@ -216,8 +216,6 @@ fun DisplayOptions(viewModel: OnBoardingViewModel, pageNumber: Int) {
 
         2 -> {
             Column(modifier = Modifier.padding(16.dp)) {
-
-                // ---------------- Day Part ----------------
                 Text(text = "Day part you study")
                 val dayPartOptions = mapOf(
                     "Morning" to R.drawable.morning,
@@ -267,7 +265,6 @@ fun DisplayOptions(viewModel: OnBoardingViewModel, pageNumber: Int) {
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // ---------------- Hours ----------------
                 Text(text = "How many hours you study?")
                 val hourOptions = listOf("30m", "1h", "2h", "2h+")
                 var selectedHours by remember { mutableStateOf("") }
@@ -281,7 +278,7 @@ fun DisplayOptions(viewModel: OnBoardingViewModel, pageNumber: Int) {
                                 .clickable {
                                     selectedHours = text
                                     viewModel.selectedStudyTime.studyHours = text
-                                }, // ✅ CLICK HANDLER
+                                },
                             elevation = CardDefaults.cardElevation(12.dp),
                             colors = CardDefaults.cardColors(
                                 containerColor = if (text == selectedHours) Color(0xFFD6EAF8) else Color.White
@@ -299,7 +296,6 @@ fun DisplayOptions(viewModel: OnBoardingViewModel, pageNumber: Int) {
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // ---------------- Session Style ----------------
                 Text(text = "Which session style you like most?")
                 val styleOptions = mapOf(
                     "Pomodoro" to R.drawable.pomodoro,
