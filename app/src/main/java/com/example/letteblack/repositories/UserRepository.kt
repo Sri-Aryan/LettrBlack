@@ -11,4 +11,6 @@ interface UserRepository {
     suspend fun getUserOnce(): UserEntity?
 
     suspend fun clearUser()
+
+    suspend fun updateUser(user: UserEntity)
 }
