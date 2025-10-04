@@ -38,24 +38,24 @@ class UserViewModel @Inject constructor(
     fun setAvatar(uri: String){
         viewModelScope.launch {
             val currentUser = repo.getUserOnce()
-            currentUser?.uid.let { uid ->
-             //   repo.updateAvatar(uid,uri)
-            }
-        }
-    }
-
-    fun updateUser(user: UserEntity) {
-        viewModelScope.launch {
-            repo.updateUser(user)
-        }
-    }
-
-    fun updateAvatar(newAvatarUri: String) {
-        viewModelScope.launch {
-            val currentUser = repo.getUserOnce()
             currentUser?.let {
-                repo.updateUser(it.copy(avatarUri = newAvatarUri))
+               repo.updateAvatar(it.uid,uri)
             }
         }
     }
+
+//    fun updateUser(user: UserEntity) {
+//        viewModelScope.launch {
+//            repo.updateUser(user)
+//        }
+//    }
+
+//    fun updateAvatar(newAvatarUri: String) {
+//        viewModelScope.launch {
+//            val currentUser = repo.getUserOnce()
+//            currentUser?.let {
+//                repo.updateUser(it.copy(avatarUri = newAvatarUri))
+//            }
+//        }
+//    }
 }

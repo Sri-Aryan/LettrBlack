@@ -20,7 +20,7 @@ class UserRepositoryImpl @Inject constructor(
         userDao.clearUser()
     }
 
-    override suspend fun updateUser(user: UserEntity) {
-        userDao.updateUser(user)
+    override suspend fun updateAvatar(uid: String, avatarUri: String) {
+        userDao.updateAvatar(uid, avatarUri)
     }
 }
