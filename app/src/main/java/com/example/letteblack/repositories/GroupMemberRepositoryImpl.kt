@@ -3,6 +3,7 @@ package com.example.letteblack.repositories
 import com.example.letteblack.db.GroupDao
 import com.example.letteblack.db.GroupMemberDao
 import com.example.letteblack.db.GroupMemberEntity
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.tasks.await
@@ -50,14 +51,6 @@ class GroupMemberRepositoryImpl(
         collection.document(member.id).set(map).await()
     }
 
-//    override suspend fun addPointsToMember(memberId: String, points: Int) {
-//        // Update Room
-//        groupMemberDao.addPoints(memberId, points)
-//
-////        val docRef = collection.document(memberId)
-////        docRef.update("points", increment(points.toLong())).await()
-//    }
-
     override fun observeMembersByPoints(groupId: String): Flow<List<GroupMemberEntity>> {
         return groupMemberDao.observeMembersSortedByPoints(groupId)
     }
@@ -67,6 +60,21 @@ class GroupMemberRepositoryImpl(
     }
 
     override suspend fun addPointsToMember(groupId: String, userId: String, points: Int) {
+        // Update Room
         groupMemberDao.addPoints(groupId, userId, points)
+
+        // Update Firebase
+        val snapshot = collection
+            .whereEqualTo("groupId", groupId)
+            .whereEqualTo("userId", userId)
+            .get()
+            .await()
+
+        if (!snapshot.isEmpty) {
+            val docId = snapshot.documents.first().id
+            collection.document(docId)
+                .update("points", FieldValue.increment(points.toLong()))
+                .await()
+        }
     }
 }

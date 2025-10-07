@@ -9,7 +9,6 @@ import com.example.letteblack.repositories.GroupMemberRepository
 import com.example.letteblack.repositories.TaskRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -38,7 +37,16 @@ class TaskViewModel @Inject constructor(
         dueDate: Long?
     ) {
         viewModelScope.launch {
-            repo.assignTask(groupId, assignerId, assigneeId, assigneeName, title, description, pointsRewarded, dueDate)
+            repo.assignTask(
+                groupId,
+                assignerId,
+                assigneeId,
+                assigneeName,
+                title,
+                description,
+                pointsRewarded,
+                dueDate
+            )
         }
     }
 
@@ -70,9 +78,12 @@ class TaskViewModel @Inject constructor(
             val task = repo.getTaskByIdOnce(taskId)
             if (task != null) {
                 repo.updateStatus(taskId, newStatus)
-                // Award points automatically if task completed
-                if (newStatus == "complete") {
-                    memberRepo.addPointsToMember(task.assigneeId, task.pointsRewarded)
+                if (newStatus.equals("complete", ignoreCase = true)) {
+                    memberRepo.addPointsToMember(
+                        groupId = task.groupId,
+                        userId = task.assigneeId,
+                        points = task.pointsRewarded
+                    )
                 }
             }
         }
@@ -94,5 +105,4 @@ class TaskViewModel @Inject constructor(
             }
         }
     }
-
 }

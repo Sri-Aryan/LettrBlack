@@ -42,31 +42,33 @@ class TaskRepositoryImpl(
             status = "incomplete"
         )
 
+        // 1️⃣ Local DB
         dao.insert(task)
 
-//        val map = mapOf(
-//            "taskId" to task.taskId,
-//            "groupId" to task.groupId,
-//            "assignerId" to task.assignerId,
-//            "assigneeId" to task.assigneeId,
-//            "title" to task.title,
-//            "description" to task.description,
-//            "pointsRewarded" to task.pointsRewarded,
-//            "dueDate" to task.dueDate,
-//            "status" to task.status,
-//            "createdAt" to task.createdAt,
-//            "updatedAt" to task.updatedAt,
-//            "status" to task.status
-//        )
-//        collection.document(task.taskId).set(map).await()
+        // 2️⃣ Firestore
+        val map = mapOf(
+            "taskId" to task.taskId,
+            "groupId" to task.groupId,
+            "assignerId" to task.assignerId,
+            "assigneeId" to task.assigneeId,
+            "assigneeName" to task.assigneeName,
+            "title" to task.title,
+            "description" to task.description,
+            "pointsRewarded" to task.pointsRewarded,
+            "dueDate" to task.dueDate,
+            "status" to task.status,
+            "createdAt" to task.createdAt,
+            "updatedAt" to task.updatedAt
+        )
+        collection.document(task.taskId).set(map).await()
     }
 
     override suspend fun updateStatus(taskId: String, status: String) {
         val now = System.currentTimeMillis()
         dao.updateStatus(taskId, status, now)
-//        collection.document(taskId).update(
-//            mapOf("status" to status, "updatedAt" to now)
-//        ).await()
+        collection.document(taskId).update(
+            mapOf("status" to status, "updatedAt" to now)
+        ).await()
     }
 
     override suspend fun updateTask(
@@ -78,17 +80,18 @@ class TaskRepositoryImpl(
         assigneeId: String
     ) {
         val now = System.currentTimeMillis()
-        dao.updateTask(taskId, title, description, dueDate, pointsRewarded,assigneeId, now)
+        dao.updateTask(taskId, title, description, dueDate, pointsRewarded, assigneeId, now)
 
-//        collection.document(taskId).update(
-//            mapOf(
-//                "title" to title,
-//                "description" to description,
-//                "dueDate" to dueDate,
-//                "pointsRewarded" to pointsRewarded,
-//                "updatedAt" to now
-//            )
-//        ).await()
+        collection.document(taskId).update(
+            mapOf(
+                "title" to title,
+                "description" to description,
+                "dueDate" to dueDate,
+                "pointsRewarded" to pointsRewarded,
+                "assigneeId" to assigneeId,
+                "updatedAt" to now
+            )
+        ).await()
     }
 
     override suspend fun deleteTask(taskId: String) {
