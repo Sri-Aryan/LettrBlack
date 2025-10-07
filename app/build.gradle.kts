@@ -111,4 +111,6 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.5.0")
     implementation("androidx.activity:activity-compose:1.7.2")
 
+    // For Preferences DataStore (key-value pairs)
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
 }

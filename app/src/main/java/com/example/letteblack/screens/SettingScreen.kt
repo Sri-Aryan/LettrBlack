@@ -1,5 +1,6 @@
 package com.example.letteblack.screens
 
+import android.content.Context
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -36,12 +37,15 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -50,17 +54,22 @@ import com.example.letteblack.AuthViewModel
 import com.example.letteblack.UserState
 import com.example.letteblack.data.Routes
 import com.example.letteblack.screens.settings.SettingsSection
+import com.example.letteblack.screens.settings.datastore.SettingDataStore
 import com.example.letteblack.viewmodel.UserViewModel
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(navController: NavHostController, authViewModel: AuthViewModel) {
-    var notifications by remember { mutableStateOf(true) }
     var sounds by remember { mutableStateOf(true) }
     var notificationDialog by remember {mutableStateOf(false)}
 
     val userViewModal: UserViewModel = hiltViewModel()
 
+    val context: Context = LocalContext.current
+    val dataStore = remember { SettingDataStore(context) }
+    val scope = rememberCoroutineScope()
+    val notificationEnabled by dataStore.notificationPreference.collectAsState(initial = true)
 
     // React to logout
     LaunchedEffect(authViewModel.userState.value) {
@@ -108,12 +117,12 @@ fun SettingsScreen(navController: NavHostController, authViewModel: AuthViewMode
                 SwitchSettingItem(
                     icon = Icons.Default.Notifications,
                     title = "Enable Notifications",
-                    checked = notifications,
+                    checked = notificationEnabled,
                     onCheckedChange = { isChecked ->
                         if (!isChecked) {
                             notificationDialog = true
                         } else {
-                            notifications = isChecked
+                            scope.launch { dataStore.savedNotificationPreference(true) }
                             userViewModal.setNotificationEnabled(isChecked)
                         }
                     }
@@ -163,7 +172,7 @@ fun SettingsScreen(navController: NavHostController, authViewModel: AuthViewMode
                     .padding(top = 12.dp, bottom = 4.dp)
             )
 
-            //handeling NotificationDialog
+            //Handling NotificationDialog
             if(notificationDialog){
                 AlertDialog(
                     onDismissRequest = {notificationDialog = false},
@@ -175,7 +184,7 @@ fun SettingsScreen(navController: NavHostController, authViewModel: AuthViewMode
                     },
                     confirmButton = {
                         TextButton(onClick = {
-                            notifications = false
+                            scope.launch { dataStore.savedNotificationPreference(false) }
                             userViewModal.setNotificationEnabled(false)
                             notificationDialog = false
                         }) {
