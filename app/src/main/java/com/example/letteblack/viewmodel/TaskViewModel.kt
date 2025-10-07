@@ -78,12 +78,9 @@ class TaskViewModel @Inject constructor(
             val task = repo.getTaskByIdOnce(taskId)
             if (task != null) {
                 repo.updateStatus(taskId, newStatus)
-                if (newStatus.equals("complete", ignoreCase = true)) {
-                    memberRepo.addPointsToMember(
-                        groupId = task.groupId,
-                        userId = task.assigneeId,
-                        points = task.pointsRewarded
-                    )
+                // Award points automatically if task completed
+                if (newStatus == "complete") {
+                    memberRepo.addPointsToMember(task.groupId,task.assigneeId, task.pointsRewarded)
                 }
             }
         }

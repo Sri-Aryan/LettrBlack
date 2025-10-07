@@ -1,7 +1,9 @@
 package com.example.letteblack.screens.settings
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -28,6 +30,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,12 +38,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
+import com.example.letteblack.R
+import com.example.letteblack.viewmodel.UserViewModel
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -49,13 +55,24 @@ fun AccountScreen(
     userEmail: String = "user@example.com",
     userUsername: String = "user1234",
     onDeleteAccount: () -> Unit = {},
-    onChangeAvatar: () -> Unit = {},
     navController: NavHostController
 ) {
     var name by remember { mutableStateOf(userName) }
     var email by remember { mutableStateOf(userEmail) }
     var username by remember { mutableStateOf(userUsername) }
     var password by remember { mutableStateOf("") }
+
+    val userViewModel: UserViewModel = hiltViewModel()
+    var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
+    val user by userViewModel.user.collectAsState()
+
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let {
+        userViewModel.setAvatar(it.toString())
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -80,14 +97,17 @@ fun AccountScreen(
         ) {
             // Avatar
             Image(
-                painter = rememberAsyncImagePainter(model = null), // Replace with user photo URL if available
+                painter = rememberAsyncImagePainter(
+                    model = user?.avatarUri ?: R.drawable.lettrblack
+                ),
                 contentDescription = "Avatar",
                 modifier = Modifier
                     .size(100.dp)
                     .clip(CircleShape)
-                    .background(Color.LightGray)
             )
-            TextButton(onClick = onChangeAvatar) {
+            TextButton(onClick = {
+                launcher.launch("image/*")
+            }) {
                 Text("Change Avatar", fontSize = 14.sp, color = MaterialTheme.colorScheme.primary)
             }
 
