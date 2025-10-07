@@ -1,11 +1,14 @@
 package com.example.letteblack.viewmodel
 
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.letteblack.db.UserEntity
 import com.example.letteblack.repositories.UserRepository
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
@@ -20,9 +23,6 @@ class UserViewModel @Inject constructor(
     val user: StateFlow<UserEntity?> = repo.observeUser()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
 
-    private val _avatarUri = MutableStateFlow<String?>(null)
-    val avatarUri: StateFlow<String?> = _avatarUri
-
     fun saveUser(user: UserEntity) {
         viewModelScope.launch {
             repo.saveUser(user)
@@ -35,27 +35,50 @@ class UserViewModel @Inject constructor(
         }
     }
 
-    fun setAvatar(uri: String){
+    fun setAvatar(newAvatarUri: String) {
         viewModelScope.launch {
             val currentUser = repo.getUserOnce()
             currentUser?.let {
-               repo.updateAvatar(it.uid,uri)
+                val updatedUser = it.copy(avatarUri = newAvatarUri)
+                repo.updateUser(updatedUser) // Just local save(Room)
+                updateAvatarInFirestore(it.uid, newAvatarUri)
             }
         }
     }
 
-//    fun updateUser(user: UserEntity) {
-//        viewModelScope.launch {
-//            repo.updateUser(user)
-//        }
-//    }
+    fun uploadAvatarToFirebase(
+        uid: String,
+        imageUri: Uri,
+        onSuccess: (String) -> Unit,
+        onError: (Exception) -> Unit
+    ) {
+        val storageRef = Firebase.storage.reference
+        val avatarRef = storageRef.child("avatars/$uid.jpg")
 
-//    fun updateAvatar(newAvatarUri: String) {
-//        viewModelScope.launch {
-//            val currentUser = repo.getUserOnce()
-//            currentUser?.let {
-//                repo.updateUser(it.copy(avatarUri = newAvatarUri))
-//            }
-//        }
-//    }
+        avatarRef.putFile(imageUri)
+            .addOnSuccessListener {
+                avatarRef.downloadUrl.addOnSuccessListener { downloadUri ->
+                    onSuccess(downloadUri.toString())
+                }
+            }
+            .addOnFailureListener { exception ->
+                onError(exception)
+            }
+    }
+
+    private fun updateAvatarInFirestore(uid: String, avatarUrl: String) {
+        val db = Firebase.firestore
+        db.collection("users").document(uid)
+            .update("avatarUrl", avatarUrl)
+            .addOnSuccessListener { /* synced successfully */ }
+            .addOnFailureListener { e -> e.printStackTrace() }
+    }
+
+    fun saveAvatarUrlToFirestore(uid: String, avatarUrl: String) {
+        val db = Firebase.firestore
+        db.collection("users").document(uid)
+            .update("avatarUrl", avatarUrl)
+            .addOnSuccessListener { /* success */ }
+            .addOnFailureListener { e -> e.printStackTrace() }
+    }
 }

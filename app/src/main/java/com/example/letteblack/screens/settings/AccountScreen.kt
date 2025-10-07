@@ -55,7 +55,7 @@ fun AccountScreen(
     userEmail: String = "user@example.com",
     userUsername: String = "user1234",
     onDeleteAccount: () -> Unit = {},
-    navController: NavHostController
+    navController: NavHostController,
 ) {
     var name by remember { mutableStateOf(userName) }
     var email by remember { mutableStateOf(userEmail) }
@@ -63,16 +63,24 @@ fun AccountScreen(
     var password by remember { mutableStateOf("") }
 
     val userViewModel: UserViewModel = hiltViewModel()
-    var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
     val user by userViewModel.user.collectAsState()
 
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         uri?.let {
-        userViewModel.setAvatar(it.toString())
+            userViewModel.uploadAvatarToFirebase(
+                uid = user?.uid ?: "",
+                imageUri = it,
+                onSuccess = { downloadUrl ->
+                    userViewModel.saveAvatarUrlToFirestore(user?.uid ?: "", downloadUrl)
+                    userViewModel.setAvatar(downloadUrl) // Save in Room
+                },
+                onError = { e -> e.printStackTrace() }
+            )
         }
     }
+
 
     Scaffold(
         topBar = {
@@ -108,7 +116,7 @@ fun AccountScreen(
             TextButton(onClick = {
                 launcher.launch("image/*")
             }) {
-                Text("Change Avatar", fontSize = 14.sp, color = MaterialTheme.colorScheme.primary)
+                Text("Set Avatar", fontSize = 14.sp, color = MaterialTheme.colorScheme.primary)
             }
 
             // Section: Personal Info

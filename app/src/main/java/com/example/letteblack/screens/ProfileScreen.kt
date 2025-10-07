@@ -72,7 +72,7 @@ fun ProfileScreen(
     var selectedGroup by remember { mutableStateOf<GroupEntity?>(null) }
 
     val userViewModel: UserViewModel = hiltViewModel()
-    val avatarUri by userViewModel.avatarUri.collectAsState()
+    //val avatarUri by userViewModel.avatarUri.collectAsState()
 
 
     LaunchedEffect(groups) {
