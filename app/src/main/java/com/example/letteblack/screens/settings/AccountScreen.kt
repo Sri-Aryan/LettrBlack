@@ -4,26 +4,32 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -38,7 +44,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -74,13 +79,12 @@ fun AccountScreen(
                 imageUri = it,
                 onSuccess = { downloadUrl ->
                     userViewModel.saveAvatarUrlToFirestore(user?.uid ?: "", downloadUrl)
-                    userViewModel.setAvatar(downloadUrl) // Save in Room
+                    userViewModel.setAvatar(downloadUrl)
                 },
                 onError = { e -> e.printStackTrace() }
             )
         }
     }
-
 
     Scaffold(
         topBar = {
@@ -100,57 +104,60 @@ fun AccountScreen(
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
                 .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
             // Avatar
-            Image(
-                painter = rememberAsyncImagePainter(
-                    model = user?.avatarUri ?: R.drawable.lettrblack
-                ),
-                contentDescription = "Avatar",
-                modifier = Modifier
-                    .size(100.dp)
-                    .clip(CircleShape)
-            )
-            TextButton(onClick = {
-                launcher.launch("image/*")
-            }) {
-                Text("Set Avatar", fontSize = 14.sp, color = MaterialTheme.colorScheme.primary)
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Image(
+                    painter = rememberAsyncImagePainter(
+                        model = user?.avatarUri ?: R.drawable.lettrblack
+                    ),
+                    contentDescription = "Avatar",
+                    modifier = Modifier
+                        .size(100.dp)
+                        .clip(CircleShape)
+                )
+                TextButton(onClick = { launcher.launch("image/*") }) {
+                    Text("Change Avatar", fontSize = 14.sp)
+                }
             }
 
-            // Section: Personal Info
             SettingsSection("Personal Info") {
-                OutlinedTextField(
+                AccountInfoItem(
+                    icon = Icons.Default.Person,
+                    title = "Name",
                     value = name,
-                    onValueChange = { name = it },
-                    label = { Text("Name") },
-                    modifier = Modifier.fillMaxWidth()
+                    onClick = {}
                 )
-                OutlinedTextField(
+                AccountInfoItem(
+                    icon = Icons.Default.AccountCircle,
+                    title = "Username",
                     value = username,
-                    onValueChange = { username = it },
-                    label = { Text("Username") },
-                    modifier = Modifier.fillMaxWidth()
+                    onClick = {}
                 )
-                OutlinedTextField(
+            }
+
+            SettingsSection("Account Security") {
+                AccountInfoItem(
+                    icon = Icons.Default.Email,
+                    title = "Email",
                     value = email,
-                    onValueChange = { email = it },
-                    label = { Text("Email") },
-                    modifier = Modifier.fillMaxWidth()
+                    onClick = {}
                 )
-                OutlinedTextField(
-                    value = password,
-                    onValueChange = { password = it },
-                    label = { Text("Password") },
-                    visualTransformation = PasswordVisualTransformation(),
-                    modifier = Modifier.fillMaxWidth()
+                AccountInfoItem(
+                    icon = Icons.Default.Lock,
+                    title = "Password",
+                    value = "••••••••",
+                    onClick = {}
                 )
             }
 
             Spacer(modifier = Modifier.weight(1f))
 
-            // Delete Account
             Button(
                 onClick = onDeleteAccount,
                 modifier = Modifier
@@ -179,12 +186,36 @@ fun SettingsSection(title: String, content: @Composable ColumnScope.() -> Unit) 
             tonalElevation = 2.dp,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Column(
-                modifier = Modifier.padding(12.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
+            Column(modifier = Modifier.padding(8.dp)) {
                 content()
             }
+        }
+    }
+}
+
+@Composable
+fun AccountInfoItem(
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    title: String,
+    value: String,
+    onClick: () -> Unit = {}
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
+            .padding(12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(icon, contentDescription = title, tint = MaterialTheme.colorScheme.primary)
+        Spacer(modifier = Modifier.width(16.dp))
+        Column(modifier = Modifier.weight(1f)) {
+            Text(title, style = MaterialTheme.typography.bodyLarge)
+            Text(
+                value,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
     }
 }
