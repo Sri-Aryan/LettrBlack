@@ -81,4 +81,13 @@ class UserViewModel @Inject constructor(
             .addOnSuccessListener { /* success */ }
             .addOnFailureListener { e -> e.printStackTrace() }
     }
+
+    fun setNotificationEnabled(enabled : Boolean){
+        viewModelScope.launch {
+            val currentUser = repo.getUserOnce()
+            currentUser?.let {
+                repo.updateUser(it.copy(notificationEbnabled = enabled))
+            }
+        }
+    }
 }

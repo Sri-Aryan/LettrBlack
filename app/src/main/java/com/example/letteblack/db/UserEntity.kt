@@ -8,5 +8,6 @@ data class UserEntity(
     @PrimaryKey val uid: String,
     val name: String,
     val email: String,
-    val avatarUri: String? = null
+    val avatarUri: String? = null,
+    val notificationEbnabled : Boolean= true
 )

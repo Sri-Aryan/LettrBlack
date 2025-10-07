@@ -21,6 +21,7 @@ import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.VolumeUp
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -31,6 +32,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -42,16 +44,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.letteblack.AuthViewModel
 import com.example.letteblack.UserState
 import com.example.letteblack.data.Routes
+import com.example.letteblack.screens.settings.SettingsSection
+import com.example.letteblack.viewmodel.UserViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(navController: NavHostController, authViewModel: AuthViewModel) {
     var notifications by remember { mutableStateOf(true) }
     var sounds by remember { mutableStateOf(true) }
+    var notificationDialog by remember {mutableStateOf(false)}
+
+    val userViewModal: UserViewModel = hiltViewModel()
+
 
     // React to logout
     LaunchedEffect(authViewModel.userState.value) {
@@ -89,20 +98,25 @@ fun SettingsScreen(navController: NavHostController, authViewModel: AuthViewMode
                 SettingsItem(Icons.Default.Lock, "Privacy", "Control your privacy",
                     onClick = { navController.navigate("privacy") })
             }
-
             // Premium Section
             SettingsSection("Premium") {
                 SettingsItem(Icons.Default.Star, "Upgrade", "Unlock premium courses",
                     onClick = {navController.navigate("premium")})
             }
-
             // Notifications
             SettingsSection("Notifications") {
                 SwitchSettingItem(
                     icon = Icons.Default.Notifications,
                     title = "Enable Notifications",
                     checked = notifications,
-                    onCheckedChange = { notifications = it }
+                    onCheckedChange = { isChecked ->
+                        if (!isChecked) {
+                            notificationDialog = true
+                        } else {
+                            notifications = isChecked
+                            userViewModal.setNotificationEnabled(isChecked)
+                        }
+                    }
                 )
             }
 
@@ -115,7 +129,6 @@ fun SettingsScreen(navController: NavHostController, authViewModel: AuthViewMode
                     onCheckedChange = { sounds = it }
                 )
             }
-
             // Help & Report
             SettingsSection("Support") {
                 SettingsItem(
@@ -130,7 +143,6 @@ fun SettingsScreen(navController: NavHostController, authViewModel: AuthViewMode
             }
 
             Spacer(modifier = Modifier.weight(1f))
-
             // Logout
             Button(
                 onClick = { authViewModel.signOut() },
@@ -141,7 +153,6 @@ fun SettingsScreen(navController: NavHostController, authViewModel: AuthViewMode
             ) {
                 Text("Logout", color = MaterialTheme.colorScheme.onError)
             }
-
             // Version Info
             Text(
                 text = "Version 1.0.0",
@@ -151,6 +162,33 @@ fun SettingsScreen(navController: NavHostController, authViewModel: AuthViewMode
                     .align(Alignment.CenterHorizontally)
                     .padding(top = 12.dp, bottom = 4.dp)
             )
+
+            //handeling NotificationDialog
+            if(notificationDialog){
+                AlertDialog(
+                    onDismissRequest = {notificationDialog = false},
+                    title = {Text("Notification")},
+                    text = {
+                        Text("You will miss important updates and reminders."+
+                                "Are you sure you want to disable notifications?"
+                        )
+                    },
+                    confirmButton = {
+                        TextButton(onClick = {
+                            notifications = false
+                            userViewModal.setNotificationEnabled(false)
+                            notificationDialog = false
+                        }) {
+                            Text("Yes", color = MaterialTheme.colorScheme.error)
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = {notificationDialog =false}) {
+                            Text("Cancel")
+                        }
+                    }
+                )
+            }
         }
     }
 }
@@ -207,7 +245,7 @@ fun SwitchSettingItem(
     icon: androidx.compose.ui.graphics.vector.ImageVector,
     title: String,
     checked: Boolean,
-    onCheckedChange: (Boolean) -> Unit
+    onCheckedChange: (Boolean) -> Unit,
 ) {
     Row(
         modifier = Modifier
