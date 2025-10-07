@@ -37,7 +37,16 @@ class TaskViewModel @Inject constructor(
         dueDate: Long?
     ) {
         viewModelScope.launch {
-            repo.assignTask(groupId, assignerId, assigneeId, assigneeName, title, description, pointsRewarded, dueDate)
+            repo.assignTask(
+                groupId,
+                assignerId,
+                assigneeId,
+                assigneeName,
+                title,
+                description,
+                pointsRewarded,
+                dueDate
+            )
         }
     }
 
@@ -93,5 +102,4 @@ class TaskViewModel @Inject constructor(
             }
         }
     }
-
 }

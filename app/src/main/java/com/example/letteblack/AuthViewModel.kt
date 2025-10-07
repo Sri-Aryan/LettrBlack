@@ -1,6 +1,5 @@
 package com.example.letteblack
 
-import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -112,6 +111,35 @@ class AuthViewModel @Inject constructor(
             userRepository.clearUser()
         }
         _userState.value = UserState.Unauthenticated
+    }
+
+    fun checkLoginState() {
+        val user = auth.currentUser
+        if (user != null) {
+            // User is still logged in
+            viewModelScope.launch {
+                val localUser = userRepository.getUserOnce()
+                if (localUser != null) {
+                    _userState.value = UserState.Authenticated(user)
+                } else {
+                    // If not in Room, fetch from Firestore
+                    firestore.collection("users").document(user.uid).get()
+                        .addOnSuccessListener { doc ->
+                            val details = doc.toObject(UserDetails::class.java)
+                            details?.let {
+                                viewModelScope.launch {
+                                    userRepository.saveUser(
+                                        UserEntity(it.uid, it.name, it.email)
+                                    )
+                                }
+                            }
+                            _userState.value = UserState.Authenticated(user)
+                        }
+                }
+            }
+        } else {
+            _userState.value = UserState.Unauthenticated
+        }
     }
 }
 
