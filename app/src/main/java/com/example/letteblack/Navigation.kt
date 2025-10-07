@@ -99,10 +99,7 @@ fun Navigation(modifier: Modifier = Modifier) {
 
         }
         composable(Routes.Account.toString()) {
-            AccountScreen(
-                navController = navController,
-                onDeleteAccount = { /* hook into authViewModel.deleteUser() */ },
-                )
+            AccountScreen(navController = navController)
         }
 
         composable("privacy") {

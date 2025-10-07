@@ -1,6 +1,7 @@
 package com.example.letteblack.screens.settings
 
 import android.net.Uri
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -24,12 +25,16 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -38,26 +43,42 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.example.letteblack.R
+import com.example.letteblack.data.Routes
 import com.example.letteblack.viewmodel.UserViewModel
+import com.google.firebase.auth.EmailAuthProvider
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AccountScreen(
-    onDeleteAccount: () -> Unit = {},
     navController: NavHostController,
 ) {
     val userViewModel: UserViewModel = hiltViewModel()
     val user by userViewModel.user.collectAsState()
+
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    var showReauthDialog by remember { mutableStateOf(false) }
+
+    val auth = FirebaseAuth.getInstance()
+    val firstore = FirebaseFirestore.getInstance()
+    val context = LocalContext.current
 
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -148,7 +169,7 @@ fun AccountScreen(
             Spacer(modifier = Modifier.weight(1f))
 
             Button(
-                onClick = onDeleteAccount,
+                onClick = { showDeleteDialog = true},
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 42.dp),
@@ -158,6 +179,35 @@ fun AccountScreen(
             ) {
                 Text("Delete Account", color = MaterialTheme.colorScheme.onError)
             }
+
+            DeleteAccountDialog(
+                showDialog =  showDeleteDialog,
+                onDismiss = { showDeleteDialog = false},
+                onConfirmDelete= {
+                    showDeleteDialog = false
+                    showReauthDialog = true
+                }
+            )
+
+            ReauthenticateDialog(
+                showDialog = showReauthDialog,
+                onDismiss = { showReauthDialog = false},
+                onReauthenticate = { password->
+                    showReauthDialog = false
+                    deleteUserAccount(
+                        auth = auth,
+                        firestore = firstore,
+                        password = password,
+                        onSuccess ={
+                            Toast.makeText(context,"Account Deleted Successfully", Toast.LENGTH_LONG).show()
+                            navController.navigate(Routes.Login.toString()){ popUpTo(0){ inclusive = true} }
+                        },
+                        onError = { errorMessage ->
+                            Toast.makeText(context,errorMessage, Toast.LENGTH_LONG).show()
+                        }
+                    )
+                }
+            )
         }
     }
 }
@@ -203,4 +253,168 @@ fun AccountInfoItem(
             Text(value,style = MaterialTheme.typography.bodySmall)
         }
     }
+}
+
+@Composable
+fun DeleteAccountDialog(
+    showDialog: Boolean,
+    onDismiss: () -> Unit,
+    onConfirmDelete: () -> Unit
+) {
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = onDismiss,
+            title = {
+                Text("Delete Account")
+            },
+            text = {
+                Text(
+                    "Are you sure you want to delete your account? " +
+                            "This action cannot be undone and all your data will be permanently deleted."
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = onConfirmDelete
+                ) {
+                    Text("Delete", color = MaterialTheme.colorScheme.error)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = onDismiss) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
+}
+
+@Composable
+fun ReauthenticateDialog(
+    showDialog: Boolean,
+    onDismiss: () -> Unit,
+    onReauthenticate: (String) -> Unit
+) {
+    var password by remember { mutableStateOf("") }
+    var passwordVisible by remember { mutableStateOf(false) }
+
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = onDismiss,
+            title = { Text("Verify Identity") },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text("Please enter your password to confirm account deletion")
+
+                    OutlinedTextField(
+                        value = password,
+                        onValueChange = { password = it },
+                        label = { Text("Password") },
+                        visualTransformation = if (passwordVisible)
+                            VisualTransformation.None else PasswordVisualTransformation(),
+                        trailingIcon = {
+                            IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                                Icon(
+                                    imageVector = if (passwordVisible)
+                                        Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                                    contentDescription = "Toggle password visibility"
+                                )
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = { onReauthenticate(password) },
+                    enabled = password.isNotEmpty()
+                ) {
+                    Text("Confirm")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = onDismiss) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
+}
+
+fun deleteUserAccount(
+    auth: FirebaseAuth,
+    firestore: FirebaseFirestore,
+    password: String,
+    onSuccess: () -> Unit,
+    onError: (String) -> Unit
+) {
+    val user = auth.currentUser
+
+    if (user?.email == null) {
+        onError("No authenticated user found")
+        return
+    }
+
+    // Re-authenticate as per firebase
+    val credential = EmailAuthProvider.getCredential(user.email!!, password)
+
+    user.reauthenticate(credential)
+        .addOnSuccessListener {
+            deleteUserDataFromFirestore(firestore, user.uid) { firestoreSuccess ->  // For deletion of user data
+                if (firestoreSuccess) {
+                    user.delete()           // Deleting Auth
+                        .addOnSuccessListener {
+                            onSuccess()
+                        }
+                        .addOnFailureListener { exception ->
+                            onError("Failed to delete account: ${exception.message}")
+                        }
+                } else {
+                    onError("Failed to delete user data")
+                }
+            }
+        }
+        .addOnFailureListener { exception ->
+            when {
+                exception.message?.contains("password") == true -> {
+                    onError("Incorrect password")
+                }
+                else -> {
+                    onError("Authentication failed: ${exception.message}")
+                }
+            }
+        }
+}
+
+fun deleteUserDataFromFirestore(
+    firestore: FirebaseFirestore,
+    userId: String,
+    onComplete: (Boolean) -> Unit
+) {
+    val batch = firestore.batch()
+
+    val userRef = firestore.collection("users").document(userId)
+    batch.delete(userRef)
+
+    // Deleting for subcollections
+    firestore.collection("users").document(userId)
+        .collection("progress")
+        .get()
+        .addOnSuccessListener { documents ->
+            for (document in documents) {
+                batch.delete(document.reference)
+            }
+            // Commiting deletions
+            batch.commit()
+                .addOnSuccessListener {
+                    onComplete(true)
+                }
+                .addOnFailureListener {
+                    onComplete(false)
+                }
+        }
+        .addOnFailureListener {
+            onComplete(false)
+        }
 }
