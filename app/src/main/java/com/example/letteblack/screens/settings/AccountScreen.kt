@@ -141,7 +141,7 @@ fun AccountScreen(
                     icon = Icons.Default.Lock,
                     title = "Password",
                     value = "••••••••",
-                    onClick = {}
+                    onClick = {navController.navigate("change_password")}
                 )
             }
 
