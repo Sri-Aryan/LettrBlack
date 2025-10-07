@@ -75,6 +75,8 @@ fun ProfileScreen(
 
     val userViewModel: UserViewModel = hiltViewModel()
 
+    val user by userViewModel.user.collectAsState()
+
     LaunchedEffect(groups) {
         Log.d("Profile", "DEBUG >>> Groups for $userId: ${groups.map { it.groupName }}")
     }
@@ -124,7 +126,7 @@ fun ProfileScreen(
                     )
 
                     Text(
-                        userName,
+                        text = "${user?.name}",
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurface

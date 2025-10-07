@@ -38,9 +38,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -56,17 +53,9 @@ import com.example.letteblack.viewmodel.UserViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AccountScreen(
-    userName: String = "User Name",
-    userEmail: String = "user@example.com",
-    userUsername: String = "user1234",
     onDeleteAccount: () -> Unit = {},
     navController: NavHostController,
 ) {
-    var name by remember { mutableStateOf(userName) }
-    var email by remember { mutableStateOf(userEmail) }
-    var username by remember { mutableStateOf(userUsername) }
-    var password by remember { mutableStateOf("") }
-
     val userViewModel: UserViewModel = hiltViewModel()
     val user by userViewModel.user.collectAsState()
 
@@ -129,14 +118,14 @@ fun AccountScreen(
             SettingsSection("Personal Info") {
                 AccountInfoItem(
                     icon = Icons.Default.Person,
-                    title = "Name",
-                    value = name,
+                    title = "${user?.name}",
+                    value = "Name",
                     onClick = {}
                 )
                 AccountInfoItem(
                     icon = Icons.Default.AccountCircle,
-                    title = "Username",
-                    value = username,
+                    title = "${user?.uid}",
+                    value = "UserID",
                     onClick = {}
                 )
             }
@@ -144,8 +133,8 @@ fun AccountScreen(
             SettingsSection("Account Security") {
                 AccountInfoItem(
                     icon = Icons.Default.Email,
-                    title = "Email",
-                    value = email,
+                    title = "${user?.email}",
+                    value = "Email",
                     onClick = {}
                 )
                 AccountInfoItem(
@@ -162,7 +151,7 @@ fun AccountScreen(
                 onClick = onDeleteAccount,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 32.dp),
+                    .padding(horizontal = 42.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.error
                 )
@@ -211,11 +200,7 @@ fun AccountInfoItem(
         Spacer(modifier = Modifier.width(16.dp))
         Column(modifier = Modifier.weight(1f)) {
             Text(title, style = MaterialTheme.typography.bodyLarge)
-            Text(
-                value,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+            Text(value,style = MaterialTheme.typography.bodySmall)
         }
     }
 }
