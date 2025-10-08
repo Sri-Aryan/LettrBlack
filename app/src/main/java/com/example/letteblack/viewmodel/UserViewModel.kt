@@ -86,7 +86,16 @@ class UserViewModel @Inject constructor(
         viewModelScope.launch {
             val currentUser = repo.getUserOnce()
             currentUser?.let {
-                repo.updateUser(it.copy(notificationEbnabled = enabled))
+                repo.updateUser(it.copy(notificationEnabled = enabled))
+            }
+        }
+    }
+
+    fun setSoundEnabled(enabled: Boolean){
+        viewModelScope.launch {
+            val currentUser = repo.getUserOnce()
+            currentUser?.let {
+                repo.updateUser(it.copy(soundEnabled = enabled))
             }
         }
     }

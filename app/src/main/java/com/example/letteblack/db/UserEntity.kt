@@ -9,5 +9,6 @@ data class UserEntity(
     val name: String,
     val email: String,
     val avatarUri: String? = null,
-    val notificationEbnabled : Boolean= true
+    val notificationEnabled : Boolean= true,
+    val soundEnabled: Boolean = true
 )

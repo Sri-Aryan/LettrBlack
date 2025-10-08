@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -30,7 +29,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -61,8 +59,6 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(navController: NavHostController, authViewModel: AuthViewModel) {
-    var sounds by remember { mutableStateOf(true) }
-    var notificationDialog by remember {mutableStateOf(false)}
 
     val userViewModal: UserViewModel = hiltViewModel()
 
@@ -70,6 +66,9 @@ fun SettingsScreen(navController: NavHostController, authViewModel: AuthViewMode
     val dataStore = remember { SettingDataStore(context) }
     val scope = rememberCoroutineScope()
     val notificationEnabled by dataStore.notificationPreference.collectAsState(initial = true)
+    val soundEnabled by dataStore.soundPrefrences.collectAsState(initial = true)
+    var soundsDialog by remember { mutableStateOf(false) }
+    var notificationDialog by remember {mutableStateOf(false)}
 
     // React to logout
     LaunchedEffect(authViewModel.userState.value) {
@@ -130,12 +129,28 @@ fun SettingsScreen(navController: NavHostController, authViewModel: AuthViewMode
             }
 
             // Sounds
+
+            //Whenever using sounds then implement Playing sound using this value
+            /*
+            Ex:
+            val user = userViewModel.user.value
+                if (user?.soundEnabled == true) {
+                    mediaPlayer.start()
+                }
+            */
             SettingsSection("Sounds") {
                 SwitchSettingItem(
                     icon = Icons.Default.VolumeUp,
                     title = "App Sounds",
-                    checked = sounds,
-                    onCheckedChange = { sounds = it }
+                    checked = soundEnabled,
+                    onCheckedChange = { isChecked->
+                        if (!isChecked) {
+                            soundsDialog = true
+                        } else {
+                            scope.launch { dataStore.savedSoundPrefrence(true) }
+                            userViewModal.setSoundEnabled(isChecked)
+                        }
+                    }
                 )
             }
             // Help & Report
@@ -192,9 +207,26 @@ fun SettingsScreen(navController: NavHostController, authViewModel: AuthViewMode
                         }
                     },
                     dismissButton = {
-                        TextButton(onClick = {notificationDialog =false}) {
+                        TextButton(onClick = {notificationDialog = false}) {
                             Text("Cancel")
                         }
+                    }
+                )
+            }
+            if (soundsDialog) {
+                AlertDialog(
+                    onDismissRequest = { soundsDialog = false },
+                    title = { Text("Turn off sounds?") },
+                    text = { Text("You won’t hear button clicks or notifications in the app.") },
+                    confirmButton = {
+                        TextButton(onClick = {
+                            scope.launch { dataStore.savedSoundPrefrence(false) }
+                            userViewModal.setSoundEnabled(false)
+                            soundsDialog = false
+                        }) { Text("Yes", color = MaterialTheme.colorScheme.error) }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { soundsDialog = false }) { Text("Cancel") }
                     }
                 )
             }
@@ -202,25 +234,26 @@ fun SettingsScreen(navController: NavHostController, authViewModel: AuthViewMode
     }
 }
 
-@Composable
-fun SettingsSection(title: String, content: @Composable ColumnScope.() -> Unit) {
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text(
-            text = title,
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.primary
-        )
-        Surface(
-            shape = MaterialTheme.shapes.medium,
-            tonalElevation = 2.dp,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Column(modifier = Modifier.padding(8.dp)) {
-                content()
-            }
-        }
-    }
-}
+//
+//@Composable
+//fun SettingsSection(title: String, content: @Composable ColumnScope.() -> Unit) {
+//    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+//        Text(
+//            text = title,
+//            style = MaterialTheme.typography.titleMedium,
+//            color = MaterialTheme.colorScheme.primary
+//        )
+//        Surface(
+//            shape = MaterialTheme.shapes.medium,
+//            tonalElevation = 2.dp,
+//            modifier = Modifier.fillMaxWidth()
+//        ) {
+//            Column(modifier = Modifier.padding(8.dp)) {
+//                content()
+//            }
+//        }
+//    }
+//}
 
 @Composable
 fun SettingsItem(
