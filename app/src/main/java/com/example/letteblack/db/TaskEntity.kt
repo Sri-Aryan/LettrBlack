@@ -13,6 +13,7 @@ data class TaskEntity(
     val description: String,
     val dueDate: Long?,
     val pointsRewarded: Int,
+    val assigneeName: String,
     val status: String = "pending",  // pending / completed
     val createdAt: Long,
     val updatedAt: Long

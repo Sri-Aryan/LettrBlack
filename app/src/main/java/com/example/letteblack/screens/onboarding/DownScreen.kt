@@ -2,6 +2,7 @@ package com.example.letteblack.screens.onboarding
 
 import android.util.Log
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -44,6 +45,7 @@ import com.example.letteblack.screens.onboarding.data.UserPreference
 import com.example.letteblack.ui.theme.BottomCardShape
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun DownScreen(
     navController: NavController, viewModel: OnBoardingViewModel, pagerState: PagerState

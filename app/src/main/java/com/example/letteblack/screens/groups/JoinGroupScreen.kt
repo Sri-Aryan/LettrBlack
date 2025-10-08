@@ -2,11 +2,16 @@ package com.example.letteblack.screens.groups
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -14,13 +19,17 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.example.letteblack.db.GroupEntity
+import com.example.letteblack.db.GroupMemberEntity
 import com.example.letteblack.screens.notes.NotesSection
 import com.example.letteblack.screens.tasks.TasksSection
 import com.example.letteblack.viewmodel.GroupViewModel
@@ -44,7 +53,9 @@ fun JoinGroupScreen(
     val group by groupViewModel.getGroup(groupId).collectAsState(initial = null)
     val members by groupViewModel.members(groupId).collectAsState(emptyList())
 
-    var selectedTab by remember { mutableStateOf(0) }
+    var selectedTab by remember { mutableIntStateOf(0) }
+    var showUpdateDialog by remember { mutableStateOf(false) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
 
     fun formatDate(time: Long): String {
         val sdf = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.getDefault())
@@ -92,6 +103,21 @@ fun JoinGroupScreen(
                     text = "Created at: ${formatDate(group!!.createdAt)}",
                     style = MaterialTheme.typography.labelSmall
                 )
+
+                // 🔹 Update & Delete buttons
+                Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                    Button(onClick = { showUpdateDialog = true }) {
+                        Text("Update Group")
+                    }
+                    Button(
+                        onClick = { showDeleteDialog = true },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.error
+                        )
+                    ) {
+                        Text("Delete Group")
+                    }
+                }
             }
 
             Text("Members", style = MaterialTheme.typography.titleMedium)
@@ -122,8 +148,6 @@ fun JoinGroupScreen(
                 )
             }
 
-            // Tab Content
-            // Tab Content
             when (selectedTab) {
                 0 -> NotesSection(
                     groupId = groupId,
@@ -132,7 +156,6 @@ fun JoinGroupScreen(
                         navController.navigate("group/$groupId/noteDetail/${note.noteId}")
                     }
                 )
-
                 1 -> TasksSection(
                     groupId = groupId,
                     viewModel = taskViewModel,
@@ -142,5 +165,96 @@ fun JoinGroupScreen(
                 )
             }
         }
+
+        // 🔹 Update Group Dialog
+        if (showUpdateDialog && group != null) {
+            UpdateGroupDialog(
+                group = group!!,
+                members = members,
+                onDismiss = { showUpdateDialog = false },
+                onConfirm = { name, desc, creatorName, updatedMembers ->
+                    groupViewModel.updateGroupWithMembers(
+                        groupId,
+                        name,
+                        desc,
+                        creatorName,
+                        updatedMembers
+                    )
+                    showUpdateDialog = false
+                }
+            )
+        }
+
+        // 🔹 Delete Confirmation Dialog
+        if (showDeleteDialog) {
+            AlertDialog(
+                onDismissRequest = { showDeleteDialog = false },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            groupViewModel.deleteGroup(groupId)
+                            showDeleteDialog = false
+                            navController.popBackStack() // go back after delete
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.error
+                        )
+                    ) {
+                        Text("Delete")
+                    }
+                },
+                dismissButton = {
+                    Button(onClick = { showDeleteDialog = false }) {
+                        Text("Cancel")
+                    }
+                },
+                title = { Text("Delete Group") },
+                text = { Text("Are you sure you want to delete this group and all its members, tasks, and notes?") }
+            )
+        }
     }
+}
+
+@Composable
+fun UpdateGroupDialog(
+    group: GroupEntity,
+    members: List<GroupMemberEntity>,
+    onDismiss: () -> Unit,
+    onConfirm: (String, String?, String, List<GroupMemberEntity>) -> Unit
+) {
+    var name by remember { mutableStateOf(group.groupName) }
+    var description by remember { mutableStateOf(group.description ?: "") }
+    var creatorName by remember { mutableStateOf(group.createdByUserName) }
+    val updatedMembers = remember { members.toMutableStateList() }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Update Group") },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text("Group Name") })
+                OutlinedTextField(value = description, onValueChange = { description = it }, label = { Text("Description") })
+                OutlinedTextField(value = creatorName, onValueChange = { creatorName = it }, label = { Text("Creator Name") })
+
+                Text("Members", style = MaterialTheme.typography.titleSmall)
+                updatedMembers.forEachIndexed { index, member ->
+                    OutlinedTextField(
+                        value = member.userName,
+                        onValueChange = { updatedMembers[index] = member.copy(userName = it) },
+                        label = { Text("Member ${index + 1}") }
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            Button(onClick = { onConfirm(name, description, creatorName, updatedMembers) }) {
+                Text("Save")
+            }
+        },
+        dismissButton = {
+            Button(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    )
 }

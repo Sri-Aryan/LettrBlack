@@ -141,7 +141,7 @@ fun SignUpScreen(
         TextButton(onClick = {
             navController.navigate(Routes.Login.toString())
         }) {
-            Text("Already have an account       , Login")
+            Text("Already have an account, Login")
         }
     }
 }

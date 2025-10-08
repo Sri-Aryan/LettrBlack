@@ -9,5 +9,6 @@ data class GroupMemberEntity(
     val groupId: String,
     val userId: String,
     val userName: String,
-    val joinedAt: Long
+    val joinedAt: Long,
+    var points: Int = 0
 )

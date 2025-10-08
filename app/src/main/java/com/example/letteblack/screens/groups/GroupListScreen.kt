@@ -1,33 +1,11 @@
 package com.example.letteblack.screens.groups
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -71,14 +49,19 @@ fun GroupListScreen(
                     .fillMaxWidth()
                     .padding(vertical = 4.dp)
                     .clickable { onGroupClick(group.groupId) },
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer
+                )
             ) {
                 Column(Modifier.padding(16.dp)) {
                     Text(group.groupName, style = MaterialTheme.typography.titleMedium)
 
                     if (!group.description.isNullOrBlank()) {
                         Spacer(Modifier.height(4.dp))
-                        Text(group.description, style = MaterialTheme.typography.bodySmall)
+                        Text(
+                            group.description,
+                            style = MaterialTheme.typography.bodySmall
+                        )
                     }
 
                     Spacer(Modifier.height(8.dp))
@@ -91,11 +74,16 @@ fun GroupListScreen(
                             "👤 ${group.createdByUserName} • ${group.memberCount} members",
                             style = MaterialTheme.typography.labelSmall
                         )
-                        IconButton(onClick = {
-                            selectedGroupId = group.groupId
-                            showJoinDialog = true
-                        }) {
-                            Icon(Icons.Default.Add, contentDescription = "Join")
+                        IconButton(
+                            onClick = {
+                                selectedGroupId = group.groupId
+                                showJoinDialog = true
+                            }
+                        ) {
+                            Icon(
+                                Icons.Default.Add,
+                                contentDescription = "Join"
+                            )
                         }
                     }
                 }
@@ -112,7 +100,6 @@ fun GroupListScreen(
     // Dialog for joining existing group
     if (showJoinDialog && selectedGroupId != null) {
         val selectedGroup = groups.find { it.groupId == selectedGroupId }
-
         AlertDialog(
             onDismissRequest = {
                 showJoinDialog = false
@@ -126,7 +113,7 @@ fun GroupListScreen(
                         value = selectedGroup?.groupName ?: "",
                         onValueChange = {},
                         label = { Text("Group Name") },
-                        enabled = false // readonly
+                        enabled = false
                     )
                     Spacer(Modifier.height(8.dp))
                     OutlinedTextField(
@@ -137,27 +124,31 @@ fun GroupListScreen(
                 }
             },
             confirmButton = {
-                TextButton(onClick = {
-                    if (userName.isNotBlank()) {
-                        val nameToSave = userName
-                        scope.launch {
-                            viewModel.joinGroup(
-                                selectedGroupId!!,
-                                userId,
-                                nameToSave
-                            )
+                TextButton(
+                    onClick = {
+                        if (userName.isNotBlank()) {
+                            val nameToSave = userName
+                            scope.launch {
+                                viewModel.joinGroup(selectedGroupId!!, userId, nameToSave)
+                            }
+                            // reset AFTER launch
+                            userName = ""
+                            showJoinDialog = false
                         }
-                        // reset AFTER launch call
-                        userName = ""
-                        showJoinDialog = false
                     }
-                }) { Text("Join") }
+                ) {
+                    Text("Join")
+                }
             },
             dismissButton = {
-                TextButton(onClick = {
-                    showJoinDialog = false
-                    userName = ""
-                }) { Text("Cancel") }
+                TextButton(
+                    onClick = {
+                        showJoinDialog = false
+                        userName = ""
+                    }
+                ) {
+                    Text("Cancel")
+                }
             }
         )
     }
@@ -189,26 +180,32 @@ fun GroupListScreen(
                 }
             },
             confirmButton = {
-                TextButton(onClick = {
-                    if (newGroupName.isNotBlank() && creatorName.isNotBlank()) {
-                        scope.launch {
-                            viewModel.createGroup(
-                                newGroupName,
-                                newGroupDescription,
-                                userId,
-                                creatorName
-                            )
-                            // reset AFTER insertion
-                            newGroupName = ""
-                            newGroupDescription = ""
-                            creatorName = ""
-                            showCreateDialog = false
+                TextButton(
+                    onClick = {
+                        if (newGroupName.isNotBlank() && creatorName.isNotBlank()) {
+                            scope.launch {
+                                viewModel.createGroup(
+                                    newGroupName,
+                                    newGroupDescription,
+                                    userId,
+                                    creatorName
+                                )
+                                // reset AFTER insertion
+                                newGroupName = ""
+                                newGroupDescription = ""
+                                creatorName = ""
+                                showCreateDialog = false
+                            }
                         }
                     }
-                }) { Text("Create") }
+                ) {
+                    Text("Create")
+                }
             },
             dismissButton = {
-                TextButton(onClick = { showCreateDialog = false }) { Text("Cancel") }
+                TextButton(onClick = { showCreateDialog = false }) {
+                    Text("Cancel")
+                }
             }
         )
     }
