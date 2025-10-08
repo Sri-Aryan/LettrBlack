@@ -1,6 +1,7 @@
 package com.example.letteblack.viewmodel
 
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.letteblack.db.UserEntity
@@ -39,7 +40,7 @@ class UserViewModel @Inject constructor(
         viewModelScope.launch {
             val currentUser = repo.getUserOnce()
             currentUser?.let {
-                val updatedUser = it.copy(avatarUri = newAvatarUri)
+                val updatedUser = it.copy(avatarUrl = newAvatarUri)
                 repo.updateUser(updatedUser) // Just local save(Room)
                 updateAvatarInFirestore(it.uid, newAvatarUri)
             }
@@ -53,15 +54,31 @@ class UserViewModel @Inject constructor(
         onError: (Exception) -> Unit
     ) {
         val storageRef = Firebase.storage.reference
-        val avatarRef = storageRef.child("avatars/$uid.jpg")
+        // timestamp to avoid conflicts
+        val timestamp = System.currentTimeMillis()
+        val avatarRef = storageRef.child("avatars/$uid/$timestamp.jpg")
+
+        Log.d("UserViewModel", "Uploading to: avatars/$uid/$timestamp.jpg")
 
         avatarRef.putFile(imageUri)
-            .addOnSuccessListener {
+            .addOnSuccessListener { taskSnapshot ->
+                Log.d("UserViewModel", "Upload successful")
+
+                // download URL after successful upload
                 avatarRef.downloadUrl.addOnSuccessListener { downloadUri ->
-                    onSuccess(downloadUri.toString())
+                    val downloadUrl = downloadUri.toString()
+                    Log.d("UserViewModel", "Download URL: $downloadUrl")
+
+                    // Save to Room and Firestore
+                    saveAvatarUrl(uid, downloadUrl)
+                    onSuccess(downloadUrl)
+                }.addOnFailureListener { exception ->
+                    Log.e("UserViewModel", "Error getting download URL", exception)
+                    onError(exception)
                 }
             }
             .addOnFailureListener { exception ->
+                Log.e("UserViewModel", "Upload failed", exception)
                 onError(exception)
             }
     }
@@ -70,7 +87,7 @@ class UserViewModel @Inject constructor(
         val db = Firebase.firestore
         db.collection("users").document(uid)
             .update("avatarUrl", avatarUrl)
-            .addOnSuccessListener { /* synced successfully */ }
+            .addOnSuccessListener {}
             .addOnFailureListener { e -> e.printStackTrace() }
     }
 
@@ -78,7 +95,7 @@ class UserViewModel @Inject constructor(
         val db = Firebase.firestore
         db.collection("users").document(uid)
             .update("avatarUrl", avatarUrl)
-            .addOnSuccessListener { /* success */ }
+            .addOnSuccessListener {  }
             .addOnFailureListener { e -> e.printStackTrace() }
     }
 
@@ -99,4 +116,51 @@ class UserViewModel @Inject constructor(
             }
         }
     }
+
+
+    // Load avatar from Firestore on app start
+    fun loadAvatarFromFirestore(uid: String) {
+        viewModelScope.launch {
+            val db = Firebase.firestore
+            db.collection("users").document(uid).get()
+                .addOnSuccessListener { document ->
+                    if (document.exists()) {
+                        val avatarUrl = document.getString("avatarUrl")
+                        if (!avatarUrl.isNullOrEmpty()) {
+                            viewModelScope.launch {
+                                val currentUser = repo.getUserOnce()
+                                currentUser?.let {
+                                    repo.updateUser(it.copy(avatarUrl = avatarUrl))
+                                }
+                            }
+                        }
+                    }
+                }
+                .addOnFailureListener { e ->
+                    Log.e("UserViewModel", "Error loading avatar from Firestore", e)
+                }
+        }
+    }
+
+    private fun saveAvatarUrl(uid: String, avatarUrl: String) {
+        viewModelScope.launch {
+            // Saving to Room
+            val currentUser = repo.getUserOnce()
+            currentUser?.let {
+                repo.updateUser(it.copy(avatarUrl = avatarUrl))
+            }
+
+            val db = Firebase.firestore
+            db.collection("users").document(uid)
+                .set(mapOf("avatarUrl" to avatarUrl), com.google.firebase.firestore.SetOptions.merge())
+                .addOnSuccessListener {
+                    Log.d("UserViewModel", "Avatar URL saved to Firestore")
+                }
+                .addOnFailureListener { e ->
+                    Log.e("UserViewModel", "Error saving to Firestore", e)
+                }
+        }
+    }
+
+
 }
