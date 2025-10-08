@@ -18,10 +18,10 @@ import androidx.navigation.NavController
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun OnboardingScreen(navController: NavController, viewModel: OnBoardingViewModel) {
-    val onBoardingViewModel = OnBoardingViewModel()
-    val items = onBoardingViewModel.items
+
+    val items = viewModel.items
     val pagerState = rememberPagerState(
-        pageCount = { onBoardingViewModel.items.size },
+        pageCount = { viewModel.items.size },
         initialPage = 0
     )
     val targetColor = items[pagerState.currentPage].color
@@ -44,5 +44,6 @@ fun OnboardingScreen(navController: NavController, viewModel: OnBoardingViewMode
     }
 
 }
+
 
 

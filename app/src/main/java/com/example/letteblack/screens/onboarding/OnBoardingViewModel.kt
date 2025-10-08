@@ -1,9 +1,13 @@
 package com.example.letteblack.screens.onboarding
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.example.letteblack.R
 import com.example.letteblack.screens.onboarding.data.Goal
 import com.example.letteblack.screens.onboarding.data.ScreenData
+import com.example.letteblack.screens.onboarding.data.StudyTimePreference
 import com.example.letteblack.screens.onboarding.data.SubjectChips
 import com.example.letteblack.screens.onboarding.data.Subjects
 import com.example.letteblack.ui.theme.Amber
@@ -12,53 +16,51 @@ import com.example.letteblack.ui.theme.Green
 
 class OnBoardingViewModel : ViewModel() {
     val title = "Subject and Domains"
+    var selectedSubjects by mutableStateOf<List<String>>(emptyList())
+        private set
+    var selectedGoals by mutableStateOf<List<String>>(emptyList())
+        private set
+    var selectedStudyTime by mutableStateOf(StudyTimePreference())
+        private set
     val subjectsChip: ArrayList<Subjects> = arrayListOf<Subjects>(
         Subjects(
-            title = "Science",
-            subjects = arrayListOf(
+            title = "Science", subjects = arrayListOf(
                 SubjectChips("Biology", icon = R.drawable.biology, false),
                 SubjectChips("Chemistry", icon = R.drawable.chemistry, false),
                 SubjectChips("Math", icon = R.drawable.math, false),
                 SubjectChips("Physics", icon = R.drawable.physics, false),
             )
-        ),
-        Subjects(
-            title = "Technology",
-            subjects = arrayListOf(
-                SubjectChips("Programming", icon = R.drawable.biology, false),
-                SubjectChips("AI", icon = R.drawable.chemistry, false),
-                SubjectChips("Data Science", icon = R.drawable.math, false),
-                SubjectChips("Design", icon = R.drawable.physics, false),
-            )
-        ),
-        Subjects(
-            title = "Humanities",
-            subjects = arrayListOf(
-                SubjectChips("History", icon = R.drawable.biology, false),
-                SubjectChips("Philosophy", icon = R.drawable.chemistry, false),
-                SubjectChips("Literature", icon = R.drawable.math, false),
-                SubjectChips("Languages", icon = R.drawable.physics, false),
+        ), Subjects(
+            title = "Technology", subjects = arrayListOf(
+                SubjectChips("Programming", icon = R.drawable.programming, false),
+                SubjectChips("AI", icon = R.drawable.ai, false),
+                SubjectChips("Data Science", icon = R.drawable.analyse, false),
+                SubjectChips("Design", icon = R.drawable.design, false),
             )
         ), Subjects(
-            title = "Business",
-            subjects = arrayListOf(
-                SubjectChips("Marketing", icon = R.drawable.biology, false),
-                SubjectChips("Finance", icon = R.drawable.chemistry, false),
-                SubjectChips("Management", icon = R.drawable.math, false),
+            title = "Humanities", subjects = arrayListOf(
+                SubjectChips("History", icon = R.drawable.history, false),
+                SubjectChips("Philosophy", icon = R.drawable.philosophy, false),
+                SubjectChips("Literature", icon = R.drawable.literature, false),
+                SubjectChips("Languages", icon = R.drawable.language, false),
             )
         ), Subjects(
-            title = "Creative",
-            subjects = arrayListOf(
-                SubjectChips("Art", icon = R.drawable.biology, false),
-                SubjectChips("Music", icon = R.drawable.chemistry, false),
-                SubjectChips("Media", icon = R.drawable.math, false),
+            title = "Business", subjects = arrayListOf(
+                SubjectChips("Marketing", icon = R.drawable.marketing, false),
+                SubjectChips("Finance", icon = R.drawable.finance, false),
+                SubjectChips("Management", icon = R.drawable.management, false),
             )
         ), Subjects(
-            title = "Exam prep",
-            subjects = arrayListOf(
-                SubjectChips("SAT", icon = R.drawable.biology, false),
-                SubjectChips("IELTS", icon = R.drawable.chemistry, false),
-                SubjectChips("GMAT", icon = R.drawable.math, false),
+            title = "Creative", subjects = arrayListOf(
+                SubjectChips("Art", icon = R.drawable.art, false),
+                SubjectChips("Music", icon = R.drawable.music, false),
+                SubjectChips("Media", icon = R.drawable.media, false),
+            )
+        ), Subjects(
+            title = "Exam prep", subjects = arrayListOf(
+                SubjectChips("SAT", icon = R.drawable.folder_math, false),
+                SubjectChips("IELTS", icon = R.drawable.ielts, false),
+                SubjectChips("GMAT", icon = R.drawable.gmat, false),
             )
         )
     )
@@ -71,15 +73,13 @@ class OnBoardingViewModel : ViewModel() {
             motiveText = "What topics are you interested in learning?",
             color = Blue,
             R.raw.subject
-        ),
-        ScreenData(
+        ), ScreenData(
             "Learning goals",
             R.raw.goal,
             motiveText = "Why are you here?",
             color = Green,
             R.raw.goal
-        ),
-        ScreenData(
+        ), ScreenData(
             "Study Time",
             R.raw.goal,
             motiveText = "How and when do you want to learn?",
@@ -87,33 +87,44 @@ class OnBoardingViewModel : ViewModel() {
             R.raw.time
         )
     )
-
     val goals = arrayListOf<Goal>(
         Goal(
-            "Pass an exam",
-            R.drawable.math,
-            false
-        ),
-        Goal(
-            "Certification",
-            R.drawable.math,
-            false
-        ),
-        Goal(
-            "career skill",
-            R.drawable.math,
-            false
-        ),
-        Goal(
-            "Improve grade",
-            R.drawable.math,
-            false
-        ),
-        Goal(
-            "Personal curiosity",
-            R.drawable.math,
-            false
-        ),
-
+            "Pass an exam", R.drawable.exam, false
+        ), Goal(
+            "Certification", R.drawable.certificate, false
+        ), Goal(
+            "Career growth", R.drawable.career, false
+        ), Goal(
+            "Improve grade", R.drawable.grade, false
+        ), Goal(
+            "Personal curiosity", R.drawable.hobby, false
+        ), Goal(
+            "Skill Mastery", R.drawable.mastery, false
+        ), Goal(
+            "Teaching", R.drawable.teaching, false
+        ), Goal(
+            "Learn Together", R.drawable.collab, false
         )
+
+    )
+
+    fun toggleSubject(subject: String) {
+        selectedSubjects = if (selectedSubjects.contains(subject)) {
+            selectedSubjects - subject
+        } else {
+            selectedSubjects + subject
+        }
+    }
+
+    fun toggleGoal(goal: String) {
+        selectedGoals = if (selectedGoals.contains(goal)) {
+            selectedGoals - goal
+        } else {
+            selectedGoals + goal
+        }
+    }
+
+
 }
+
+

@@ -9,6 +9,6 @@ class Goal(
     val icon: Int,
     selected: Boolean = false
 ) {
-    var selected by mutableStateOf(selected)  // 👈 state-backed
+    var selected by mutableStateOf(selected)
 
 }
