@@ -1,6 +1,7 @@
 package com.example.letteblack.screens.onboarding
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,6 +22,7 @@ import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.InputChip
 import androidx.compose.material3.MaterialTheme
@@ -47,7 +49,7 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.letteblack.R
 import com.example.letteblack.ui.theme.Poppins
 import com.example.letteblack.ui.theme.ReemKufi
-
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun UpScreen(pagerState: PagerState, viewModel: OnBoardingViewModel) {
     val pageNumber = pagerState.currentPage
@@ -89,8 +91,7 @@ fun UpScreen(pagerState: PagerState, viewModel: OnBoardingViewModel) {
     }
 }
 
-
-@OptIn(ExperimentalLayoutApi::class)
+@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun DisplayOptions(viewModel: OnBoardingViewModel, pageNumber: Int) {
 
@@ -107,7 +108,7 @@ fun DisplayOptions(viewModel: OnBoardingViewModel, pageNumber: Int) {
                     text = subjects[subjectIndex].title,
                     fontWeight = FontWeight.Normal,
                     fontFamily = Poppins,
-                    color = Color.Black
+                    color = Color.DarkGray
                 )
 
                 if (enabled) {

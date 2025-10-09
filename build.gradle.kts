@@ -5,4 +5,6 @@ plugins {
     alias(libs.plugins.google.gms.google.services) apply false
     alias(libs.plugins.kotlin.kapt) apply false
     alias(libs.plugins.dagger.hilt.android) apply false
+
+    kotlin("plugin.serialization") version "2.2.0" apply false
 }

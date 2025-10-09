@@ -3,19 +3,21 @@ package com.example.letteblack.repositories
 import com.example.letteblack.db.GroupDao
 import com.example.letteblack.db.GroupMemberDao
 import com.example.letteblack.db.GroupMemberEntity
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.tasks.await
 import java.util.UUID
 
 class GroupMemberRepositoryImpl(
-    private val dao: GroupMemberDao,
+    private val groupMemberDao: GroupMemberDao,
     private val groupDao: GroupDao,
     private val firestore: FirebaseFirestore
 ) : GroupMemberRepository {
 
     private val collection get() = firestore.collection("group_members")
 
-    override fun observeMembers(groupId: String) = dao.observeMembers(groupId)
+    override fun observeMembers(groupId: String) = groupMemberDao.observeMembers(groupId)
 
     override suspend fun joinGroup(
         groupId: String,
@@ -31,7 +33,7 @@ class GroupMemberRepositoryImpl(
             joinedAt = now
         )
 
-        dao.insert(member)
+        groupMemberDao.insert(member)
 
         val group = groupDao.getGroupById(groupId)
         if (group != null) {
@@ -47,5 +49,32 @@ class GroupMemberRepositoryImpl(
             "joinedAt" to member.joinedAt
         )
         collection.document(member.id).set(map).await()
+    }
+
+    override fun observeMembersByPoints(groupId: String): Flow<List<GroupMemberEntity>> {
+        return groupMemberDao.observeMembersSortedByPoints(groupId)
+    }
+
+    override fun getMemberById(memberId: String): Flow<GroupMemberEntity?> {
+        return groupMemberDao.getMemberByIdFlow(memberId)
+    }
+
+    override suspend fun addPointsToMember(groupId: String, userId: String, points: Int) {
+        // Update Room
+        groupMemberDao.addPoints(groupId, userId, points)
+
+        // Update Firebase
+        val snapshot = collection
+            .whereEqualTo("groupId", groupId)
+            .whereEqualTo("userId", userId)
+            .get()
+            .await()
+
+        if (!snapshot.isEmpty) {
+            val docId = snapshot.documents.first().id
+            collection.document(docId)
+                .update("points", FieldValue.increment(points.toLong()))
+                .await()
+        }
     }
 }

@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "591554703858",
-    "project_id": "letteblack86",
-    "storage_bucket": "letteblack86.firebasestorage.app"
+    "project_number": "59316226400",
+    "project_id": "donorapp-1a2fb",
+    "storage_bucket": "donorapp-1a2fb.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:591554703858:android:fac7b2e182a0252df43b6b",
+        "mobilesdk_app_id": "1:59316226400:android:959bf8f487b8dda31d3605",
         "android_client_info": {
           "package_name": "com.example.letteblack"
         }
@@ -15,7 +15,26 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyAvUEhpH6cEvPBLeNswnUvBsjTVHUvQaJg"
+          "current_key": "AIzaSyB1v8KbKP9aSuvyohV7w4mwXRVVGrkk9a8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:59316226400:android:e1a43028bb8294851d3605",
+        "android_client_info": {
+          "package_name": "com.vanshika.donorapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB1v8KbKP9aSuvyohV7w4mwXRVVGrkk9a8"
         }
       ],
       "services": {

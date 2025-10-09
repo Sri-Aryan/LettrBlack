@@ -20,10 +20,11 @@ class TaskRepositoryImpl(
         groupId: String,
         assignerId: String,
         assigneeId: String,
+        assigneeName: String,
         title: String,
         description: String,
         pointsRewarded: Int,
-        dueDate: Long?   // 👈 must be passed from UI
+        dueDate: Long?
     ) {
         val now = System.currentTimeMillis()
         val task = TaskEntity(
@@ -31,25 +32,30 @@ class TaskRepositoryImpl(
             groupId = groupId,
             assignerId = assignerId,
             assigneeId = assigneeId,
+            assigneeName = assigneeName,
             title = title,
             description = description,
             pointsRewarded = pointsRewarded,
             dueDate = dueDate,
             createdAt = now,
-            updatedAt = now
+            updatedAt = now,
+            status = "incomplete"
         )
 
+        // 1️⃣ Local DB
         dao.insert(task)
 
+        // 2️⃣ Firestore
         val map = mapOf(
             "taskId" to task.taskId,
             "groupId" to task.groupId,
             "assignerId" to task.assignerId,
             "assigneeId" to task.assigneeId,
+            "assigneeName" to task.assigneeName,
             "title" to task.title,
             "description" to task.description,
             "pointsRewarded" to task.pointsRewarded,
-            "dueDate" to task.dueDate,   // 👈 check this is not null
+            "dueDate" to task.dueDate,
             "status" to task.status,
             "createdAt" to task.createdAt,
             "updatedAt" to task.updatedAt
@@ -70,10 +76,11 @@ class TaskRepositoryImpl(
         title: String,
         description: String,
         dueDate: Long?,
-        pointsRewarded: Int
+        pointsRewarded: Int,
+        assigneeId: String
     ) {
         val now = System.currentTimeMillis()
-        dao.updateTask(taskId, title, description, dueDate, pointsRewarded, now)
+        dao.updateTask(taskId, title, description, dueDate, pointsRewarded, assigneeId, now)
 
         collection.document(taskId).update(
             mapOf(
@@ -81,6 +88,7 @@ class TaskRepositoryImpl(
                 "description" to description,
                 "dueDate" to dueDate,
                 "pointsRewarded" to pointsRewarded,
+                "assigneeId" to assigneeId,
                 "updatedAt" to now
             )
         ).await()
@@ -93,6 +101,10 @@ class TaskRepositoryImpl(
 
     override fun getTaskById(taskId: String): Flow<TaskEntity?> {
         return dao.getTaskById(taskId)
+    }
+
+    override suspend fun getTaskByIdOnce(taskId: String): TaskEntity? {
+        return dao.getTaskByIdOnce(taskId)
     }
 
 }

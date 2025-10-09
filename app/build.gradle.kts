@@ -6,6 +6,8 @@ plugins {
     alias(libs.plugins.google.gms.google.services)
     alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.dagger.hilt.android)
+    kotlin("plugin.serialization") version "2.2.0"
+
 }
 
 android {
@@ -64,12 +66,15 @@ dependencies {
     // Navigation + ViewModel in Compose
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
     implementation("androidx.navigation:navigation-compose:2.7.7")
+    implementation(libs.kotlinx.serialization.json)
+
 
     // --- Room ---
     implementation("androidx.room:room-runtime:2.7.2")
     implementation("androidx.room:room-ktx:2.7.2")
     implementation(libs.transportation.consumer)
     implementation(libs.androidx.ui.geometry)
+    implementation(libs.androidx.work.runtime.ktx)
     kapt("androidx.room:room-compiler:2.7.2")
 
     // --- Hilt ---
@@ -86,6 +91,7 @@ dependencies {
     implementation("com.google.firebase:firebase-auth-ktx")
     implementation("com.google.firebase:firebase-firestore-ktx")
     implementation("com.google.firebase:firebase-analytics-ktx")
+    implementation("com.google.firebase:firebase-storage-ktx")
 
     // --- Lottie ---
     implementation("com.airbnb.android:lottie-compose:6.0.0")
@@ -100,4 +106,12 @@ dependencies {
 
     implementation("androidx.compose.material:material-icons-extended")
     implementation("androidx.compose.material3:material3")
+    implementation("me.saket.swipe:swipe:1.1.1")
+
+    //Coil
+    implementation("io.coil-kt:coil-compose:2.5.0")
+    implementation("androidx.activity:activity-compose:1.7.2")
+
+    // For Preferences DataStore (key-value pairs)
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
 }
