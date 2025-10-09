@@ -122,13 +122,5 @@ fun LoginScreen(navController: NavHostController, modifier: Modifier, authViewMo
             }
         }
 
-        TextButton(
-            onClick = { navController.navigate(Routes.OnBoarding.toString()) },
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(16.dp)
-        ) {
-            Text("Skip")
-        }
     }
 }

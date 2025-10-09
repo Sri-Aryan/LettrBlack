@@ -127,6 +127,14 @@ fun SignUpScreen(
                     authViewModel.name = ""
                     authViewModel.email = ""
                     authViewModel.password = ""
+
+                    navController.navigate(Routes.OnBoarding.toString()) {
+                        popUpTo(Routes.SignUp.toString()) {
+                            inclusive = true
+                        }
+                        launchSingleTop = true
+                    }
+
                 } else {
                     Utils.showToast(context, "enter the name, email and password")
                 }
@@ -141,7 +149,7 @@ fun SignUpScreen(
         TextButton(onClick = {
             navController.navigate(Routes.Login.toString())
         }) {
-            Text("Already have an account       , Login")
+            Text("Already have an account, Login")
         }
     }
 }
