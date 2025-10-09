@@ -127,6 +127,14 @@ fun SignUpScreen(
                     authViewModel.name = ""
                     authViewModel.email = ""
                     authViewModel.password = ""
+
+                    navController.navigate(Routes.OnBoarding.toString()) {
+                        popUpTo(Routes.SignUp.toString()) {
+                            inclusive = true
+                        }
+                        launchSingleTop = true
+                    }
+
                 } else {
                     Utils.showToast(context, "enter the name, email and password")
                 }

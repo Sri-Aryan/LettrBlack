@@ -102,14 +102,21 @@ fun DownScreen(
 
                             pagerState.animateScrollToPage(pagerState.currentPage + 1)
                         } else {
-                            navController.navigate(Routes.Home.toString())
+
                             val userPreference = UserPreference(
                                 subjectPreference = viewModel.selectedSubjects,
                                 goalPreference = viewModel.selectedGoals,
                                 studyTimePreference = viewModel.selectedStudyTime
                             )
                             Log.d("MYTAG", "DownScreen: ${userPreference.copy()}")
-                                // Here we can apply user preference to firestore
+                            navController.navigate(Routes.Home.toString())
+                            {
+                                popUpTo(Routes.OnBoarding.toString()) {
+                                    inclusive = true
+                                }
+                                launchSingleTop = true
+                            }
+                            // Here we can apply user preference to firestore
                         }
                     }
                 },
