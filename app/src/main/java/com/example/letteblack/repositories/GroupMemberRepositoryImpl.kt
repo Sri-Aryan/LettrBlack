@@ -17,13 +17,36 @@ class GroupMemberRepositoryImpl(
 
     private val collection get() = firestore.collection("group_members")
 
-    override fun observeMembers(groupId: String) = groupMemberDao.observeMembers(groupId)
+    override fun observeMembers(groupId: String): Flow<List<GroupMemberEntity>> =
+        groupMemberDao.observeMembers(groupId)
+
+    override fun observeMembersByPoints(groupId: String): Flow<List<GroupMemberEntity>> =
+        groupMemberDao.observeMembersSortedByPoints(groupId)
+
+    override fun getMemberById(memberId: String): Flow<GroupMemberEntity?> =
+        groupMemberDao.getMemberByIdFlow(memberId)
 
     override suspend fun joinGroup(
         groupId: String,
         userId: String,
         userName: String
-    ) {
+    ): Boolean {  // return true if joined, false if already a member
+        // Check locally if user is already a member
+        val existingMember = groupMemberDao.getMemberByGroupAndUser(groupId, userId)
+        if (existingMember != null) {
+            return false // Already a member
+        }
+
+        // Double-check Firebase
+        val snapshot = collection
+            .whereEqualTo("groupId", groupId)
+            .whereEqualTo("userId", userId)
+            .get()
+            .await()
+
+        if (!snapshot.isEmpty) return false
+
+        // Not a member yet, create new member
         val now = System.currentTimeMillis()
         val member = GroupMemberEntity(
             id = UUID.randomUUID().toString(),
@@ -38,7 +61,7 @@ class GroupMemberRepositoryImpl(
         val group = groupDao.getGroupById(groupId)
         if (group != null) {
             val updated = group.copy(memberCount = group.memberCount + 1)
-            groupDao.insert(updated) // since it's REPLACE, it updates
+            groupDao.insert(updated)
         }
 
         val map = mapOf(
@@ -49,14 +72,8 @@ class GroupMemberRepositoryImpl(
             "joinedAt" to member.joinedAt
         )
         collection.document(member.id).set(map).await()
-    }
 
-    override fun observeMembersByPoints(groupId: String): Flow<List<GroupMemberEntity>> {
-        return groupMemberDao.observeMembersSortedByPoints(groupId)
-    }
-
-    override fun getMemberById(memberId: String): Flow<GroupMemberEntity?> {
-        return groupMemberDao.getMemberByIdFlow(memberId)
+        return true
     }
 
     override suspend fun addPointsToMember(groupId: String, userId: String, points: Int) {
@@ -69,7 +86,6 @@ class GroupMemberRepositoryImpl(
             .whereEqualTo("userId", userId)
             .get()
             .await()
-
         if (!snapshot.isEmpty) {
             val docId = snapshot.documents.first().id
             collection.document(docId)

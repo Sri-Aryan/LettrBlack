@@ -36,4 +36,8 @@ interface GroupMemberDao {
 
     @Query("UPDATE group_members SET points = points + :points WHERE userId = :userId")
     suspend fun addPointsByUserId(userId: String, points: Int)
+
+    @Query("SELECT * FROM group_members WHERE groupId = :groupId AND userId = :userId LIMIT 1")
+    suspend fun getMemberByGroupAndUser(groupId: String, userId: String): GroupMemberEntity?
+
 }

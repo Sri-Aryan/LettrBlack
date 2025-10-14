@@ -141,6 +141,14 @@ class AuthViewModel @Inject constructor(
             _userState.value = UserState.Unauthenticated
         }
     }
+
+    fun getCurrentUser(onUserFetched: (UserEntity?) -> Unit) {
+        viewModelScope.launch {
+            val user = userRepository.getUserOnce()
+            onUserFetched(user)
+        }
+    }
+
 }
 
 

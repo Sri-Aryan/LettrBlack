@@ -6,8 +6,6 @@ import com.example.letteblack.db.GroupEntity
 import com.example.letteblack.db.GroupMemberEntity
 import com.example.letteblack.repositories.GroupMemberRepository
 import com.example.letteblack.repositories.GroupRepository
-import com.example.letteblack.repositories.NoteRepository
-import com.example.letteblack.repositories.TaskRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
@@ -31,9 +29,17 @@ class GroupViewModel @Inject constructor(
 
     fun getGroup(groupId: String) = groupRepo.getGroup(groupId)
 
-    fun joinGroup(groupId: String, userId: String, userName: String) {
+    fun joinGroup(
+        groupId: String,
+        userId: String,
+        userName: String,
+        onAlreadyMember: () -> Unit
+    ) {
         viewModelScope.launch {
-            memberRepo.joinGroup(groupId, userId, userName)
+            val joined = memberRepo.joinGroup(groupId, userId, userName)
+            if (!joined) {
+                onAlreadyMember() // callback to show toast
+            }
         }
     }
 

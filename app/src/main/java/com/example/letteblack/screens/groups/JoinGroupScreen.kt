@@ -224,7 +224,7 @@ fun UpdateGroupDialog(
 ) {
     var name by remember { mutableStateOf(group.groupName) }
     var description by remember { mutableStateOf(group.description ?: "") }
-    var creatorName by remember { mutableStateOf(group.createdByUserName) }
+    val creatorName = group.createdByUserName
     val updatedMembers = remember { members.toMutableStateList() }
 
     AlertDialog(
@@ -232,9 +232,25 @@ fun UpdateGroupDialog(
         title = { Text("Update Group") },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text("Group Name") })
-                OutlinedTextField(value = description, onValueChange = { description = it }, label = { Text("Description") })
-                OutlinedTextField(value = creatorName, onValueChange = { creatorName = it }, label = { Text("Creator Name") })
+                OutlinedTextField(
+                    value = name,
+                    onValueChange = { name = it },
+                    label = { Text("Group Name") }
+                )
+
+                OutlinedTextField(
+                    value = description,
+                    onValueChange = { description = it },
+                    label = { Text("Description") }
+                )
+
+                OutlinedTextField(
+                    value = creatorName,
+                    onValueChange = {},
+                    label = { Text("Creator Name") },
+                    enabled = false,
+                    readOnly = true
+                )
 
                 Text("Members", style = MaterialTheme.typography.titleSmall)
                 updatedMembers.forEachIndexed { index, member ->

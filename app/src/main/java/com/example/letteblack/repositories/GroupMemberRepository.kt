@@ -8,7 +8,7 @@ interface GroupMemberRepository {
 
     fun observeMembersByPoints(groupId: String): Flow<List<GroupMemberEntity>>
 
-    suspend fun joinGroup(groupId: String, userId: String, userName: String)
+    suspend fun joinGroup(groupId: String, userId: String, userName: String): Boolean
 
     suspend fun addPointsToMember(groupId: String, userId: String, points: Int)
 
