@@ -1,5 +1,10 @@
 package com.example.letteblack.screens
 
+import android.Manifest
+import android.os.Build
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -89,6 +94,22 @@ fun HomeScreen(
     val userInfo by authViewModel.userRepository.observeUser().collectAsState(initial = null)
 
     val innerNavController = rememberNavController()
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        val permissionLauncher = rememberLauncherForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ) { isGranted ->
+            if (isGranted) {
+                Log.d("Notifications", "Permission granted")
+            } else {
+                Log.d("Notifications", "Permission denied")
+            }
+        }
+
+        LaunchedEffect(Unit) {
+            permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
+    }
 
     Scaffold(
         bottomBar = { BottomNavigationBar(innerNavController) }

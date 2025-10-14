@@ -73,6 +73,7 @@ dependencies {
     implementation("androidx.room:room-runtime:2.7.2")
     implementation("androidx.room:room-ktx:2.7.2")
     implementation(libs.transportation.consumer)
+    implementation(libs.androidx.ui.geometry)
     implementation(libs.androidx.work.runtime.ktx)
     kapt("androidx.room:room-compiler:2.7.2")
 
@@ -90,6 +91,7 @@ dependencies {
     implementation("com.google.firebase:firebase-auth-ktx")
     implementation("com.google.firebase:firebase-firestore-ktx")
     implementation("com.google.firebase:firebase-analytics-ktx")
+    implementation("com.google.firebase:firebase-storage-ktx")
 
     // --- Lottie ---
     implementation("com.airbnb.android:lottie-compose:6.0.0")
@@ -110,4 +112,6 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.5.0")
     implementation("androidx.activity:activity-compose:1.7.2")
 
+    // For Preferences DataStore (key-value pairs)
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
 }

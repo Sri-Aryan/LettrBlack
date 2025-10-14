@@ -40,7 +40,6 @@ object AppModule {
         Room.databaseBuilder(app, AppDatabase::class.java, "study_app.db")
             .fallbackToDestructiveMigration()
             .build()
-
     @Provides
     fun provideGroupMemberDao(db: AppDatabase): GroupMemberDao = db.groupMemberDao()
 

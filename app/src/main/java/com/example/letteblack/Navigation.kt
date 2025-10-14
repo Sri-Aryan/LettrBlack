@@ -22,6 +22,7 @@ import com.example.letteblack.screens.onboarding.OnboardingScreen
 import com.example.letteblack.screens.premium.PremiumContentScreen
 import com.example.letteblack.screens.report.ReportScreen
 import com.example.letteblack.screens.settings.AccountScreen
+import com.example.letteblack.screens.settings.ChangePasswordScreen
 import com.example.letteblack.screens.settings.PrivacyScreen
 
 @Composable
@@ -98,10 +99,7 @@ fun Navigation(modifier: Modifier = Modifier) {
 
         }
         composable(Routes.Account.toString()) {
-            AccountScreen(
-                navController = navController,
-                onDeleteAccount = { /* hook into authViewModel.deleteUser() */ },
-                )
+            AccountScreen(navController = navController)
         }
 
         composable("privacy") {
@@ -112,6 +110,10 @@ fun Navigation(modifier: Modifier = Modifier) {
         }
         composable("report") {
             ReportScreen(navController)
+        }
+
+        composable("change_password"){
+            ChangePasswordScreen(navController)
         }
     }
 }

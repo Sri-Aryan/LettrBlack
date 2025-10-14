@@ -23,7 +23,4 @@ interface UserDao {
 
     @Query("DELETE FROM user_info")
     suspend fun clearUser()
-
-    @Query("UPDATE user_info SET avatarUri = :avatarUri WHERE uid = :uid")
-    suspend fun updateAvatar(uid: String, avatarUri: String)
 }

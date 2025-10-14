@@ -12,5 +12,6 @@ interface UserRepository {
 
     suspend fun clearUser()
 
-    suspend fun updateAvatar(uid: String, avatarUri: String)
+    suspend fun updateUser(user: UserEntity)
+
 }
