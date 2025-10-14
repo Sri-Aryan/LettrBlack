@@ -31,8 +31,11 @@ class GroupRepositoryImpl(
         creatorUserName: String
     ) {
         val now = System.currentTimeMillis()
+        val groupId = UUID.randomUUID().toString()
+
+        // Create the group entity
         val group = GroupEntity(
-            groupId = UUID.randomUUID().toString(),
+            groupId = groupId,
             groupName = groupName,
             description = description,
             createdByUserId = creatorUserId,
@@ -41,9 +44,11 @@ class GroupRepositoryImpl(
             memberCount = 1
         )
 
+        // Save locally
         groupDao.insert(group)
 
-        val map = mapOf(
+        // Save remotely
+        val groupMap = mapOf(
             "groupId" to group.groupId,
             "groupName" to group.groupName,
             "description" to group.description,
@@ -52,7 +57,36 @@ class GroupRepositoryImpl(
             "createdAt" to group.createdAt,
             "memberCount" to group.memberCount
         )
-        groupsRef.document(group.groupId).set(map).await()
+        groupsRef.document(group.groupId).set(groupMap).await()
+
+        // Add creator as first member
+        val memberId = UUID.randomUUID().toString()
+        val creatorMember = GroupMemberEntity(
+            id = memberId,
+            groupId = groupId,
+            userId = creatorUserId,
+            userName = creatorUserName,
+            joinedAt = now,
+            points = 0
+        )
+
+        // Local insert
+        groupMemberDao.insert(creatorMember)
+
+        // Firebase
+        groupsRef.document(groupId)
+            .collection("members")
+            .document(memberId)
+            .set(
+                mapOf(
+                    "id" to memberId,
+                    "groupId" to groupId,
+                    "userId" to creatorUserId,
+                    "userName" to creatorUserName,
+                    "joinedAt" to now,
+                    "points" to 0
+                )
+            ).await()
     }
 
     override suspend fun updateGroup(
@@ -87,13 +121,9 @@ class GroupRepositoryImpl(
 
         // 2. Remote delete (Fire store)
         val groupDoc = groupsRef.document(groupId)
-
-        // Delete sub collections
         groupDoc.collection("members").get().await().forEach { it.reference.delete().await() }
         groupDoc.collection("tasks").get().await().forEach { it.reference.delete().await() }
         groupDoc.collection("notes").get().await().forEach { it.reference.delete().await() }
-
-        // Finally delete group itself
         groupDoc.delete().await()
     }
 
@@ -117,7 +147,8 @@ class GroupRepositoryImpl(
                 "groupId" to member.groupId,
                 "userId" to member.userId,
                 "userName" to member.userName,
-                "joinedAt" to member.joinedAt
+                "joinedAt" to member.joinedAt,
+                "points" to member.points
             )
             groupsRef.document(groupId)
                 .collection("members")

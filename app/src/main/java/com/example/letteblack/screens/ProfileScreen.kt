@@ -23,6 +23,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenuItem
@@ -231,6 +232,15 @@ fun ProfileScreen(
                     }
                 }
             }
+            Spacer(Modifier.height(16.dp))
+            Button(
+                onClick = {
+                    selectedGroup?.let { navController.navigate("leaderboard/${it.groupId}") }
+                },
+                enabled = selectedGroup != null,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Leaderboard")
 
             Surface(
                 modifier = Modifier.fillMaxWidth(),
@@ -254,6 +264,8 @@ fun ProfileScreen(
                     BadgeSection()
                 }
             }
+
+      
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.example.letteblack.screens.groups
 
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -7,32 +8,46 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.letteblack.db.GroupEntity
 import com.example.letteblack.viewmodel.GroupViewModel
+import com.example.letteblack.AuthViewModel
 import kotlinx.coroutines.launch
 
 @Composable
 fun GroupListScreen(
     userId: String,
     onGroupClick: (String) -> Unit,
-    viewModel: GroupViewModel = hiltViewModel()
+    viewModel: GroupViewModel = hiltViewModel(),
+    authViewModel: AuthViewModel = hiltViewModel()
 ) {
     val groups by viewModel.groups().collectAsState(initial = emptyList())
 
-    // state for joining existing group
+    // Dialog states
     var showJoinDialog by remember { mutableStateOf(false) }
     var selectedGroupId by remember { mutableStateOf<String?>(null) }
-    var userName by remember { mutableStateOf("") }
 
-    // state for creating new group
     var showCreateDialog by remember { mutableStateOf(false) }
     var newGroupName by remember { mutableStateOf("") }
     var newGroupDescription by remember { mutableStateOf("") }
-    var creatorName by remember { mutableStateOf("") }
+
+    // Current user info
+    var currentUserName by remember { mutableStateOf("") }
 
     val scope = rememberCoroutineScope()
+
+    val context = LocalContext.current
+
+    // Fetch name from local Room (AuthViewModel)
+    LaunchedEffect(Unit) {
+        authViewModel.getCurrentUser { user ->
+            user?.let {
+                currentUserName = it.name
+            }
+        }
+    }
 
     Column(
         Modifier
@@ -40,7 +55,6 @@ fun GroupListScreen(
             .padding(16.dp)
     ) {
         Text("Groups", style = MaterialTheme.typography.titleLarge)
-
         Spacer(Modifier.height(8.dp))
 
         groups.forEach { group: GroupEntity ->
@@ -58,10 +72,7 @@ fun GroupListScreen(
 
                     if (!group.description.isNullOrBlank()) {
                         Spacer(Modifier.height(4.dp))
-                        Text(
-                            group.description,
-                            style = MaterialTheme.typography.bodySmall
-                        )
+                        Text(group.description, style = MaterialTheme.typography.bodySmall)
                     }
 
                     Spacer(Modifier.height(8.dp))
@@ -80,10 +91,7 @@ fun GroupListScreen(
                                 showJoinDialog = true
                             }
                         ) {
-                            Icon(
-                                Icons.Default.Add,
-                                contentDescription = "Join"
-                            )
+                            Icon(Icons.Default.Add, contentDescription = "Join")
                         }
                     }
                 }
@@ -97,18 +105,14 @@ fun GroupListScreen(
         }
     }
 
-    // Dialog for joining existing group
+    // Join Group Dialog
     if (showJoinDialog && selectedGroupId != null) {
         val selectedGroup = groups.find { it.groupId == selectedGroupId }
         AlertDialog(
-            onDismissRequest = {
-                showJoinDialog = false
-                userName = ""
-            },
+            onDismissRequest = { showJoinDialog = false },
             title = { Text("Join Group") },
             text = {
                 Column {
-                    // Prefilled Group Name (read only)
                     OutlinedTextField(
                         value = selectedGroup?.groupName ?: "",
                         onValueChange = {},
@@ -117,43 +121,34 @@ fun GroupListScreen(
                     )
                     Spacer(Modifier.height(8.dp))
                     OutlinedTextField(
-                        value = userName,
-                        onValueChange = { userName = it },
-                        label = { Text("Enter your name") }
+                        value = currentUserName,
+                        onValueChange = {},
+                        label = { Text("Your Name") },
+                        enabled = false // not editable
                     )
                 }
             },
             confirmButton = {
                 TextButton(
                     onClick = {
-                        if (userName.isNotBlank()) {
-                            val nameToSave = userName
-                            scope.launch {
-                                viewModel.joinGroup(selectedGroupId!!, userId, nameToSave)
-                            }
-                            // reset AFTER launch
-                            userName = ""
-                            showJoinDialog = false
+                        viewModel.joinGroup(selectedGroupId!!, userId, currentUserName) {
+                            Toast.makeText(context, "You are already a member of this group", Toast.LENGTH_SHORT).show()
                         }
+                        showJoinDialog = false
                     }
                 ) {
                     Text("Join")
                 }
             },
             dismissButton = {
-                TextButton(
-                    onClick = {
-                        showJoinDialog = false
-                        userName = ""
-                    }
-                ) {
+                TextButton(onClick = { showJoinDialog = false }) {
                     Text("Cancel")
                 }
             }
         )
     }
 
-    // Dialog for creating new group
+    // Create Group Dialog
     if (showCreateDialog) {
         AlertDialog(
             onDismissRequest = { showCreateDialog = false },
@@ -173,27 +168,26 @@ fun GroupListScreen(
                     )
                     Spacer(Modifier.height(8.dp))
                     OutlinedTextField(
-                        value = creatorName,
-                        onValueChange = { creatorName = it },
-                        label = { Text("Your Name") }
+                        value = currentUserName,
+                        onValueChange = {},
+                        label = { Text("Created By") },
+                        enabled = false // readonly field
                     )
                 }
             },
             confirmButton = {
                 TextButton(
                     onClick = {
-                        if (newGroupName.isNotBlank() && creatorName.isNotBlank()) {
+                        if (newGroupName.isNotBlank()) {
                             scope.launch {
                                 viewModel.createGroup(
                                     newGroupName,
                                     newGroupDescription,
                                     userId,
-                                    creatorName
+                                    currentUserName
                                 )
-                                // reset AFTER insertion
                                 newGroupName = ""
                                 newGroupDescription = ""
-                                creatorName = ""
                                 showCreateDialog = false
                             }
                         }
