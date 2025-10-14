@@ -82,7 +82,7 @@ fun ProfileScreen(
         Log.d("Profile", "DEBUG >>> Groups for $userId: ${groups.map { it.groupName }}")
     }
 
-    Scaffold{ innerPadding ->
+    Scaffold { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -241,34 +241,32 @@ fun ProfileScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Leaderboard")
-
-            Surface(
-                modifier = Modifier.fillMaxWidth(),
-                shape = MaterialTheme.shapes.large,
-                tonalElevation = 4.dp,
-                shadowElevation = 2.dp
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(20.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+            }
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = MaterialTheme.shapes.large,
+                    tonalElevation = 4.dp,
+                    shadowElevation = 2.dp
                 ) {
-                    Text(
-                        "Achievements",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 18.sp,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-
-                    BadgeSection()
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(20.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        Text(
+                            "Achievements",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 18.sp,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        BadgeSection()
+                    }
                 }
             }
-
-      
         }
     }
-}
+
 
 
 @Composable
@@ -330,3 +328,4 @@ fun BadgeSection() {
         }
     }
 }
+
