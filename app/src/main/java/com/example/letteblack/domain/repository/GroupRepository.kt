@@ -1,0 +1,32 @@
+package com.example.letteblack.domain.repository
+
+import com.example.letteblack.data.local.entities.GroupEntity
+import com.example.letteblack.data.local.entities.GroupMemberEntity
+import kotlinx.coroutines.flow.Flow
+
+interface GroupRepository {
+    fun observeGroups(): Flow<List<GroupEntity>>
+    fun getGroup(groupId: String): Flow<GroupEntity?>
+
+    suspend fun createGroup(
+        groupName: String,
+        description: String?,
+        creatorUserId: String,
+        creatorUserName: String
+    )
+
+    suspend fun updateGroup(
+        groupId: String,
+        groupName: String,
+        description: String?,
+        creatorUserName: String
+    )
+
+    suspend fun deleteGroup(groupId: String)
+
+    suspend fun getMembers(groupId: String): List<GroupMemberEntity>
+
+    suspend fun updateMembers(groupId: String, members: List<GroupMemberEntity>)
+
+    fun getUserGroups(userId: String): Flow<List<GroupEntity>>
+}

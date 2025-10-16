@@ -8,6 +8,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
+import com.example.letteblack.core.navigation.Navigation
 import com.example.letteblack.ui.theme.LetteBlackTheme
 import dagger.hilt.android.AndroidEntryPoint
 

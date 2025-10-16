@@ -4,8 +4,8 @@ import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.letteblack.db.UserEntity
-import com.example.letteblack.repositories.UserRepository
+import com.example.letteblack.data.local.entities.UserEntity
+import com.example.letteblack.domain.repository.UserRepository
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
@@ -161,6 +161,4 @@ class UserViewModel @Inject constructor(
                 }
         }
     }
-
-
 }
