@@ -213,7 +213,6 @@ fun NavGraph(
                 ProfileScreen(
                     navController = rootNavController, // Don't use innerNavController here
                     userId = user.uid,
-                    userName = user.name
                 )
             } ?: CenterText("Loading user...")
         }

@@ -69,7 +69,6 @@ fun Navigation(modifier: Modifier = Modifier) {
             ProfileScreen(
                 navController = navController,
                 userId = userId,
-                userName = userName
             )
         }
 
