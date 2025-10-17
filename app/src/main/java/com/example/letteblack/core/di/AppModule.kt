@@ -11,7 +11,7 @@ import com.example.letteblack.data.local.dao.UserDao
 import com.example.letteblack.domain.repository.GroupMemberRepository
 import com.example.letteblack.data.repository.groupmembers.GroupMemberRepositoryImpl
 import com.example.letteblack.domain.repository.GroupRepository
-import com.example.letteblack.data.repository.groups.GroupRepositoryImpl
+import com.example.letteblack.data.repository.groups.ProfileScreen
 import com.example.letteblack.domain.repository.NoteRepository
 import com.example.letteblack.data.repository.notes.NoteRepositoryImpl
 import com.example.letteblack.domain.repository.TaskRepository
@@ -78,7 +78,7 @@ object AppModule {
         noteDao: NoteDao,
         fs: FirebaseFirestore
     ): GroupRepository =
-        GroupRepositoryImpl(groupDao, groupMemberDao, taskDao, noteDao, fs)
+        ProfileScreen(groupDao, groupMemberDao, taskDao, noteDao, fs)
 
     @Provides
     @Singleton

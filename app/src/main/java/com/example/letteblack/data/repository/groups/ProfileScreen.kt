@@ -1,11 +1,11 @@
 package com.example.letteblack.data.repository.groups
 
 import com.example.letteblack.data.local.dao.GroupDao
-import com.example.letteblack.data.local.entities.GroupEntity
 import com.example.letteblack.data.local.dao.GroupMemberDao
-import com.example.letteblack.data.local.entities.GroupMemberEntity
 import com.example.letteblack.data.local.dao.NoteDao
 import com.example.letteblack.data.local.dao.TaskDao
+import com.example.letteblack.data.local.entities.GroupEntity
+import com.example.letteblack.data.local.entities.GroupMemberEntity
 import com.example.letteblack.domain.repository.GroupRepository
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.Flow
@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.tasks.await
 import java.util.UUID
 
-class GroupRepositoryImpl(
+class ProfileScreen(
     private val groupDao: GroupDao,
     private val groupMemberDao: GroupMemberDao,
     private val taskDao: TaskDao,

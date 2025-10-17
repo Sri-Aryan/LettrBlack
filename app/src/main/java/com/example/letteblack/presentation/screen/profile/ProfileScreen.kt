@@ -55,7 +55,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.letteblack.R
-import com.example.letteblack.db.GroupEntity
+import com.example.letteblack.data.local.entities.GroupEntity
 import com.example.letteblack.viewmodel.GroupViewModel
 import com.example.letteblack.viewmodel.UserViewModel
 
@@ -82,7 +82,7 @@ fun ProfileScreen(
         Log.d("Profile", "DEBUG >>> Groups for $userId: ${groups.map { it.groupName }}")
     }
 
-    Scaffold{ innerPadding ->
+    Scaffold { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -242,91 +242,92 @@ fun ProfileScreen(
             ) {
                 Text("Leaderboard")
 
-            Surface(
-                modifier = Modifier.fillMaxWidth(),
-                shape = MaterialTheme.shapes.large,
-                tonalElevation = 4.dp,
-                shadowElevation = 2.dp
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(20.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = MaterialTheme.shapes.large,
+                    tonalElevation = 4.dp,
+                    shadowElevation = 2.dp
                 ) {
-                    Text(
-                        "Achievements",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 18.sp,
-                        color = MaterialTheme.colorScheme.primary
-                    )
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(20.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        Text(
+                            "Achievements",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 18.sp,
+                            color = MaterialTheme.colorScheme.primary
+                        )
 
-                    BadgeSection()
+                    }
                 }
+
+
             }
-
-      
         }
     }
-}
 
 
-@Composable
-fun BadgeCard(emoji: String, label: String) {
-    Card(
-        modifier = Modifier
-            .aspectRatio(1f),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
-        ),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 4.dp,
-            pressedElevation = 8.dp,
-            focusedElevation = 6.dp
-        ),
-        shape = RoundedCornerShape(16.dp)
-    ) {
-        Column(
+    @Composable
+    fun BadgeCard(emoji: String, label: String) {
+        Card(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(12.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+                .aspectRatio(1f),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.primaryContainer
+            ),
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 4.dp,
+                pressedElevation = 8.dp,
+                focusedElevation = 6.dp
+            ),
+            shape = RoundedCornerShape(16.dp)
         ) {
-            Text(emoji, fontSize = 36.sp)
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                label,
-                fontSize = 13.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onPrimaryContainer
-            )
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(12.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(emoji, fontSize = 36.sp)
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    label,
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            }
+        }
+    }
+
+    @Composable
+    fun BadgeSection() {
+        val badges = listOf(
+            "🎯" to "Goal Setter",
+            "📚" to "Bookworm",
+            "⚡" to "Quick Learner",
+            "🏆" to "Top Performer",
+            "🔥" to "Streak 7 Days",
+            "📘" to "Course Master"
+        )
+
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(2),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(420.dp),
+            contentPadding = PaddingValues(4.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            items(badges) { (emoji, label) ->
+                BadgeCard(emoji, label)
+            }
         }
     }
 }
 
-@Composable
-fun BadgeSection() {
-    val badges = listOf(
-        "🎯" to "Goal Setter",
-        "📚" to "Bookworm",
-        "⚡" to "Quick Learner",
-        "🏆" to "Top Performer",
-        "🔥" to "Streak 7 Days",
-        "📘" to "Course Master"
-    )
-
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(420.dp),
-        contentPadding = PaddingValues(4.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        items(badges) { (emoji, label) ->
-            BadgeCard(emoji, label)
-        }
-    }
-}

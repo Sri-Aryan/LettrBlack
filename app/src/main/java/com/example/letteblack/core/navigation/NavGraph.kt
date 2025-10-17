@@ -12,15 +12,23 @@ import androidx.navigation.compose.composable
 import com.example.letteblack.data.local.entities.UserEntity
 import com.example.letteblack.data.remote.Routes
 import com.example.letteblack.data.remote.UserDetails
-import com.example.letteblack.presentation.screen.groups.*
+import com.example.letteblack.presentation.screen.groups.GroupListScreen
+import com.example.letteblack.presentation.screen.groups.JoinGroupScreen
 import com.example.letteblack.presentation.screen.home.HomeContent
 import com.example.letteblack.presentation.screen.home.components.CenterText
 import com.example.letteblack.presentation.screen.leaderboard.LeaderboardScreen
-import com.example.letteblack.presentation.screen.notes.*
-import com.example.letteblack.presentation.screen.profile.ProfileScreen
+import com.example.letteblack.presentation.screen.notes.AddNoteScreen
+import com.example.letteblack.presentation.screen.notes.NoteDetailScreen
+import com.example.letteblack.presentation.screen.notes.NotesSection
+import com.example.letteblack.presentation.screen.notes.UpdateNoteScreen
 import com.example.letteblack.presentation.screen.puzzle.PuzzleScreen
-import com.example.letteblack.presentation.screen.tasks.*
-import com.example.letteblack.viewmodel.*
+import com.example.letteblack.presentation.screen.tasks.AddTaskScreen
+import com.example.letteblack.presentation.screen.tasks.TaskDetailScreen
+import com.example.letteblack.presentation.screen.tasks.UpdateTaskScreen
+import com.example.letteblack.screens.ProfileScreen
+import com.example.letteblack.viewmodel.AuthViewModel
+import com.example.letteblack.viewmodel.NotesViewModel
+import com.example.letteblack.viewmodel.TaskViewModel
 
 @Composable
 fun NavGraph(

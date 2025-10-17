@@ -56,9 +56,10 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.letteblack.data.datastore.SettingDataStore
+import com.example.letteblack.data.remote.Routes
+import com.example.letteblack.screens.settings.SettingsSection
 import com.example.letteblack.viewmodel.AuthViewModel
 import com.example.letteblack.viewmodel.UserState
-import com.example.letteblack.data.remote.Routes
 import com.example.letteblack.viewmodel.UserViewModel
 import kotlinx.coroutines.launch
 
@@ -108,7 +109,7 @@ fun SettingsScreen(navController: NavHostController, authViewModel: AuthViewMode
             // Account Section
             SettingsSection("Account") {
                 SettingsItem(Icons.Default.Person, "Profile", "Manage your account",
-                onClick = {navController.navigate(toString())})
+                onClick = {navController.navigate("profile")})
                 SettingsItem(Icons.Default.Lock, "Privacy", "Control your privacy",
                     onClick = { navController.navigate("privacy") })
             }

@@ -13,17 +13,17 @@ import com.example.letteblack.presentation.screen.auth.LoginScreen
 import com.example.letteblack.presentation.screen.auth.SignUpScreen
 import com.example.letteblack.presentation.screen.home.HomeScreen
 import com.example.letteblack.presentation.screen.onboarding.OnBoardingViewModel
-import com.example.letteblack.presentation.screen.settings.AccountScreen
-import com.example.letteblack.presentation.screen.settings.ChangePasswordScreen
-import com.example.letteblack.presentation.screen.settings.PrivacyScreen
-import com.example.letteblack.presentation.screen.profile.ProfileScreen
+import com.example.letteblack.presentation.screen.onboarding.OnboardingScreen
 import com.example.letteblack.presentation.screen.puzzle.PuzzleCategoryScreen
 import com.example.letteblack.presentation.screen.puzzle.PuzzlePlayScreen
+import com.example.letteblack.presentation.screen.settings.ChangePasswordScreen
+import com.example.letteblack.presentation.screen.settings.PremiumContentScreen
+import com.example.letteblack.presentation.screen.settings.PrivacyScreen
+import com.example.letteblack.presentation.screen.settings.ReportScreen
 import com.example.letteblack.presentation.screen.settings.SettingsScreen
 import com.example.letteblack.presentation.screen.splash.SplashScreen
-import com.example.letteblack.presentation.screen.onboarding.OnboardingScreen
-import com.example.letteblack.presentation.screen.settings.PremiumContentScreen
-import com.example.letteblack.presentation.screen.settings.ReportScreen
+import com.example.letteblack.screens.ProfileScreen
+import com.example.letteblack.screens.settings.AccountScreen
 import com.example.letteblack.viewmodel.AuthViewModel
 
 @Composable

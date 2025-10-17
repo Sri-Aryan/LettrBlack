@@ -64,7 +64,7 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.letteblack.R
-import com.example.letteblack.data.Routes
+import com.example.letteblack.data.remote.Routes
 import com.example.letteblack.viewmodel.UserViewModel
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
