@@ -5,6 +5,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -15,23 +16,26 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -39,10 +43,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -53,8 +57,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
@@ -129,28 +135,115 @@ fun AccountScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Account") },
+                title = {
+                    Text(
+                        "Account",
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 22.sp
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(
+                            Icons.Default.ArrowBack,
+                            contentDescription = "Back",
+                            tint = Color.White
+                        )
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color(0xFFDDC5E7)
+                )
             )
-        }
+        },
+        containerColor = Color(0xFFDDC5E7)
     ) { innerPadding ->
-        Column(
+        Box(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            // Avatar
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+            // top portion
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(140.dp)
+                    .background(Color(0xFFDDC5E7))
+            )
+
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 80.dp)
+                    .padding(horizontal = 24.dp),
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = Color.White),
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .verticalScroll(rememberScrollState())
+                        .padding(16.dp)
+                        .padding(top = 60.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(24.dp)
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Text(
+                            text = user?.name ?: "User",
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.Black
+                        )
+                        Text(
+                            text = user?.email ?: "",
+                            fontSize = 14.sp,
+                            color = Color.Gray
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(0.dp)
+                    ) {
+                        ProfileMenuItem(
+                            icon = Icons.Default.Person,
+                            title = "Edit Password",
+                            onClick = { navController.navigate("change_password")}
+                        )
+                        ProfileMenuItem(
+                            icon = Icons.Default.Email,
+                            title = "Payment Option",
+                            onClick = {}
+                        )
+                        ProfileMenuItem(
+                            icon = Icons.Default.Lock,
+                            title = "Terms & Conditions",
+                            onClick = { }
+                        )
+
+                        ProfileMenuItem(
+                            icon = Icons.Default.Lock,
+                            title = "Delete Account",
+                            onClick = { showDeleteDialog = true }
+                        )
+                    }
+                }
+            }
+
+            // overlapping card
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 20.dp),
+                contentAlignment = Alignment.TopCenter
             ) {
                 Box(contentAlignment = Alignment.Center) {
                     AsyncImage(
@@ -163,75 +256,25 @@ fun AccountScreen(
                         contentDescription = "Avatar",
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
-                            .size(100.dp)
+                            .size(120.dp)
                             .clip(CircleShape)
-                            .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
+                            .border(4.dp, Color.White, CircleShape)
+                            .clickable { launcher.launch("image/*") }
                     )
 
                     if (isUploading) {
                         CircularProgressIndicator(
-                            modifier = Modifier.size(100.dp),
-                            color = MaterialTheme.colorScheme.primary
+                            modifier = Modifier.size(120.dp),
+                            color = Color(0xFF7E19A9)
                         )
                     }
                 }
-
-                TextButton(
-                    onClick = { launcher.launch("image/*") },
-                    enabled = !isUploading
-                ) {
-                    Text(if (isUploading) "Uploading..." else "Change Avatar", fontSize = 14.sp)
-                }
-            }
-
-            SettingsSection("Personal Info") {
-                AccountInfoItem(
-                    icon = Icons.Default.Person,
-                    title = "${user?.name}",
-                    value = "Name",
-                    onClick = {}
-                )
-                AccountInfoItem(
-                    icon = Icons.Default.AccountCircle,
-                    title = "${user?.uid}",
-                    value = "UserID",
-                    onClick = {}
-                )
-            }
-
-            SettingsSection("Account Security") {
-                AccountInfoItem(
-                    icon = Icons.Default.Email,
-                    title = "${user?.email}",
-                    value = "Email",
-                    onClick = {}
-                )
-                AccountInfoItem(
-                    icon = Icons.Default.Lock,
-                    title = "Password",
-                    value = "••••••••",
-                    onClick = {navController.navigate("change_password")}
-                )
-            }
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            Button(
-                onClick = { showDeleteDialog = true},
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 42.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.error
-                )
-            ) {
-                Text("Delete Account", color = MaterialTheme.colorScheme.onError)
             }
 
             DeleteAccountDialog(
-                showDialog =  showDeleteDialog,
-                onDismiss = { showDeleteDialog = false},
-                onConfirmDelete= {
+                showDialog = showDeleteDialog,
+                onDismiss = { showDeleteDialog = false },
+                onConfirmDelete = {
                     showDeleteDialog = false
                     showReauthDialog = true
                 }
@@ -239,19 +282,19 @@ fun AccountScreen(
 
             ReauthenticateDialog(
                 showDialog = showReauthDialog,
-                onDismiss = { showReauthDialog = false},
-                onReauthenticate = { password->
+                onDismiss = { showReauthDialog = false },
+                onReauthenticate = { password ->
                     showReauthDialog = false
                     deleteUserAccount(
                         auth = auth,
                         firestore = firstore,
                         password = password,
-                        onSuccess ={
-                            Toast.makeText(context,"Account Deleted Successfully", Toast.LENGTH_LONG).show()
-                            navController.navigate(Routes.Login.toString()){ popUpTo(0){ inclusive = true} }
+                        onSuccess = {
+                            Toast.makeText(context, "Account Deleted Successfully", Toast.LENGTH_LONG).show()
+                            navController.navigate(Routes.Login.toString()) { popUpTo(0) { inclusive = true } }
                         },
                         onError = { errorMessage ->
-                            Toast.makeText(context,errorMessage, Toast.LENGTH_LONG).show()
+                            Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
                         }
                     )
                 }
@@ -261,24 +304,69 @@ fun AccountScreen(
 }
 
 @Composable
+fun ProfileMenuItem(
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    title: String,
+    value: String? = null,
+    onClick: () -> Unit = {}
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
+            .padding(vertical = 16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            icon,
+            contentDescription = title,
+            tint = Color.Black,
+            modifier = Modifier.size(24.dp)
+        )
+        Spacer(modifier = Modifier.width(16.dp))
+        Text(
+            title,
+            style = MaterialTheme.typography.bodyLarge,
+            fontWeight = FontWeight.Normal,
+            color = Color.Black,
+            modifier = Modifier.weight(1f)
+        )
+        if (value != null) {
+            Text(
+                value,
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.Gray,
+                modifier = Modifier.padding(end = 8.dp)
+            )
+        }
+        Icon(
+            imageVector = Icons.Default.ArrowForwardIos,
+            contentDescription = "Navigate",
+            tint = Color.Black,
+            modifier = Modifier
+                .size(20.dp)
+                .then(Modifier.offset(x = 0.dp))
+        )
+    }
+}
+
+@Composable
 fun SettingsSection(title: String, content: @Composable ColumnScope.() -> Unit) {
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    Column(verticalArrangement = Arrangement.spacedBy(5.dp)) {
         Text(
             text = title,
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.primary
+            style = MaterialTheme.typography.titleLarge,
+            color = Color.Gray,
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Medium,
+            modifier = Modifier.padding(start = 4.dp)
         )
-        Surface(
-            shape = MaterialTheme.shapes.medium,
-            tonalElevation = 2.dp,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Column(modifier = Modifier.padding(8.dp)) {
-                content()
-            }
+        Column(modifier = Modifier.fillMaxWidth()) {
+            content()
         }
     }
 }
+
 
 @Composable
 fun AccountInfoItem(
@@ -291,17 +379,42 @@ fun AccountInfoItem(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onClick() }
-            .padding(12.dp),
+            .padding(vertical = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(icon, contentDescription = title, tint = MaterialTheme.colorScheme.primary)
+        Box(
+            modifier = Modifier
+                .size(48.dp)
+                .background(
+                    color = Color(0xFF7E19A9).copy(alpha = 0.1f),
+                    shape = CircleShape
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                icon,
+                contentDescription = title,
+                tint = Color(0xFF7E19A9),
+                modifier = Modifier.size(24.dp)
+            )
+        }
         Spacer(modifier = Modifier.width(16.dp))
         Column(modifier = Modifier.weight(1f)) {
-            Text(title, style = MaterialTheme.typography.bodyLarge)
-            Text(value,style = MaterialTheme.typography.bodySmall)
+            Text(
+                title,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Medium,
+                color = Color.Black
+            )
+            Text(
+                value,
+                style = MaterialTheme.typography.bodySmall,
+                color = Color.Gray
+            )
         }
     }
 }
+
 
 @Composable
 fun DeleteAccountDialog(
@@ -330,7 +443,7 @@ fun DeleteAccountDialog(
             },
             dismissButton = {
                 TextButton(onClick = onDismiss) {
-                    Text("Cancel")
+                    Text("Cancel", color = Color(0xFF000000))
                 }
             }
         )
