@@ -1,4 +1,4 @@
-package com.example.letteblack.presentation.screen.settings
+package com.example.letteblack.screens.settings
 
 import android.net.Uri
 import android.util.Log
@@ -64,7 +64,7 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.letteblack.R
-import com.example.letteblack.data.remote.Routes
+import com.example.letteblack.data.Routes
 import com.example.letteblack.viewmodel.UserViewModel
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
@@ -248,7 +248,7 @@ fun AccountScreen(
                         password = password,
                         onSuccess ={
                             Toast.makeText(context,"Account Deleted Successfully", Toast.LENGTH_LONG).show()
-                            navController.navigate(toString()){ popUpTo(0){ inclusive = true} }
+                            navController.navigate(Routes.Login.toString()){ popUpTo(0){ inclusive = true} }
                         },
                         onError = { errorMessage ->
                             Toast.makeText(context,errorMessage, Toast.LENGTH_LONG).show()

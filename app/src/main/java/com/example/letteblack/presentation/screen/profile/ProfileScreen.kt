@@ -1,4 +1,4 @@
-package com.example.letteblack.presentation.screen.profile
+package com.example.letteblack.screens
 
 import android.util.Log
 import androidx.compose.foundation.Image
@@ -55,7 +55,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.letteblack.R
-import com.example.letteblack.data.local.entities.GroupEntity
+import com.example.letteblack.db.GroupEntity
 import com.example.letteblack.viewmodel.GroupViewModel
 import com.example.letteblack.viewmodel.UserViewModel
 
@@ -82,7 +82,7 @@ fun ProfileScreen(
         Log.d("Profile", "DEBUG >>> Groups for $userId: ${groups.map { it.groupName }}")
     }
 
-    Scaffold { innerPadding ->
+    Scaffold{ innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -242,29 +242,30 @@ fun ProfileScreen(
             ) {
                 Text("Leaderboard")
 
-                Surface(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = MaterialTheme.shapes.large,
-                    tonalElevation = 4.dp,
-                    shadowElevation = 2.dp
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                shape = MaterialTheme.shapes.large,
+                tonalElevation = 4.dp,
+                shadowElevation = 2.dp
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(20.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(20.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        Text(
-                            "Achievements",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 18.sp,
-                            color = MaterialTheme.colorScheme.primary
-                        )
+                    Text(
+                        "Achievements",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp,
+                        color = MaterialTheme.colorScheme.primary
+                    )
 
-                        BadgeSection()
-                    }
+                    BadgeSection()
                 }
             }
+
+      
         }
     }
 }
