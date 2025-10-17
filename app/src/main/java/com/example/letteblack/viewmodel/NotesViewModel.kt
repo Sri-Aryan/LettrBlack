@@ -2,10 +2,10 @@ package com.example.letteblack.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.letteblack.db.GroupMemberEntity
-import com.example.letteblack.db.NoteEntity
-import com.example.letteblack.repositories.GroupMemberRepository
-import com.example.letteblack.repositories.NoteRepository
+import com.example.letteblack.data.local.entities.GroupMemberEntity
+import com.example.letteblack.data.local.entities.NoteEntity
+import com.example.letteblack.domain.repository.GroupMemberRepository
+import com.example.letteblack.domain.repository.NoteRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch

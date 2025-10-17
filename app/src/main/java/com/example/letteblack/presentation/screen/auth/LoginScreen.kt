@@ -1,0 +1,162 @@
+package com.example.letteblack.presentation.screen.auth
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import com.example.letteblack.viewmodel.AuthViewModel
+import com.example.letteblack.R
+import com.example.letteblack.viewmodel.UserState
+import com.example.letteblack.core.util.Utils
+import com.example.letteblack.data.remote.Routes
+
+@Composable
+fun LoginScreen(
+    navController: NavHostController,
+    modifier: Modifier,
+    authViewModel: AuthViewModel
+) {
+    val context = LocalContext.current
+    var eyeOpener by remember { mutableStateOf(false) }
+
+    LaunchedEffect(authViewModel.userState.value) {
+        when (val state = authViewModel.userState.value) {
+            is UserState.Authenticated -> {
+                authViewModel.email = ""
+                authViewModel.password = ""
+                navController.navigate(Routes.Home.toString()) {
+                    popUpTo(Routes.Login.toString()) { inclusive = true }
+                }
+            }
+
+            is UserState.Error -> Utils.showToast(context, state.error)
+            else -> {}
+        }
+    }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(bottom = 60.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                "Welcome To Login Screen",
+                fontSize = 24.sp,
+                fontFamily = FontFamily.SansSerif,
+                fontWeight = FontWeight.SemiBold
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+
+            OutlinedTextField(
+                value = authViewModel.email,
+                onValueChange = { authViewModel.onEmailChange(it) },
+                placeholder = { Text("Enter your email") },
+                label = { Text("Email") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(60.dp)
+                    .padding(horizontal = 16.dp),
+                shape = CircleShape
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            OutlinedTextField(
+                value = authViewModel.password,
+                onValueChange = { authViewModel.onPasswordChange(it) },
+                placeholder = { Text("Enter your password") },
+                label = { Text("Password") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(60.dp)
+                    .padding(horizontal = 16.dp),
+                shape = CircleShape,
+                visualTransformation = if (!eyeOpener) PasswordVisualTransformation() else VisualTransformation.None,
+                trailingIcon = {
+                    IconButton(
+                        onClick = { eyeOpener = !eyeOpener },
+                        modifier = Modifier.size(50.dp)
+                    ) {
+                        Icon(
+                            painterResource(R.drawable.eye),
+                            contentDescription = null,
+                            tint = Color.Unspecified,
+                            modifier = Modifier.size(40.dp)
+                        )
+                    }
+                }
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(
+                onClick = {
+                    if (authViewModel.email.isNotEmpty() && authViewModel.password.isNotEmpty()) {
+                        authViewModel.login(authViewModel.email, authViewModel.password)
+                    } else {
+                        Utils.showToast(context, "Enter the email and password")
+                    }
+                },
+                enabled = authViewModel.userState.value != UserState.Loading,
+                modifier = Modifier.size(200.dp, 50.dp)
+            ) {
+                Text("Login")
+            }
+
+            TextButton(onClick = { navController.navigate(Routes.SignUp.toString()) }) {
+                Text("Don't have any account? SignUp")
+            }
+        }
+
+        TextButton(
+            onClick = { navController.navigate(Routes.OnBoarding.toString()) },
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(16.dp)
+        ) {
+            Text("Skip")
+        }
+        Spacer(modifier = Modifier.height(20.dp))
+        TextButton(
+            onClick = { navController.navigate(Routes.Home.toString()) },
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .padding(16.dp)
+        ) {
+            Text("Skip to Home") // Added to skip the onboarding
+        }
+    }
+}
