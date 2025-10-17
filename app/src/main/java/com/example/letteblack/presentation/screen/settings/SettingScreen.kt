@@ -109,7 +109,7 @@ fun SettingsScreen(navController: NavHostController, authViewModel: AuthViewMode
             // Account Section
             SettingsSection("Account") {
                 SettingsItem(Icons.Default.Person, "Profile", "Manage your account",
-                onClick = {navController.navigate("profile")})
+                onClick = {navController.navigate("account")})
                 SettingsItem(Icons.Default.Lock, "Privacy", "Control your privacy",
                     onClick = { navController.navigate("privacy") })
             }

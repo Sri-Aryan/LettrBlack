@@ -241,7 +241,7 @@ fun ProfileScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Leaderboard")
-
+            }
                 Surface(
                     modifier = Modifier.fillMaxWidth(),
                     shape = MaterialTheme.shapes.large,
@@ -261,10 +261,9 @@ fun ProfileScreen(
                             color = MaterialTheme.colorScheme.primary
                         )
 
+                        BadgeSection()
                     }
                 }
-
-
             }
         }
     }
@@ -329,5 +328,5 @@ fun ProfileScreen(
             }
         }
     }
-}
+
 

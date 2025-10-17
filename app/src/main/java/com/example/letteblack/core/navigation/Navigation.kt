@@ -94,12 +94,11 @@ fun Navigation(modifier: Modifier = Modifier) {
             )
         }
 
-
         composable(Routes.PuzzleCategory.toString()) {
             PuzzleCategoryScreen(modifier = modifier)
 
         }
-        composable(Routes.Account.toString()) {
+        composable("account") {
             AccountScreen(navController = navController)
         }
 
